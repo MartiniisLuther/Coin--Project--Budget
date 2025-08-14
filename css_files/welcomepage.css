@@ -1,0 +1,282 @@
+@import url('https://fonts.googleapis.com/css2?family=Tektur:wght@400..900&display=swap');
+
+/* to all elements on the page */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+}
+
+/* to the html properties */
+html {
+    font-size: 62.5%;
+}
+
+/* body tag */
+body {
+    background-color: #f5f5f5;
+}
+
+/* outer container */
+.outer_container {
+    margin: 0 auto;
+    max-width: 1440px;
+    /* max-width: 1200px; */
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    /* height: 100%; */
+    display: flex;
+    flex-direction: column;
+}
+
+/* styles the second level container */
+.inner_container {
+    position: relative;
+    background-size: 100% 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-radius: 0 0 1rem 1rem;
+    /* mybe change this to snow or sth */
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+    overflow: hidden;
+    padding: 40px;
+
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+
+/* headline */
+.headline {
+    font-family: 'Tektur', sans-serif;
+    font-size: 10rem;
+    color: #d1b47f;
+    /* color: gold; */
+    /* color: rgb(44, 62, 80); */
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(44, 62, 80, 0.5);
+
+}
+
+/* tagline p */
+.tagline {
+    font-family: 'Tektur', sans-serif;
+    font-size: 8rem;
+    color: gold;
+    color: snow;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+/* p subtagline */
+.subtagline {
+    font-family: 'Barriecito', cursive;
+    font-size: 4rem;
+    /* color: rgb(44, 62, 80); */
+    color: snow;
+    margin-bottom: 40px;
+    text-align: right;
+}
+
+
+/* styles the img > piggysvg */
+.inner_container .piggysvg {
+    position: absolute;
+    top:20%;
+    left: 20%;
+    opacity: 0.8;
+    margin: 20px 0;
+    filter: drop-shadow(0 0 10px rgba(209, 180, 127, 0.5));
+}
+
+/* styles the buttons */
+.inner_container .btn {
+    position: absolute;
+    display: inline-block;
+    padding: 20px 40px;
+    font-family: 'Tektur', sans-serif;
+    font-size: 3rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* button login */
+.inner_container .btn-login {
+    top: 70%;
+    left: 1%;
+    /* background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%); */
+    background: transparent;
+    border: 2px solid #fff;
+    color: gold;
+}
+
+/* button signup */
+.inner_container .btn-signup {
+    top: 85%;
+    right: 10%;
+    color: gold;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+    border: 2px solid gold;
+}
+
+/* hover effect on buttons */
+.btn-login:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-signup:hover {
+    background: rgb(229, 198, 135, 0.1);
+    color: snow;
+    transform: translateY(-3px);
+}
+
+/* shake effect on the piggy svg */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.piggysvg {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* styles the form div container */
+.form-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 20, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* hide elements by default */
+.hidden {
+    display: none;
+}
+
+/* styles the login/signup div form-box */
+.form-box {
+    background: #1f2b3a;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px #c9a74c77;
+    max-width: 800px;
+    width: 100%;
+    color: #f5deb3;
+    text-align: center;
+    font-family: 'Tektur', sans-serif;
+}
+
+/* styles the form-box h2 */
+.form-box h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* styles the form-box input */
+.form-box input {
+    width: 100%;
+    padding: 1rem;
+    margin: 2rem 0;
+    border-radius: 0.5rem;
+    border: none;
+    background: #2c3e50;
+    color: #f5deb3;
+    font-size: 1.6rem;
+}
+
+/* styles the form-box buttons */
+.form-btn {
+    background: #d4af37;
+    width: 100%;
+    font-size: 2rem;
+    color: #1b1b1b;
+    font-weight: bold;
+    padding: 0.8rem 1.2rem;
+    border: none;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: 'Tektur', sans-serif;
+}
+
+/* hover effect on form-box buttons */
+.form-btn:hover {
+    background: #c9a74c;
+}
+
+/* switches to login/signup */
+.form-switch {
+    margin-top: 2rem;
+    font-size: 1.5rem;
+    color: #f5deb3;
+}
+
+/* styles the form-switch span */
+.form-switch span {
+    cursor: pointer;
+    color: #d4af37;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* media queries - up to 1300px*/
+@media screen and (max-width: 1200px) {
+    /* resize the main container */
+    html {
+        font-size: 60%; /* 1rem = 10px */
+    }    
+}
+
+
+/* up to 800 px */
+@media screen and (max-width: 800px) {
+    /* resize the main container */
+    html {
+        font-size: 55%; /* 1rem = 10px */
+    }
+}
+
+/* up to 500px */
+@media screen and (max-width: 720px) {
+    section.account_container {
+        display: flex;
+        flex-direction: column;
+        
+        position: relative;
+
+    }
+
+    /* needs modification */
+    .left_settings_overview {
+        display: none;
+    } 
+
+    /* show hamburger */
+    .hamburger {
+        display: block; /* show hamburger icon */
+    }
+
+    /* styles the right side of the settings */
+    .right_account_details {
+        width: 100%;
+        /* display: none; */
+    }
+    
+
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard | One Coin to Rule</title>
+    
+    <!-- Link to CSS file -->
+    <link rel="stylesheet" href="css_files/homepage.css">
+    <link rel="stylesheet" href="css_files/accountpage.css">
+
+    <!-- Link to JavaScript files -->
+    <script src="js_files/homepage.js" defer></script>
+    <script src="js_files/accountpage.js"></script>
+
+
+    <!--links to various icons, from flaticon & fontawesome-->
+    <script src="https://kit.fontawesome.com/8d07e5d887.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <!-- navigation section -->
+    <header class="navbar-outer">
+        <div class="navbar-inner">
+            <!-- logo should direct to home -->
+            <div class="logo">Coin 💰</div> 
+            <nav class="aboutNavPage">
+                <ul class="nav-links">
+                    <li><a href="homepage.html" class="nav-item ">Home</a></li>
+                    <li class="nav-item-dropdown-container">
+                        <a href="#" class="nav-item linkAbout">About <i class="fas fa-caret-down"></i></a>
+                        <ul class="nav-item-dropdown">
+                            <li><a href="accountpage.html" >Account</a></li>
+                            <li><a href="welcomepage.html" class="logout navLogout">LogOut</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- hamburger icon -->
+                <div class="hamburger">
+                    <span class="bar"> <i class="fa-solid fa-bars"></i></span>
+                </div>               
+            </nav> 
+            
+        </div>
+    </header>
+
+    <!-- account stuff body section -->
+    <main class="dashboard">
+        <section class="account_container">
+            <!-- left side- overview -->
+            <div class="left_settings_overview">
+                <h2>settings</h2>
+                <div class="profile_settings">
+                    <div class="profile_pic">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEhUlEQVR4nNVZz28bRRTeC1ScOQAqEkJCgKB/BRJXRIUEKicOjp3gpMhxkzYOJRC1SdPEnjFw4V+AEwevf8RO4jaxPdOkcOBE4B+gohL+sfPGRR701k7qxHbwzo4dGOmTVt6dt9/beTPve8+WZWB8y+ovUiY/plwmCZdZyuQh4fCYMGi64PC4/ZvMus9U5BWcY53n+Iap5wmDq5TDA8ql0gFhwJNMzKCtsRFPVhovEyYpYdDQJd4DBnXKJImXGhdHRvy7ffUM5fAZYVAzRpz3rEiDMPll8ld1wSh5wuENwuHnURGnPYCfNhi8boQ85fDBKL86HexElTK47O/LM/kJ5fBk/ORlO6Q4/E1Zc1KP/INm6LyI01PAk8p72KD3/wHytLMSpALvD0U+fiBeIxz+Om/S9LQTDGpf78ObZ5Jf+kU9a+q0STCp1kpSrZXb14aceIjH+eDQYXDDzws2KqBi20KFM0IFUs4JTGeFiu0IFa+ALyeSHK71D51S46KbETUN3yyCCtonSfdDyHbUF0XhK5QS+/WXehxAeaBlkEs1vwX/Svw05gvgztV0JN5PmGlpm9i2d/JHWNzRDCcG9RMCsK0qvRu6UwYVGCJsBsJ21J2SnhMJLsJPN6+mJI5s9m5Wr5jNa+4HBswljxuCMGh5NRBn+qHTjYmU49rS2MwtWq69YHUqKc8Glu+bcSCQctTyrl4YES4/srDE05n8+Y45B24WdTezJFanTvU8OWbQgZj2aSRtDKHfdSZjMjLlwNI93Y0sD/EE+lNn8sqeuRVY2dPOB49Q/0jNDaRCaf+rELId7YxMGIC2A4iFbf8OxHZ86SLQDiFEnEk1mdYnP5l2/EltDCHC5G/aBrhUqyVQExpyIphy1Kpu7B87IA+1j9Fu3NqTKmQPH06TaeHOoT7f2z5GNRPZaaxXpIrmhSsNBhHHe/jMetkAeX6UyCryihFjHdwtS7VYBDW7KdRMrg28xsyN90y+K8nkhxYKIh0xd94gR2KuUw/w/50DHMrH9QA2js6bEPWM5qcnSko/Bf0gYAfCbxeCDlNStlsqkmgTZaC+ug9ucX81J/pKDDxm8R4+g8/6cYxwueG7rYL65daudEtC3Uw8mxfq9m7b1vAOQHXg31OEwfVhjKyU2l/alBqdyQp1e9iszCBqDRrYtsP23aDJqFvmCuZkdOAUMLzO1EYMDs5sLZ7V3MUkFM6MhnigC/iOfgkPO3L4T9GZ5J9uaLjc3V5H0WVC+3vRSqtdIeW21zm8Z3kZSd4M4uS18njJB45PLcdVuphxE0wGLJ1xl8mJKR963y+m0o5arzSnLT/jxhYshWynNW7ywVSjNbclli0TYyEv3g1nnPq4yIczjfr1onjHMjlmbHUhmnd+DNmNka1GMOW05vKQjZTUc9aoxsJ27VIkJw6CBh0J2Y1WZFPsL92rvmWNaywWxavXCuKH6axT1Wqx2+6ZX40WnO+jBfXK2Ij3G9Fs7dJcQZBIznk4kxWPpjKOxBXCEhKB11PphpzOiT9mN8XB/JaTmE/X3jbx8n8A0x2IRmBkF3AAAAAASUVORK5CYII=" alt="test-account">                    
+                    </div>
+                    <div class="profile_info">
+                        <h3 class="display_name">tyrannt lizard</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- to be shown when there's hamburger -->
+            <div class="settings_popup">
+                <div class="left_settings_overview_1">
+                    <h2>settings</h2>
+                    <div class="profile_settings">
+                        <div class="profile_pic">
+                            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEhUlEQVR4nNVZz28bRRTeC1ScOQAqEkJCgKB/BRJXRIUEKicOjp3gpMhxkzYOJRC1SdPEnjFw4V+AEwevf8RO4jaxPdOkcOBE4B+gohL+sfPGRR701k7qxHbwzo4dGOmTVt6dt9/beTPve8+WZWB8y+ovUiY/plwmCZdZyuQh4fCYMGi64PC4/ZvMus9U5BWcY53n+Iap5wmDq5TDA8ql0gFhwJNMzKCtsRFPVhovEyYpYdDQJd4DBnXKJImXGhdHRvy7ffUM5fAZYVAzRpz3rEiDMPll8ld1wSh5wuENwuHnURGnPYCfNhi8boQ85fDBKL86HexElTK47O/LM/kJ5fBk/ORlO6Q4/E1Zc1KP/INm6LyI01PAk8p72KD3/wHytLMSpALvD0U+fiBeIxz+Om/S9LQTDGpf78ObZ5Jf+kU9a+q0STCp1kpSrZXb14aceIjH+eDQYXDDzws2KqBi20KFM0IFUs4JTGeFiu0IFa+ALyeSHK71D51S46KbETUN3yyCCtonSfdDyHbUF0XhK5QS+/WXehxAeaBlkEs1vwX/Svw05gvgztV0JN5PmGlpm9i2d/JHWNzRDCcG9RMCsK0qvRu6UwYVGCJsBsJ21J2SnhMJLsJPN6+mJI5s9m5Wr5jNa+4HBswljxuCMGh5NRBn+qHTjYmU49rS2MwtWq69YHUqKc8Glu+bcSCQctTyrl4YES4/srDE05n8+Y45B24WdTezJFanTvU8OWbQgZj2aSRtDKHfdSZjMjLlwNI93Y0sD/EE+lNn8sqeuRVY2dPOB49Q/0jNDaRCaf+rELId7YxMGIC2A4iFbf8OxHZ86SLQDiFEnEk1mdYnP5l2/EltDCHC5G/aBrhUqyVQExpyIphy1Kpu7B87IA+1j9Fu3NqTKmQPH06TaeHOoT7f2z5GNRPZaaxXpIrmhSsNBhHHe/jMetkAeX6UyCryihFjHdwtS7VYBDW7KdRMrg28xsyN90y+K8nkhxYKIh0xd94gR2KuUw/w/50DHMrH9QA2js6bEPWM5qcnSko/Bf0gYAfCbxeCDlNStlsqkmgTZaC+ug9ucX81J/pKDDxm8R4+g8/6cYxwueG7rYL65daudEtC3Uw8mxfq9m7b1vAOQHXg31OEwfVhjKyU2l/alBqdyQp1e9iszCBqDRrYtsP23aDJqFvmCuZkdOAUMLzO1EYMDs5sLZ7V3MUkFM6MhnigC/iOfgkPO3L4T9GZ5J9uaLjc3V5H0WVC+3vRSqtdIeW21zm8Z3kZSd4M4uS18njJB45PLcdVuphxE0wGLJ1xl8mJKR963y+m0o5arzSnLT/jxhYshWynNW7ywVSjNbclli0TYyEv3g1nnPq4yIczjfr1onjHMjlmbHUhmnd+DNmNka1GMOW05vKQjZTUc9aoxsJ27VIkJw6CBh0J2Y1WZFPsL92rvmWNaywWxavXCuKH6axT1Wqx2+6ZX40WnO+jBfXK2Ij3G9Fs7dJcQZBIznk4kxWPpjKOxBXCEhKB11PphpzOiT9mN8XB/JaTmE/X3jbx8n8A0x2IRmBkF3AAAAAASUVORK5CYII=" alt="test-account">                    
+                        </div>
+                        <div class="profile_info">
+                            <h3 class="display_name">tyrannt lizard</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- right side- account details -->
+            <div class="right_account_details">
+                <!-- <div class="about_account"> -->
+                <div class="basic_info">
+                    <h3>basic info</h3>
+                    <form action="">
+                        <label for="name">name:</label>
+                        <input type="text" id="name" name="name" placeholder="Tyrannt Lizard" required autocomplete="off">
+                        <label for="username">username:</label>
+                        <input type="text" id="username" name="username" placeholder="tyrannt_lizard" required autocomplete="off">
+                    </form>
+                </div>
+                <!-- edits for the account -->
+                <div class="account_info">
+                    <h3>edit details</h3>
+                    <form action="">
+                        <label for="current_password">current password:</label>
+                        <input type="password" id="current_password" name="current_password" placeholder="enter current password" required>
+                        <label for="new_password">new password:</label> 
+                        <input type="password" id="new_password" name="new_password" placeholder="enter new password" required>
+                    </form>
+                </div>
+                <!-- </div> -->
+                <!-- buttons -->
+                <div class="account_actions">
+                    <h3>updates</h3>
+                    <div class="button_div">
+                        <button class="btn btn-save">save changes</button>
+                        <button class="btn btn-delete">delete account</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+</body>

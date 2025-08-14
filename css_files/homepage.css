@@ -1,0 +1,784 @@
+@import url('https://fonts.googleapis.com/css2?family=Tektur:wght@400..900&display=swap');
+
+/* to all elements on the page */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Tektur', sans-serif;
+}
+
+/* to the html properties */
+html {
+    font-size: 62.5%;
+}
+
+body {
+    background-color: #f5f5f5;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+}
+
+/* styles the outermost container */
+.navbar-outer {
+    padding: 2rem;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* ensures the navbar is always on top */
+}
+
+/* styles the second level container */
+.navbar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto; /* this is needed here*/
+    max-width: 1440px;
+    padding: 0 2rem;
+}
+
+/* styles the logo */
+.logo {
+    color: #d4af37;
+    font-size: 3rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* styles the navigation links */
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    font-size: 2rem;
+}
+
+/* styles the class nav-item for all the elements */
+.nav-item {
+    color: #f0e6d2;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+/* hover and active effect */
+.nav-item:hover,
+.nav-item.active {
+    color: #d4af37;
+    text-shadow: 0 0 5px #d4af37;
+}
+
+.nav-item-dropdown-container {
+    position: relative; /* relative positioning for dropdown */
+}
+
+/* styles the dropdown under Account on navbar */
+.nav-item-dropdown {
+    position: absolute; /* relative positioning for dropdown */
+    display: none;
+    top: 100%; /* positions the dropdown below the parent */
+    left: -10px;
+    background: rgba(44, 62, 80);
+    list-style: none;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    /* border: solid 1px rgba(44, 62, 80); */
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* ensures the dropdown */
+}
+
+/* styles the links */
+.nav-item-dropdown a {
+    color: #f0e6d2;
+    text-decoration: none;
+    display: block;
+    padding: 0.5rem;
+}
+
+/* hover effect on dropdown links */
+.nav-item-dropdown a:hover {
+    color: #d4af37;
+    text-shadow: 0 0 5px #d4af37;
+}
+
+/* shows the dropdown on hover */
+.nav-item-dropdown-container:hover .nav-item-dropdown {
+    /* shows the dropdown */
+}
+
+/* class show */
+.nav-item-dropdown.show {
+    display: block; /* shows the dropdown */
+}
+
+/* styles the outer_container, other styles in welcomepage.css */
+.dashboard {
+    max-width: 1440px;
+    /* max-width: 1200px; */
+    align-items: center;
+    justify-content: center;
+    /* height: 100vh; */
+    border-radius: 0 0 1rem 1rem;
+    margin: 8vh auto;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); */
+    /* background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%); */
+    padding: 5px;
+}
+
+/* styles the section welcome-card */
+.welcome-card {
+    background-color: #fff;
+    margin: 0 0 1.5rem 0;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+
+    outline: 1px solid rgb(128, 128, 128, 0.5);
+    outline-offset: -2rem;
+}
+
+/* p1 of the welcome card */
+.welcome-card .p1 {
+    font-size: 2.5rem;
+    margin: 1rem 0;
+    color: #333;
+    /* color: #d4af37; */
+    font-weight: 100;
+    display: inline-block;
+}
+
+/* styles the username */
+.welcome-card #reg_name {
+    color: #d4af37;
+    text-shadow: 0 0 5px gold;
+    font-size: 3.5rem;
+}
+
+/* styles the date div */
+.welcome-card .date_div {
+    font-size: 2rem;
+    color: #333;
+    /* color: #d4af37; */
+    /* text-align: center; */
+    font-weight: 100;
+    /* margin: 0 0 0 2rem; */
+}
+
+/* styles the content outer div card */
+.content_container {
+    display: flex;
+    gap: 2rem;
+    background-color: #fff;
+    /* padding: 2rem; */
+    border-radius: 1rem;
+    /* border: 1px solid orangered; */
+}
+
+/* styles the left_container */
+.left_container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 30%;
+    /* border: 1px solid green; */
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+/* styles the right_container */
+.right_container {
+    display: flex;
+    flex-direction: column;
+    gap:2rem;
+    width: 70%;
+    /* border: 1px solid palevioletred; */
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+/* styles the summary card */
+.budget_card, .summary_card {
+    display: flex;
+    flex-direction: column;
+    /* border: 1px solid gold; */
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); */
+    border: 1px solid rgb(128, 128, 128, 0.5);
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 2rem;
+    align-items: center;
+    justify-content: center;
+    font-weight: 400;
+    /* background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%); */
+    /* color: gold; */
+    color: #1a1a1a;
+}
+
+/* styles the div with pie chart */
+.summary_pie {
+    /* border: gold 1px solid; */
+    border: rgba(128, 128, 128, 0.3) 1px solid;
+    border-radius: 1rem;
+    padding: 5px;
+    margin-bottom: 1rem;
+}
+
+
+/* styles the card titles */
+h2 {
+    font-size: 2.5rem;
+    text-decoration: underline;
+    margin-bottom: 1rem;
+    font-weight: 300;
+    color: #1a1a1a;
+}
+
+.budget_card label {
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    text-align: left;
+}
+
+/* styles the budget card content */
+.budget_details,  .month_select, .currency_select {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    margin: 1rem 0;
+}
+
+/* styles the currency selector */
+.budget_details #currency_option {
+    padding: 5px;
+    border-radius: 0.5rem;
+    border: 1px solid #2c3e50;
+    background: #2c3e50;
+    color: gold;
+    font-size: 1.6rem; 
+}
+
+/* styles the budget input field */
+.budget_details input[type="number"] {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid #2c3e50;
+    background: #fff;
+    color: #1a1a1a;
+    font-size: 1.6rem;
+    padding: 1rem;
+}
+
+/* styles the month selector */
+.month_select select {
+    width: 100%;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid #2c3e50;
+    background: #fff;
+    color: #1a1a1a;
+    font-size: 1.6rem; 
+} 
+
+/* styles the summary text of the pie chart */
+.summary_card .summary_text {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* div add categories button*/
+#add_categories_btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid #2c3e50;
+    background: #2c3e50;
+    color: gold;
+    font-size: 1.6rem; 
+    cursor: pointer;
+}
+
+/* styles the div that contains categories */
+.add_categories {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 2rem 0;
+
+}
+
+/* styles the container categories */
+.categories_container {
+    display: flex;
+    flex-wrap: wrap; /* allows wrapping to new lines */
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+/* styles the category cards added dynamically*/
+.category_added {
+    display: flex;
+    text-transform: capitalize;
+    flex-direction: row;
+    justify-content: space-between;
+    background: #fff;
+    border: 1px solid #c9a74c;
+    color: #2c3e50;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    gap: 1rem;
+}
+
+/* styles the delete btn */
+.delete_category_btn {
+    background: none;
+    border: none;
+    color: crimson;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+/* hover effect on delete button */
+.delete_category_btn:hover {
+    color: darkred;
+}
+
+/* styles the days left div */
+.summary_card .days_left {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.5rem;
+    width: 210px;
+    margin-bottom: 1rem;
+    border: rgba(128, 128, 128, 0.3) 1px solid;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); */
+    border-radius: 1rem;
+    padding: 5px;
+    text-align: center;
+}
+
+/* styles the days left bar */
+#daysProgress {
+  width: 100%;
+  height: 16px; /* or use var(--progress-bar-height) if defined */
+  border-radius: 8px;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #d4ab37; /* fallback for non-pseudo */
+}
+
+/* Firefox */
+#daysProgress::-moz-progress-bar {
+  background-color: teal;
+  border-radius: 8px;
+}
+/* Chrome/Safari */
+#daysProgress::-webkit-progress-bar {
+  background-color: #d4ab37;
+  border-radius: 8px;
+}
+#daysProgress::-webkit-progress-value {
+  background-color: teal;
+  border-radius: 8px;
+}
+/* slow edge (old) */
+#daysProgress::-ms-fill {
+  background-color: teal;
+  border-radius: 8px;
+}
+
+/* styles the right container with categories */
+
+/* styles the title expenditure card */
+.right_container .exp_heading {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 2rem;
+    align-items: center;
+    justify-content: center;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); */
+    border: 1px solid rgb(128, 128, 128, 0.5);
+
+}
+
+/* styles the button to add expenses */
+#set_budget_btn, .add_expense_btn {
+    background: transparent;
+    color: #1a1a1a;
+    font-size: 1.5rem;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid #d4af37;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); */
+    cursor: pointer;
+    color: gold;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+    border: 2px solid gold;
+    transition: all 0.3s ease;
+}
+
+/* hover effect on the button */
+#set_budget_btn:hover, .add_expense_btn:hover {
+    transform: scale(1.07);
+}
+
+/* styles the categories & overview div */
+.exp-categories_months-oveview {
+    display: flex;
+    flex-direction: column; /* vertical alignment*/
+    gap: 2rem;
+}
+
+/* styles the right side with months overview */
+.months-overview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+    padding: 2rem;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); */
+    border: 1px solid rgb(128, 128, 128, 0.5);
+    width: 100%;
+}
+
+/* styles the categories div */
+.exp_categories_group {
+    display: flex;
+    flex-wrap: wrap; /* allows wrapping to new lines */
+    /* gap: 1rem; */
+    /* padding: 1rem; */
+    justify-content: flex-start; /* aligns items left */
+    width: 100%;
+    border: 1px solid rgb(128, 128, 128, 0.5);
+    border-radius: 1rem;
+}
+
+/* styles the each category cards */
+.each_exp_overview {
+    display: flex;
+    align-items: center; /* centers the icon and text vertically */
+    justify-content: center; /* centers the icon and text horizontally */
+    gap: 10px;
+    flex-direction: column;
+    min-width: 150px; /* this is needed */
+    /* height: 10rem; */
+    background-color: #fff;
+    margin: 0.5rem;
+    /* box-shadow: 0 2px 4px rgba(0,` 0, 0, 0.3); */
+    border: 1px solid rgb(128, 128, 128, 0.2);
+    border-radius: 1rem;
+    padding: 1rem;
+    /* flex-shrink: 0;  */
+    /* prevent shrinking */
+}
+
+/* KI generiete */
+/* Icon styling */
+.exp_icon {
+    margin-right: 1rem;   
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.3);
+    border-radius: 2rem;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*  */
+.exp_icon img {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* text container inside the card */
+.exp_values {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.2;
+    width: 100%;
+    text-align: center;
+}
+
+/* name of the category (e.g., Food, Transport) */
+.exp_name {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.25rem;
+}
+
+/* amount (e.g., $200) */
+.exp_amount {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: #1a1a1a;
+    border: 1px solid #d4af37;
+    padding:5px;
+    border-radius: 5px;
+    /* text-shadow: 0 0 5px #d4af37; */
+}
+
+/* styles the currency under the expenses */
+.exp_amount #currency_option {
+    /* font-weight: 300; */
+}
+
+/* h3 */
+.months-overview h3 {
+    text-align: center;
+    font-size: 2rem;
+    text-decoration: underline;
+    margin-bottom: 1rem;
+    font-weight: 300;
+    color: #1a1a1a;
+}
+
+/* pop up window, div creates the popup */
+.add_category_popup, 
+.add-expense-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 20, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* hide elements by default */
+.add_category_popup.hidden,
+.add-expense-popup.hidden {
+    display: none;
+}
+
+/* needed to set the positioning correctly */
+.add_category_div {
+    position: relative;
+}
+
+/* only for categories form */
+#closeCategoryForm {
+    position: absolute;
+    top: 1rem;
+    left: 2rem;
+    z-index: 1001;
+}
+
+/* close popup forms button */
+.closeForm {
+    background: none;
+    border: none;
+    color: crimson;
+    font-size: 2.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+/* div for the two pop up menu*/
+.add_category_div, 
+.add_expense_div {
+    background: #1f2b3a;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px #c9a74c77;
+    max-width: 800px;
+    width: 50%;
+    color: #f5deb3;
+    text-align: left;
+}
+
+/* h3 */
+.add_category_div, 
+.add_expense_div h3 {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+/* labels, titles on the form */
+.add_category_div label {
+    display: block;
+    color: #f5deb3;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    font-weight: 500;
+}
+
+.add_expense_div label {
+    font-size: 2rem;
+    /* font-weight: 500; */
+}
+
+/* styles the form-box input, from the different dropdown menus */
+.add_category_div select,
+.add_category_div input,
+.add_expense_div select, 
+.add_expense_div input[type="number"] {
+    width: 100%;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 0.5rem;
+    border: none;
+    background: #2c3e50;
+    color: gold;
+    font-size: 1.6rem;
+}
+
+/* button */
+.add_category_div button[type="submit"], 
+.add_expense_div button[type="submit"] {
+    background: #d4af37;
+    margin-top: 1rem;
+    width: 100%;
+    font-size: 2rem;
+    color: #1b1b1b;
+    font-weight: bold;
+    padding: 0.8rem 1.2rem;
+    border: none;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+/* hover effect on form-box button */
+.add_expense_div button[type="submit"]:hover {
+    background: #c9a74c;
+}
+
+/* media queries - up to 1300px*/
+@media screen and (max-width: 1300px) {
+    /* resize the main container */
+    .content_container {
+        flex-direction: column;
+        padding: 2rem;
+        align-items: center;
+    }
+
+    /* resize the left side container */
+    .left_container {
+        flex-direction: row;
+        width: 100%;
+        margin-bottom: 2rem;
+        align-items: center;
+        justify-content: center;
+        /* border: 1px solid rgba(128, 128, 128, 0.5); */
+    }
+
+    /* styles the budget card */
+    .budget_card { 
+        width: 50%;
+        margin-bottom: 2rem;
+    }
+
+    .summary_card {
+        width: 50%;
+        margin-bottom: 2rem;
+    }
+
+    /* redesign the right side container */
+    .right_container {
+        width: 100%;
+    }
+}
+
+/* up to 990px */
+@media screen and (max-width: 990px) {
+    /* resize the welcome card */
+    .welcome-card .p1 {
+        font-size: 2rem;
+        padding: 1.5rem;
+    }
+
+    /* styles the left_container */
+    .left_container {
+        flex-direction: row;
+        width: 100%;
+        align-items: center;
+    }
+
+    /* styles the right_container */
+    .right_container {
+        width: 100%;
+    }
+
+    /* styles the budget card */
+    .budget_card, .summary_card {
+        width: 100%;
+    }
+}
+
+/* up to 850 px */
+@media screen and (max-width: 850px) {
+    /* resize the welcome card */
+    .welcome-card .p1 {
+        font-size: 2rem;
+        padding: 1.5rem;
+    }
+
+    /* styles the left_container */
+    .left_container {
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+
+    /* styles the each category cards */
+    .each_exp_overview {
+        flex-direction: column;
+        min-width: 110px; /* this is needed */
+        border-radius: 1.5rem;
+        padding: 1rem;
+    }
+
+    .exp_categories_group {
+        justify-content: center; /* aligns items left */
+    }
+}
+
+/* up to 500px */
+@media screen and (max-width: 550px) {
+    .welcome-card .p1 {
+        font-size: 1.5rem;;
+    }
+
+    /* styles the each category cards */
+    .each_exp_overview {
+        display: flex;
+        flex-direction: column;
+        min-width: 130px; /* this is needed */
+        border-radius: 1.5rem;
+        padding: 1rem;
+    }
+
+    .exp_categories_group {
+        justify-content: center; /* aligns items left */
+    }
+
+    /* div for the two pop up menu*/
+    .add_category_div, 
+    .add_expense_div {
+        width: 80%;
+    }
+    
+
+}

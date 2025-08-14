@@ -1,0 +1,263 @@
+/* other styles are imported from homepage.css */
+
+.aboutNavPage {
+    display: flex;
+    justify-content: space-between; /* space between logo and nav items */
+    align-items: center; /* vertically center items */
+}
+
+/* hamburger styles */
+.hamburger {
+    display: none; /* hidden by default */
+    cursor: pointer; /* pointer cursor on hover */
+    right: 2rem; /* right aligned */
+    color: #d4af37; /* color of the icon */
+    font-size: 2rem; /* size of the icon */
+    margin: 0 0 0 2rem; /* margin to align with the nav items */
+}
+
+section.account_container {
+    display: flex;
+    flex-direction: row; /* across layout */
+    gap: 4rem;
+    background-color: #fff;
+    padding: 4rem;
+    border-radius: 1rem;
+    height: 100%;
+    /* border: 1px solid orangered; */
+}
+
+/* hide the second menu by default */
+.settings_popup {
+    display: none; /* hidden by default */
+    align-items: right;
+    justify-content: right;
+    position: fixed;
+    top: 6rem;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(128, 128, 128, 0.5);
+    z-index: 999;
+}
+
+/* these settings are for popup when hamburger is clicked */
+.left_settings_overview_1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* distributes items evenly */
+    align-items: center; /* center horizontally */
+    height: 50%;
+    padding: 2rem;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    border-radius: 1rem;
+    text-transform: capitalize;
+    width: 80%;
+    background-color: #fff;
+    outline: 1px solid rgb(128, 128, 128, 0.5);
+    outline-offset: -1rem;
+}
+
+/* styles the left side - settings overview */
+.left_settings_overview {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* distributes items evenly */
+    align-items: center; /* center horizontally */
+    height: 50%; /* take full height of parent */
+    padding: 2rem;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    border-radius: 1rem;
+    text-transform: capitalize;
+    width: 30%;
+    background-color: #fff;
+}
+
+/* styles the h2 on the left side */
+.left_settings_overview_1 h2,
+.left_settings_overview h2 {
+    font-size: 5rem;
+    font-weight: 300;
+    color: #1a1a1a;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+/* styles the account profile pic img */
+.left_settings_overview_1 img,
+.left_settings_overview img {
+    width: 70%;
+    height: 70%;
+    border-radius: 50%;
+    margin: 2rem 0;
+    align-items: center; /* centers the image horizontally */
+    cursor: pointer; /* makes it clickable */
+}
+
+/* styles the display name */
+.left_settings_overview_1 .display_name,
+.left_settings_overview .display_name {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+    font-weight: 300;
+    margin: 2rem 0;
+    cursor: pointer; /* makes it clickable */
+    background-color: rgba(26, 26, 26, 0.1);
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+/* hover on display name */
+.left_settings_overview_1 .display_name:hover,
+.left_settings_overview .display_name:hover {
+    /* color: #d4af37; */
+    text-shadow: 0 0 5px #d4af37;
+}
+
+
+/* styles the right side of the settings */
+.right_account_details {
+    display: flex;
+    flex-direction: column; /* down layout */
+    gap: 2rem;
+    padding: 2rem;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    border-radius: 1rem;
+    width: 70%;
+    text-transform: capitalize;
+}
+
+/* styles the h3 on the right side */
+.right_account_details h3 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #1a1a1a;
+    margin-bottom: 2rem;
+    text-align: left;
+    text-decoration: underline;
+}
+
+/* styles the form */
+.right_account_details form {
+    display: flex;
+    flex-direction: column; /* down layout */
+    gap: 2rem;
+    width: 100%;
+    background-color: rgba(128, 128, 128, 0.1);
+    padding: 1rem;
+    border-radius: 1rem;
+}
+
+/* styles the labels on form */
+.right_account_details form label {
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    font-weight: 300;
+}
+
+/* styles the input fields on form */
+.right_account_details form input {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    border-radius: 0.5rem;
+    font-size: 2rem;
+    color: #d4af37;
+}
+
+/* styles the buttons div */
+.right_account_details .account_actions {
+    
+}
+
+.right_account_details .button_div {
+    display: flex;
+    flex-direction: column; /* across layout */
+    gap: 2rem; /* space between buttons */
+    width: 100%;
+    justify-content: space-between; /* distributes buttons evenly */
+    
+}
+
+/* styles the buttons, shared features */
+.right_account_details .btn{
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* styles the save button */
+.right_account_details .btn-save {
+    background-color: #d4af37;
+    padding: 2rem 2rem;
+    /* margin: 0 1rem 0 0; */
+}
+
+
+/* hover on save button */
+.right_account_details .btn-save:hover {
+    background-color: #b38f2c;
+    box-shadow: 0 0 5px #d4af37;
+}
+
+/* styles the delete button */
+.right_account_details .btn-delete {
+    background-color: #ff4d4d;
+    padding: 1rem;
+}
+
+/* hover on delete button */
+.right_account_details .btn-delete:hover {
+    background-color: #e60000;
+    box-shadow: 0 0 5px #ff4d4d;
+}
+
+
+/* media queries - up to 1300px*/
+@media screen and (max-width: 1200px) {
+    /* resize the main container */
+    html {
+        font-size: 60%; /* 1rem = 10px */
+    }    
+}
+
+
+/* up to 800 px */
+@media screen and (max-width: 800px) {
+    /* resize the main container */
+    html {
+        font-size: 55%; /* 1rem = 10px */
+    }
+}
+
+/* up to 500px */
+@media screen and (max-width: 720px) {
+    section.account_container {
+        display: flex;
+        flex-direction: column;
+        
+        position: relative;
+
+    }
+
+    /* needs modification */
+    .left_settings_overview {
+        display: none;
+    } 
+
+    /* show hamburger */
+    .hamburger {
+        display: block; /* show hamburger icon */
+    }
+
+    /* styles the right side of the settings */
+    .right_account_details {
+        width: 100%;
+        /* display: none; */
+    }
+    
+
+}

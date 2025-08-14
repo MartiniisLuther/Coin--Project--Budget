@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | Track all Coins to Rule</title>
+
+    <!-- link to css files -->
+    <link rel="stylesheet" href="css_files/welcomepage.css">
+    
+    <!-- link to java script -->
+    <script src="js_files/welcomepage.js" defer></script>
+</head>
+<body>
+    <main>
+        <!-- outer div -->
+        <div class="outer_container">
+            <div class="inner_container">
+                <!-- heading -->
+                <h1 class="headline">Master Your Money</h1>
+                <!-- p text -->
+                <p class="tagline">One Coin at a Time </p>
+                <p class="subtagline">to Rule them All!</p>
+                <!--  decorative image-->
+                <div class="deco_pic">
+                    <!-- <img src="picts/bank.svg" alt="bank" class="banksvg"> -->
+                    <img src="picts/piggy.svg" alt="piggy bank" class="piggysvg">
+                </div>
+                <!-- buttons login /signup -->
+                <div class="buttons">
+                    <button class="btn btn-login" id="btn-login">log in to your tracker</button>
+                    <button class="btn btn-signup" id="btn-signup">create account</button>
+                </div>
+
+                <!-- login/signup forms hidden by default -->
+                <div id="form-container" class="form-container hidden">
+                    <!-- login form - with actions -->
+                    <form action="php/login.php"  method="POST" class="form-box " id="login-form">
+                        <h2>Login to Continue Tracking</h2>
+                        <div>
+                            <input type="text" name="login_username" placeholder="Username" required>
+                            <input type="password" name="login_password" placeholder="Password" required>
+                            <button type="submit" class="form-btn">login</button>
+                            <p class="form-switch">Not Yet Tracking? <span id="switch-to-signup">Join here</span></p>
+                        </div>
+                    </form>
+                    
+                    <!-- signup form - with action and method -->
+                    <form action="php/signup.php"  method="POST" class="form-box hidden" id="signup-form">
+                        <h2>Welcome</h2>
+                        <div>
+                            <input type="text" name="signup_name" placeholder="Name" required>
+                            <input type="text" name="signup_username" placeholder="Username" required>
+                            <input type="password" name="signup_password" placeholder="Password" required>
+                            <button type="submit" class="form-btn">sign up</button>
+                            <p class="form-switch">Already joined? <span id="switch-to-login">Log in</span></p>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>
+
