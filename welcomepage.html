@@ -40,6 +40,9 @@
                         <div>
                             <input type="text" name="login_username" placeholder="Username" required>
                             <input type="password" name="login_password" placeholder="Password" required>
+
+                            <p id="reset_password"><span id="password_reset">forgot password?</span></p>
+
                             <button type="submit" class="form-btn">login</button>
                             <p class="form-switch">Not Yet Tracking? <span id="switch-to-signup">Join here</span></p>
                         </div>
@@ -52,6 +55,22 @@
                             <input type="text" name="signup_name" placeholder="Name" required>
                             <input type="text" name="signup_username" placeholder="Username" required>
                             <input type="password" name="signup_password" placeholder="Password" required>
+
+                            <!-- security questions for when to rest the password -->
+                            <div class="security-questions">
+                                <label for="security_question">Choose Security Question:</label>
+                                <select name="security_question" id="security_question" required>
+                                    <option value="" disabled selected>Select a question</option>
+                                    <option value="pet_name">What is the name of your first pet?</option>
+                                    <option value="mother_maiden">What is your mother's maiden name?</option>
+                                    <option value="favorite_color">What is your favorite color?</option>
+                                    <option value="nick_name">What is your childhood nick name?</option>
+
+                                </select>
+                                <input type="text" name="security_answer" placeholder="Your answer" required>
+                            </div>
+
+                            <!-- submit button -->
                             <button type="submit" class="form-btn">sign up</button>
                             <p class="form-switch">Already joined? <span id="switch-to-login">Log in</span></p>
                         </div>
