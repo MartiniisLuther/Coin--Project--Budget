@@ -146,6 +146,7 @@ body {
 }
 
 /* styles the form div container */
+.reset_password_form,
 .form-container {
     position: fixed;
     top: 0;
@@ -161,13 +162,13 @@ body {
 
 /* hide form elements by default */
 .hidden {
-    /* display: none; */
+    display: none;
 }
 
-/* remove this after adding the security questions */
-#login-form {
-    display: none; /* hide the signup form by default */
-}
+/* #signup-form,
+#reset-password-form {
+    display: none;
+} */
 
 /* styles the login/signup div form-box */
 .form-box {

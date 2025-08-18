@@ -34,7 +34,7 @@
 
                 <!-- login/signup forms hidden by default -->
                 <div id="form-container" class="form-container hidden">
-                    <!-- login form - with actions -->
+                    <!-- login form -->
                     <form action="php/login.php"  method="POST" class="form-box " id="login-form">
                         <h2>Login to Continue Tracking</h2>
                         <div>
@@ -48,7 +48,7 @@
                         </div>
                     </form>
                     
-                    <!-- signup form - with action and method -->
+                    <!-- signup form -->
                     <form action="php/signup.php"  method="POST" class="form-box hidden" id="signup-form">
                         <h2>Welcome</h2>
                         <div>
@@ -73,6 +73,21 @@
                             <!-- submit button -->
                             <button type="submit" class="form-btn">sign up</button>
                             <p class="form-switch">Already joined? <span id="switch-to-login">Log in</span></p>
+                        </div>
+                    </form>
+
+                    <!-- this form is for resetting the password -->
+                    <form action="" method="" class="form-box hidden" id="reset-password-form">
+                        <h2>Reset Your Password</h2>
+                        <div>
+                            <input type="text" name="reset_username" placeholder="Username" required>
+                            <input type="text" name="reset_security_answer" placeholder="Answer to your security question" required>
+                            <input type="password" name="new_password" placeholder="New Password" required>
+
+                            <!-- submit button -->
+                            <button type="submit" class="form-btn">Reset Password</button>
+                            <!-- switch to login form -->
+                            <p class="form-switch">Remembered your password? <span id="switch-to-login-reset">Log in</span></p>
                         </div>
                     </form>
                 </div>
