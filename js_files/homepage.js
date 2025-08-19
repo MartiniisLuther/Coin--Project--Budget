@@ -1,289 +1,268 @@
-// creates date on the homepage
-document.addEventListener('DOMContentLoaded', function() {
-    // add event listener to navbar linkAbout
-    const linkAbout = document.querySelector('.linkAbout');
-    const dropdownMenu = document.querySelector('.nav-item-dropdown');
-    
-    // Toggle dropdown menu on click
-    linkAbout.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent default link behavior
-        dropdownMenu.classList.toggle('show'); // add/remove the dropdown menu visibility class
-    }); 
-    // Close dropdown if clicked outside
-    document.addEventListener('click', function(event) {
-        if (!linkAbout.contains(event.target) && !dropdownMenu.contains(event.target)) {
-            dropdownMenu.classList.remove('show'); // remove the dropdown menu visibility class
+// overall page loader to monitor the page load
+document.addEventListener("DOMContentLoaded", async () => {
+    // use some hardcoded data for test purposes
+    async function fetchSummaryData() {
+        return { spent: 1000, total: 1300};
+    }
+
+    // sim DB fetch
+    async function fetchMonthlySpending() {
+        return [800, 950, 700, 1200, 1100, 900, 1000, 1300, 1400, 1500, 1600, 1700];
+    }
+
+    // sim DB fetch
+    async function fetchCategories() {
+        return [];
+    }
+
+
+    // navbar dropdown
+    const linkAbout = document.querySelector(".linkAbout");
+    const dropdownMenu = document.querySelector(".nav-item-dropdown");
+
+    function setupDropdown(link, menu) {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            menu.classList.toggle("show");
+        });
+        document.addEventListener("click", (e) => {
+            if (!link.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove("show");
+            }
+        });
+    }
+    // make dropdown work, when About is clicked
+    if(linkAbout && dropdownMenu) setupDropdown(linkAbout, dropdownMenu);
+
+
+    // data for the date and days progress
+    function setupDateAndProgress() {
+        const dateElement = document.getElementById("date");
+        if (dateElement) {
+            dateElement.textContent = new Date().toLocaleDateString("en-US", {
+                weekday: "long", day: "2-digit", month: "long", year: "numeric"
+            });
         }
-    });
+
+        // set the current month in the header
+        const monthElement = document.getElementById("current_month");
+        if(monthElement) {
+            monthElement.textContent = new Date().toLocaleDateString("en-US", {
+                month: "long"
+            });
+        }
+
+        // calculate the days left in the month
+        const now = new Date();
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        const today = now.getDate();
+        const daysLeft = lastDay - today;
+
+        // set the progress bar and text
+        const progress = document.getElementById("daysProgress");
+        const daysLeftText = document.getElementById("daysLeftText");
+        if (progress && daysLeftText) {
+            progress.max = lastDay;
+            progress.value = today;
+            daysLeftText.textContent = `${daysLeft} day${daysLeft !== 1 ? "s" : ""} left`;
+        }
+    }
+    // call the function to fetch data and setup the page
+    setupDateAndProgress();
 
 
-    // Set today's date
-    const dateElement = document.getElementById('date');
-    const currentMonth = document.getElementById('current_month');
-    if (dateElement) {
-        const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
-        const today = new Date().toLocaleDateString('en-US', options);
-        dateElement.textContent = today;
+    // set up for the summary doughnut style pie chart
+    function drawDoughnutChart(ctx, spent, total) {
+        const radius = 80, centerX = 100, centerY = 90;
+        const spentAngle = (2 * Math.PI) * (spent / total);
+
+        // draws the background circle
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = "#d4af37"; // gold color
+        ctx.fill();
+
+        // draws the spent portion of the doughnut
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, -0.5 * Math.PI, spentAngle - 0.5 * Math.PI, false);
+        ctx.closePath();
+        ctx.fillStyle = "teal";
+        ctx.fill();
     }
 
-    // Set current month
-    const monthElement = document.getElementById('current_month');
-    if (monthElement) {
-        const options = { month: 'long' };
-        const currentMonth = new Date().toLocaleDateString('en-US', options);
-        monthElement.textContent = currentMonth;
+
+    // fetch and display the summary data
+    async function setupSummary() {
+        const { spent, total } = await fetchSummaryData();
+        const percent = Math.round((spent / total) * 100);
+
+        const summaryText = document.getElementById("summaryText");
+        if (summaryText) {
+            summaryText.textContent = `${percent}% of €${total} spent.`;
+        }
+
+        const doughnutCanvas = document.getElementById("summaryDoughnut");
+        if (doughnutCanvas) {
+            drawDoughnutChart(doughnutCanvas.getContext("2d"), spent, total);
+        }
     }
-
-    // provisionally amount spent so far - should be replaced with data from budget page
-    const spent = 1000;
-    const total = 1300;
-    const percent = Math.round((spent / total) * 100);
-
-    // Update summary text
-    document.getElementById('summaryText').textContent = `${percent} % of $${total} spent.`;
-
-    // Draw doughnut chart
-    const ctx = document.getElementById('summaryDoughnut').getContext('2d');
-    const radius = 80;
-    const centerX = 100;
-    const centerY = 90;
-    const spentAngle = (2 * Math.PI) * (spent / total);
-
-    // Background circle
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    ctx.fillStyle = '#d4af37'; // gold color shade
-    ctx.fill();
-
-    // Spent arc
-    ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    ctx.arc(centerX, centerY, radius, -0.5 * Math.PI, spentAngle - 0.5 * Math.PI, false);
-    ctx.closePath();
-    ctx.fillStyle = 'teal';
-    ctx.fill();
-
-    // Calculate days left in the current month
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const today = now.getDate();
-    const lastDay = new Date(year, month + 1, 0).getDate();
-    const daysLeft = lastDay - today;
-    const daysPassed = today;
-
-    const progress = document.getElementById('daysProgress');
-    const daysLeftText = document.getElementById('daysLeftText');
-    progress.max = lastDay;
-    progress.value = daysPassed;
-    daysLeftText.textContent = `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`;
-});
+    // call the function to setup the summary
+    setupSummary();
 
 
-// this creates the bar chart of the last 12 months spending
-document.addEventListener("DOMContentLoaded", function() {
-    // Example data for the last 12 months
-    const months = [];
-    const now = new Date();
-    for (let i = 11; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        months.push(d.toLocaleString('default', { month: 'short' }));
-    }
-    const spending = [800, 950, 700, 1100, 1200, 900, 1000, 1050, 980, 1150, 1300, 1250]; // Example data
-
-    // Highlight the current month
-    const backgroundColors = months.map((m, idx) =>
-        idx === months.length - 1 ? 'rgba(54, 162, 235, 0.8)' : 'rgba(201, 203, 207, 0.6)'
-    );
-
-    // Load Chart.js from CDN if not already loaded
+    // display the bar chart for the monthly spending
     function loadChartJs(callback) {
-        if (window.Chart) { callback(); return; }
-        const script = document.createElement('script');
+        if (window.Chart) {
+            return callback();
+        }
+        const script = document.createElement("script");
         script.src = "https://cdn.jsdelivr.net/npm/chart.js";
         script.onload = callback;
         document.head.appendChild(script);
     }
 
-    loadChartJs(function() {
-        const ctx = document.getElementById('monthsBarChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: 'Spending ($)',
-                    data: spending,
-                    backgroundColor: backgroundColors,
-                    borderColor: backgroundColors.map(c => c.replace('0.6', '1').replace('0.8', '1')),
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 200 }
-                    }
-                }
-            }
+    async function setupBarChart() {
+        const spending = await fetchMonthlySpending();
+        const months = Array.from({ length: 12}, (_, i) => {
+            const d = new Date(new Date().getFullYear(), new Date().getMonth() - 11 + i, 1);
+            return d.toLocaleDateString("default", { month: "short"});
         });
-    });
-});
 
-// popup for selecting categories
-document.addEventListener("DOMContentLoaded", () => {
-    // add categories form
-    const addCategoryBtn = document.getElementById("add_categories_btn");
+        loadChartJs(() => {
+            const ctx = document.getElementById("monthsBarChart")?.getContext("2d");
+            if (!ctx) return;
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: "Spending (€)",
+                        data: spending,
+                        backgroundColor: months.map((_, idx) => 
+                            idx === months.length - 1 ? "rgba(54,162,235,0.8" : "rgba(201,203,207,0.6)"
+                        ),
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false }, scales: { y: { beginAtZero: true } } }
+                }
+            });
+        });
+    }
+    // call the function to setup the bar chart
+    setupBarChart();
+
+
+    //choosing/adding categories, includes popup logics for different actions
     const categoryPopup = document.getElementById("addCategoryPopup");
+    const addCategoryBtn = document.getElementById("add_categories_btn");
     const closeCategoryBtn = document.getElementById("closeCategoryForm");
 
-    // Show category form popup
-    addCategoryBtn.addEventListener("click", () => {
-        categoryPopup.classList.toggle("hidden");
-    });
-
-    // Close category form popup
-    closeCategoryBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (confirm("Are you sure you want to quit?")) {
-            categoryPopup.classList.add("hidden");
-        }
-    });
-
-    // add new categories under the Allocate Amount button
-    function createCategoryElement(name, amount, currency = '€') {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.className = 'category_added';
-
-        const titleDiv = document.createElement('div');
-        titleDiv.className = 'category_title';
-        titleDiv.textContent = name;
-
-        const amountDiv = document.createElement('div');
-        amountDiv.className = 'category_amount';
-        const currencySpan = document.createElement('span');
-        currencySpan.className = 'currency_option';
-        currencySpan.textContent = currency;
-        amountDiv.appendChild(currencySpan);
-        amountDiv.append(amount);
-
-        // delete the added category
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete_category_btn';
-        deleteBtn.title = 'Delete Category';
-        deleteBtn.innerHTML = '&times;';
-        deleteBtn.addEventListener('click', () => {
-            if (confirm("Are you sure you want to delete this category?")) {
-            categoryDiv.remove(); // alert("Category deleted.");
+    if (addCategoryBtn) {
+        addCategoryBtn.addEventListener("click", () => {
+            categoryPopup.classList.toggle("hidden");
+        });
+    }
+    if (closeCategoryBtn) {
+        closeCategoryBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (confirm ("Are you sure you want to quit?")) {
+                categoryPopup.classList.add("hidden");
             }
         });
+    }
 
-        categoryDiv.appendChild(titleDiv);
-        categoryDiv.appendChild(amountDiv);
+    // create categories, with delete functionality
+    function createCategoryElement (name, amount, currency = "€") {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.className = "category_added";
+        categoryDiv.innerHTML = `
+            <div class="category_title">${name}</div>
+            <div class="category_amount"><span class="currency_option">${currency}</span>${amount}</div>
+        `;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "delete_category_btn";
+        deleteBtn.title = "Delete Category";
+        deleteBtn.innerHTML = "&times;";
+        deleteBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to delete this category?")) categoryDiv.remove();
+        });
+
         categoryDiv.appendChild(deleteBtn);
-
         return categoryDiv;
     }
 
-    // Submit button adds category to the page - under allocate amount
+    // display the created categories onto the page
     const submitCategoryBtn = document.getElementById("submitCategory");
-    submitCategoryBtn.addEventListener("click", (event) => {
-        event.preventDefault(); // Prevent form submission
+    if (submitCategoryBtn) {
+        submitCategoryBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const name = document.getElementById("category_name").value.trim();
+            const amount = parseFloat(document.getElementById("category_amount").value.trim() || 0);
+            if (!name || !amount) return alert ("Please fill in both fields.");
 
-        const categoryName = document.getElementById("category_name").value.trim();
-        const categoryAmount = parseFloat(document.getElementById("category_amount").value.trim()) || 0;
-        
-        // Validate input - ensure both name and amount are provided
-        if (!categoryName || !categoryAmount) {
-            alert("Please enter both name and amount!");
-            return;
-        }
+            const exists = [...document.querySelectorAll(".category_added .category_title")]
+                .some(el => el.textContent.trim().toLowerCase() === name.toLowerCase());
+            if (exists) return alert("Category already exists!");
 
-        // Check if category already exists
-        const existingCategories = document.querySelectorAll(".category_added .category_title");
-        for (let existingCategory of existingCategories) {
-            if (existingCategory.textContent.trim().toLowerCase() === categoryName.toLowerCase()) {
-                alert("Category already exists!");
-                return;
-            }
-        }
+            const newCategory = createCategoryElement(name, amount);
+            document.getElementById("categories_container").appendChild(newCategory);
 
-        // Create and append the new category element
-        const categoryDiv = createCategoryElement(categoryName, categoryAmount);
-        document.getElementById("categories_container").appendChild(categoryDiv);
-
-        // Clear the input fields
-        document.getElementById("category_name").value = "";
-        document.getElementById("category_amount").value = "";
-        categoryPopup.classList.add("hidden");
-    });
-
-
-    // add expenses form
-    const addExpenseBtn = document.getElementById("add_expense_btn");
-    const expenseForm = document.getElementById("addExpenseForm");
-    const submitBtn = document.getElementById("submitExpense");
-
-    // Show expense form popup
-    addExpenseBtn.addEventListener("click", () => {
-        expenseForm.classList.toggle("hidden");
-    });
-
-    // 
-    submitBtn.addEventListener("click", () => {
-        const category = document.getElementById("category").value; // get the selected category
-        const amount = parseFloat(document.getElementById("amount").value);
-        if (!amount || amount <= 0) {
-            alert("Enter a valid amount");
-            return;
-        }
-
-        updateCategoryAmount(category, amount);
-        expenseForm.classList.add("hidden");
-    });
-
-    // Function to update the expenses amount, takes the old amount and adds the new amount entered to the old
-    function updateCategoryAmount(category, amount) {
-        const categories = document.querySelectorAll(".each_exp_overview");
-
-        categories.forEach((cat) => {
-            const name = cat.querySelector(".exp_name").textContent.trim();
-            if (name === category) {
-                // const amountSpan = cat.querySelector(".exp_amount span + text, .exp_amount span");
-                const current = parseFloat(cat.querySelector(".exp_amount").textContent.replace(/[^0-9.]/g, ''));
-                const newTotal = current + amount;
-                cat.querySelector(".exp_amount").innerHTML = `<span id="currency_option">€</span>${newTotal.toFixed(2)}`;
-            }
+            document.getElementById("category_name").value = "";
+            document.getElementById("category_amount").value = "";
+            categoryPopup.classList.add("hidden");
         });
     }
+
+
+
+    // expense tracking section, also includes popup logic
+    const addExpenseBtn = document.getElementById("add_expense_btn");
+    const expenseForm = document.getElementById("addExpenseForm");
+    const closeExpenseBtn = document.getElementById("closeExpenseForm");
+    const submitExpenseBtn = document.getElementById("submitExpense");
+
+    function closeFormWithConfirm (form) {
+        if (confirm("Are you sure you want to quit?")) form.classList.add("hidden");
+    }
+    // close the expense form when the background is clicked
+    if (addExpenseBtn && expenseForm) {
+        addExpenseBtn.addEventListener("click", () => expenseForm.classList.toggle("hidden"));
+        expenseForm.addEventListener("click", (e) => {
+            if (e.target === expenseForm) closeFormWithConfirm(expenseForm);
+        });
+    }
+    // close the expense form when the close button is clicked
+    if (closeExpenseBtn && expenseForm) {
+        closeExpenseBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            closeFormWithConfirm(expenseForm);
+        });
+    }
+
+    // submit and update categories on the page
+    function updateCategoryAmount(category, amount) {
+        document.querySelectorAll(".each_exp_overview").forEach(cat => {
+            if (cat.querySelector(".exp_name").textContent.trim() === category) {
+                const current = parseFloat(cat.querySelector(".exp_amount").textContent.replace(/[^0-9.]/g, "")) || 0;
+                cat.querySelector(".exp_amount").innerHTML = `<span id="currency_option">€</span>${(current + amount).toFixed(2)}`;
+            };
+        });
+    }
+
+    // submit the expense form and add the expense to the overview
+    if (submitExpenseBtn) {
+        submitExpenseBtn.addEventListener("click", () => {
+            const category = document.getElementById("category").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+            if (!amount || amount <= 0) return alert ("Please enter a valid amount.");
+            updateCategoryAmount(category, amount);
+            expenseForm.classList.add("hidden");
+        });
+    }
+
+    //the end
+
 });
-
-// This should close the form when clicking outside of the form or on the close button, with confirmation.
-const addExpenseForm = document.getElementById("addExpenseForm");
-const closeBtn = document.getElementById("closeExpenseForm");
-
-if (addExpenseForm) {
-    addExpenseForm.addEventListener("click", (e) => {
-        if (e.target === addExpenseForm) {
-            if (confirm("Are you sure you want to quit?")) {
-                addExpenseForm.classList.add("hidden");
-            }
-        }
-    });
-}
-
-if (closeBtn) {
-    closeBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (confirm("Are you sure you want to quit?")) {
-            addExpenseForm.classList.add("hidden");
-        }
-    });
-}
-
-// this creates 
-
