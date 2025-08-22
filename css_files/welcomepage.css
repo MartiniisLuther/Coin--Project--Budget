@@ -162,13 +162,13 @@ body {
 
 /* hide form elements by default */
 .hidden {
-    display: none;
+    /* display: none; */
 }
 
-/* #signup-form,
-#reset-password-form {
+#login-form,
+#signup-form {
     display: none;
-} */
+}
 
 /* styles the login/signup div form-box */
 .form-box {
@@ -194,7 +194,7 @@ body {
 .form-box input {
     width: 100%;
     padding: 1rem;
-    margin: 1.5rem 0;
+    margin: 1rem 0;
     border-radius: 0.5rem;
     border: none;
     background: #2c3e50;
@@ -259,14 +259,14 @@ body {
 .security-questions {
     display: flex; 
     flex-direction: column;
-    margin-top: 1rem;
-    text-align: left;
 }
 
 /* styles the security questions label */
-.security-questions label {
+#reset-password-form label {
     font-size: 1.5rem;
-    margin-bottom: 1rem;
+    color: #f5deb3;
+    margin-top: 1rem;
+    text-align: left;
 }
 
 /* styles the security questions select */
@@ -277,6 +277,7 @@ body {
     border-radius: 0.5rem;
     font-size: 1.5rem;
     color: #d4af37;
+    margin: 1rem 0;
     background: #2c3e50;
 }
 

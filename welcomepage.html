@@ -63,11 +63,10 @@
                                     <option value="" disabled selected>Select a question</option>
                                     <option value="pet_name">What is the name of your first pet?</option>
                                     <option value="mother_maiden">What is your mother's maiden name?</option>
-                                    <option value="favorite_color">What is your favorite color?</option>
+                                    <option value="favorite_color">What is the name of your first school?</option>
                                     <option value="nick_name">What is your childhood nick name?</option>
-
                                 </select>
-                                <input type="text" name="security_answer" placeholder="Your answer" required>
+                                <input type="text" name="security_answer" id="security_answer" placeholder="Your answer" required>
                             </div>
 
                             <!-- submit button -->
@@ -77,11 +76,27 @@
                     </form>
 
                     <!-- this form is for resetting the password -->
-                    <form action="" method="" class="form-box hidden" id="reset-password-form">
+                    <form action="php/reset_password.php" method="POST" class="form-box hidden" id="reset-password-form">
                         <h2>Reset Your Password</h2>
-                        <div>
+                        <div class="reset-password-div">
+                            <label for="reset_username" style="display:block; text-align:left;">Username:</label>
                             <input type="text" name="reset_username" placeholder="Username" required>
-                            <input type="text" name="reset_security_answer" placeholder="Answer to your security question" required>
+
+                            <div class="security-questions">
+                                <label for="security_question">Choose Security Question:</label>
+                                <select name="security_question" id="security_question" required>
+                                    <option value="" disabled selected>Select a question</option>
+                                    <option value="pet_name">What is the name of your first pet?</option>
+                                    <option value="mother_maiden">What is your mother's maiden name?</option>
+                                    <option value="favorite_color">What is the name of your first school?</option>
+                                    <option value="nick_name">What is your childhood nick name?</option>
+                                </select>
+                                
+                                <label for="reset_security_answer">Answer:</label>
+                                <input type="text" name="reset_security_answer" id="reset_security_answer" placeholder="Answer to your security question" required>
+                            </div>
+
+                            <label for="new_password" style="display:block; text-align:left;">New Password:</label>
                             <input type="password" name="new_password" placeholder="New Password" required>
 
                             <!-- submit button -->
