@@ -5,7 +5,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    
 }
 
 /* to the html properties */
@@ -162,13 +161,14 @@ body {
 
 /* hide form elements by default */
 .hidden {
-    /* display: none; */
-}
-
-#login-form,
-#signup-form {
     display: none;
 }
+
+/* temporariry hide the forms or display forms to design them*/
+/* #login-form,
+#signup-form {
+    display: none;
+} */
 
 /* styles the login/signup div form-box */
 .form-box {
@@ -279,6 +279,14 @@ body {
     color: #d4af37;
     margin: 1rem 0;
     background: #2c3e50;
+}
+
+/* signup success or fail */
+.form-message {
+    margin: 1rem 0;
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-align: center;
 }
 
 /* up to 800 px */

@@ -1,3 +1,12 @@
+<?php 
+session_start();
+if (!isset($_SESSION['username'])) {
+    header("Location: welcomepage.html");
+    exit();
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,12 +32,12 @@
             <div class="logo">Coin 💰</div>
             <nav>
                 <ul class="nav-links">
-                    <li><a href="homepage.html" class="nav-item active">Home</a></li>
+                    <li><a href="homepage.php" class="nav-item active">Home</a></li>
                     <li class="nav-item-dropdown-container">
                         <a href="#" class="nav-item linkAbout">About <i class="fas fa-caret-down"></i></a>
                         <ul class="nav-item-dropdown">
                             <li><a href="accountpage.html">Account</a></li>
-                            <li><a href="#">LogOut</a></li>
+                            <li><a href="php/logout.php">LogOut</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -40,8 +49,10 @@
         <!-- welcome card, with username and date -->
         <section class="welcome-card">
             <div class="par1">
-                <p class="p1">Lo, <span id="reg_name">Username</span>! Let us now peruse with your budget, one coin at a time 💸 </p>
-                <!-- <p class="p2">Let us now peruse with your budget, one coin at a time 💸 </p> -->
+                <!-- <p class="p1">Lo, <span id="reg_name">Username</span>! Let us now peruse with your budget, one coin at a time 💸 </p> -->
+                <!-- modified this to allow username for the session -->
+                <p class="p1">Lo, <span id="reg_name"><?php echo htmlspecialchars($_SESSION["username"]) ?></span>
+                ! Let us now peruse with your budget, one coin at a time 💸 </p>
             </div>
             <!-- div contains the date -->
             <div class="date_div">
@@ -326,3 +337,4 @@
     </main>
 </body>
 </html>
+

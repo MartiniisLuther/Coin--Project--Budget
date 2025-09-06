@@ -263,6 +263,4 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    //the end
-
 });

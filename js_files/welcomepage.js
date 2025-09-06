@@ -1,76 +1,91 @@
-//function to group all the code for the toggle classlist
+//function to show specific form all the code for the toggle classlist
 function showForm(formId) {
-    // get all the ids for the forms
-    const forms = ["login-form", "signup-form", "reset-password-form"];
-    document.getElementById("form-container").classList.remove("hidden");
-    // loop through the forms and hide them
-    forms.forEach(id => {
-        const form = document.getElementById(id);
-        if(form) {
-            if (id === formId) {
-                form.classList.remove("hidden");
-            } else {
-                form.classList.add("hidden");
-            }
-        }
+    const forms = document.querySelectorAll(".form-box");
+    forms.forEach(form => {
+        form.classList.toggle("hidden", form.id !== formId);
     });
 }
 
-// event listener for the login button click
-document.getElementById("btn-login").addEventListener("click", () => {
-    showForm("login-form");
-});
+//event listener to the page loading
+document.addEventListener("DOMContentLoaded", () => {
+    // dom elements
+    const btnLogin = document.getElementById("btn-login");
+    const btnSignup = document.getElementById("btn-signup");
+    const formContainer = document.getElementById("form-container");
+    const passwordReset = document.getElementById("password_reset");
+    const switchToSignup = document.getElementById("switch-to-signup");
+    const switchToLogin = document.getElementById("switch-to-login");
+    const switchToLoginReset = document.getElementById("switch-to-login-reset");
+    const signupMsg = document.getElementById("signup-message");
 
-// event listener for the signup button click
-document.getElementById("btn-signup").addEventListener("click", () => {
-    showForm("signup-form");
-});
+    // show the login form
+    btnLogin.addEventListener("click", () => {
+        showForm("login-form");
+        formContainer.classList.remove("hidden");
+    });
 
-// switch-forms from login to signup
-document.getElementById("switch-to-signup").addEventListener("click", () => {
-    showForm("signup-form");
-});
+    // show the signup form
+    btnSignup.addEventListener("click", () => {
+        showForm("signup-form");
+        formContainer.classList.remove("hidden");
+    });
+ 
+    // switch to signup from login
+    switchToSignup.addEventListener("click", () => {
+        showForm("signup-form");
+    });
 
-// switch-forms from signup to login
-document.getElementById("switch-to-login").addEventListener("click", () => {
-    showForm("login-form");
-});
+    // switch to login from signup
+    switchToLogin.addEventListener("click", () => {
+        showForm("login-form");
+    });
 
-// hide and clear the forms, with a warning
-document.getElementById("form-container").addEventListener("click", (e) => {
-    // Only act when clicking the backdrop (outside the forms)
-    if (e.target !== e.currentTarget) return;
+    // switch to login from reset password
+    switchToLoginReset.addEventListener("click", () => {
+        showForm("login-form");
+    });
 
-    const forms = ["login-form", "signup-form", "reset-password-form"]
-        .map(id => document.getElementById(id)).filter(Boolean);
-        // check if any input has user-entered data
-        const hasEnteredData = forms.some(form =>
-        Array.from(form.querySelectorAll("input")).some(input => input.value.trim() !== "")
-    );
+    // show reset password form
+    passwordReset.addEventListener("click", () => {
+        showForm("reset-password-form");
+    });
 
-    // If there's data, confirm before closing; cancel should abort the close
-    if (hasEnteredData) {
-        const ok = confirm("Close the form? Any entered data will be lost.");
-        if (!ok) return;
-    }
+    // hide & clear forms when clicking outside
+    formContainer.addEventListener("click", (e) => {
+        if (e.target !== formContainer) return; // proceed if the container itself is clicked
 
-    // Close the form and clear inputs
-    e.currentTarget.classList.add("hidden");
-    forms.forEach(form => {
-        form.classList.add("hidden");
-        form.querySelectorAll("input").forEach(input => {
-            input.value = ""; 
+        const forms = Array.from(document.querySelectorAll(".form-box"));
+        const hasEnteredData = forms.some(form => 
+            Array.from(form.querySelectorAll("input")).some(input => input.value.trim() !== "")
+        );
+
+        // hide only if no data has been entered
+        if (hasEnteredData) {
+            const ok = confirm("Close the form? Unsaved data will be lost.");
+            if (!ok) return; // if user cancels, do nothing
+        }
+
+        // hide all forms and clear inputs
+        formContainer.classList.add("hidden");
+        forms.forEach(form => {
+            form.classList.add("hidden");
+            form.querySelectorAll("input").forEach(input => input.value = "");
         });
     });
+
+    // handles signup messages from URL parameters
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("signup") === "success") {
+        signupMsg.textContent = "Signup successful! You can now login.";
+        signupMsg.style.color = "green";
+        formContainer.classList.remove("hidden");
+        showForm("login-form");
+
+    } else if (params.get("error") === "userexists") {
+        signupMsg.textContent = "Username already exists. Please choose another.";
+        signupMsg.style.color = "red";
+        formContainer.classList.remove("hidden");
+        showForm("signup-form");
+    }
 });
 
-
-// click event for password reset form
-document.getElementById("password_reset").addEventListener("click", () => {
-    showForm("reset-password-form");
-});
-
-// switch forms from reset password to login
-document.getElementById("switch-to-login-reset").addEventListener("click", () => {
-    showForm("login-form");
-});

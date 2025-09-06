@@ -1,7 +1,11 @@
 <?php 
+// enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+
 include 'database.php'; // includes the database connection file
 
-// Check if the form is submitted
+// check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get the form data
     $name = $_POST["signup_name"];
@@ -18,20 +22,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // If username already exists, redirect to login page with error
     if ($stmt -> num_rows > 0) {
-        echo "Username already exists.";
-        // exit();
+        header("Location: ../welcomepage.html?error=userexists");
+        exit();
     } else {
         // insert new user
-        $stmt = $conn -> prepare("INSERT INTO users (name, username, passwors, security_question, security_answer) VALUES (?, ?, ?, ?)");
-        $stmt -> bind_param("ssss", $name, $username, $password, $security_question, $security_answer);
+        $stmt = $conn -> prepare("INSERT INTO users (name, username, password, security_question, security_answer) VALUES (?, ?, ?, ?, ?)");
+        $stmt -> bind_param("sssss", $name, $username, $password, $security_question, $security_answer);
 
         // execute the statement
         if ($stmt -> execute()) {
-            echo "Signup successful! You can now login.";
-            header("Location: ../welcomepage.html");
+            header("Location: ../homepage.php?success=signup");
             exit();
         } else {
-            echo "Error: " . $stmt -> error;
+            header("Location: ../welcomepage.html?error=server");
+            exit();
         }
     }
 }

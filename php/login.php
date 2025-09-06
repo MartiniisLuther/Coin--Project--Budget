@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION["username"] = $username;
 
             // redirect to the homepage after successful login
-            header("Location: ../homepage.html");
+            header("Location: ../homepage.php");
             exit();
         } else {
             // Password is incorrect
