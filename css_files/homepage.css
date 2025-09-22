@@ -104,9 +104,10 @@ body {
 }
 
 /* shows the dropdown on hover */
+/*
 .nav-item-dropdown-container:hover .nav-item-dropdown {
-    /* shows the dropdown */
-}
+} 
+*/
 
 /* class show */
 .nav-item-dropdown.show {
@@ -780,6 +781,4 @@ h2 {
     .add_expense_div {
         width: 80%;
     }
-    
-
 }

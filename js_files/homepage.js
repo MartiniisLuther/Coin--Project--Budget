@@ -1,22 +1,28 @@
 // overall page loader to monitor the page load
 document.addEventListener("DOMContentLoaded", async () => {
-    // use some hardcoded data for test purposes
+    // fetch summary data from the "database"
     async function fetchSummaryData() {
-        return { spent: 1000, total: 1300};
+        const result = await fetch("php/get_summary.php"); 
+        if (!result.ok) throw new Error("Failed to fetch summary data");
+        return await result.json();
     }
 
-    // sim DB fetch
+    // fetch monthly spending data from the "database"
     async function fetchMonthlySpending() {
-        return [800, 950, 700, 1200, 1100, 900, 1000, 1300, 1400, 1500, 1600, 1700];
+        const result = await fetch("php/get_monthly_spending.php");
+        if (!result.ok) throw new Error("Failed to fetch categories");
+        return await result.json();
     }
 
-    // sim DB fetch
+    //fetch categories data
     async function fetchCategories() {
-        return [];
+        const result = await fetch("php/get_categories.php");
+        if (!result.ok) throw new Error("Failed to fetch categories");
+        return await result.json();
     }
+    
 
-
-    // navbar dropdown
+    // NAVBAR dropdown
     const linkAbout = document.querySelector(".linkAbout");
     const dropdownMenu = document.querySelector(".nav-item-dropdown");
 
@@ -111,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupSummary();
 
 
-    // display the bar chart for the monthly spending
+    // display the BAR CHART for the monthly spending
     function loadChartJs(callback) {
         if (window.Chart) {
             return callback();
@@ -223,6 +229,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     const expenseForm = document.getElementById("addExpenseForm");
     const closeExpenseBtn = document.getElementById("closeExpenseForm");
     const submitExpenseBtn = document.getElementById("submitExpense");
+
+    const setBudgetBtn = document.getElementById("set_budget_btn");
+    // event listener to add a budget on click add
+    if (setBudgetBtn) {
+        setBudgetBtn.addEventListener("click", async () => {
+            const amount = document.getElementById("budget_amount").value;
+            const month = document.getElementById("month_select").value;
+            // check amount is valid
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid budget amount.");
+                return;
+            }
+            // send data to backend to save in the "database"
+            const result = await fetch("php/save_budget.php", {
+                method: "POST",
+                headers: {"Content-Type": "application/json" },
+                body: JSON.stringify({ amount, month })
+            });
+            // check if the response is ok
+            const resultData = await result.text();
+            alert(resultData);
+        });
+    }
 
     function closeFormWithConfirm (form) {
         if (confirm("Are you sure you want to quit?")) form.classList.add("hidden");

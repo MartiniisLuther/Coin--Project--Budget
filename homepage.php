@@ -320,10 +320,10 @@ if (!isset($_SESSION['username'])) {
                             <option value="Others">Others</option>
                         </select>
 
-                        <label for="amount">Spent Amount:</label>
+                        <label for="amount">Budget Amount:</label>
                         <input type="number" id="amount" min="0" required />
 
-                        <label for="amount_left">Amount Left:</label>
+                        <label for="amount_left">Spent Amount:</label>
                         <input type="number" id="amount" min="0" required />
 
                         <label for="cost">Cost Amount:</label>
