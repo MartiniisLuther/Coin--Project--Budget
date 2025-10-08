@@ -108,6 +108,3 @@ $createExpenditureTable =
 if ($conn -> query($createExpenditureTable) !== TRUE) {
     die("Error creating expenditure records table: " . $conn -> error);
 }
-
-
-
