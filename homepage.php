@@ -37,7 +37,7 @@ if (!isset($_SESSION['username'])) {
                         <a href="#" class="nav-item linkAbout">About <i class="fas fa-caret-down"></i></a>
                         <ul class="nav-item-dropdown">
                             <li><a href="accountpage.html">Account</a></li>
-                            <li><a href="php/logout.php">LogOut</a></li>
+                            <li><a href="php/credentials/logout.php">LogOut</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -74,24 +74,22 @@ if (!isset($_SESSION['username'])) {
                             <span id="currency_option">€</span>
                         <!-- </div> -->
                         <input type="number" id="budget_amount" placeholder="Enter amount" />
-                        <button type="submit" id="set_budget_btn">add</button>
+                        <!-- save budget button -->
+                        <button type="submit" id="set_budget_btn">save</button>
                     </div>
                     <!-- choose month drop down -->
                     <div class="month_select">
                         <label for="month_select">Month:</label>
                         <select id="month_select">
-                            <option value="January">January</option>
-                            <option value="February">February</option>
-                            <option value="March">March</option>
-                            <option value="April">April</option>
-                            <option value="May">May</option>
-                            <option value="June">June</option>
-                            <option value="July">July</option>
-                            <option value="August">August</option>
-                            <option value="September">September</option>
-                            <option value="October">October</option>
-                            <option value="November">November</option>
-                            <option value="December">December</option>
+                            <?php
+                            $currentMonth = date('F');
+                            $months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                     'July', 'August', 'September', 'October', 'November', 'December'];
+                            foreach ($months as $month) {
+                                $selected = ($month === $currentMonth) ? 'selected' : '';
+                                echo "<option value=\"$month\" $selected>$month</option>";
+                            }
+                            ?>
                         </select>
                     </div>                    
                     <!-- set budget for different categories -->

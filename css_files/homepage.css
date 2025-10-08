@@ -537,9 +537,11 @@ h2 {
 }
 
 /* styles the currency under the expenses */
+/* font-weight: 300; */
+/*
 .exp_amount #currency_option {
-    /* font-weight: 300; */
 }
+*/
 
 /* h3 */
 .months-overview h3 {

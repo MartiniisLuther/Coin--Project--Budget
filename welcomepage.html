@@ -35,7 +35,7 @@
                 <!-- login/signup forms hidden by default -->
                 <div id="form-container" class="form-container hidden">
                     <!-- login form -->
-                    <form action="/myapp/php/login.php"  method="POST" class="form-box " id="login-form">
+                    <form action="/myapp/php/credentials/login.php"  method="POST" class="form-box " id="login-form">
                         <h2>Login to Continue Tracking</h2>
                         <div>
                             <input type="text" name="login_username" placeholder="Username" required>
@@ -50,7 +50,7 @@
                     
                     <!-- signup form -->
                     <div id="signup-message" class="form-message"></div>
-                    <form action="/myapp/php/signup.php"  method="POST" class="form-box hidden" id="signup-form">
+                    <form action="/myapp/php/credentials/signup.php"  method="POST" class="form-box hidden" id="signup-form">
                         <h2>Welcome</h2>
                         <div>
                             <input type="text" name="signup_name" placeholder="Name" required>
@@ -77,7 +77,7 @@
                     </form>
 
                     <!-- this form is for resetting the password -->
-                    <form action="/myapp/php/reset_password.php" method="POST" class="form-box hidden" id="reset-password-form">
+                    <form action="/myapp/php/credentials/reset_password.php" method="POST" class="form-box hidden" id="reset-password-form">
                         <h2>Reset Your Password</h2>
                         <div class="reset-password-div">
                             <label for="reset_username" style="display:block; text-align:left;">Username:</label>
