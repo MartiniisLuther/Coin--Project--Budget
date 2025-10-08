@@ -1,5 +1,5 @@
 <?php 
-include "database.php"; // includes the database connection file
+include "../database.php"; // includes the database connection file
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
