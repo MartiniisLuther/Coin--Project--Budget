@@ -86,6 +86,8 @@ $createMonthlySpendingTable =
     user_id INT NOT NULL,
     month VARCHAR(20) NOT NULL,
     total_spent DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    total_budget DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_user_month (user_id, month)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
