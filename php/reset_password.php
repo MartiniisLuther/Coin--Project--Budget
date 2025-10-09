@@ -1,5 +1,5 @@
 <?php 
-include "../database.php"; // includes the database connection file
+include "database.php"; // includes the database connection file
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -24,10 +24,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $update = $conn -> prepare("UPDATE users SET password = ? WHERE id = ?");
             $update -> bind_param("si", $newPassword, $user_id);
 
-            // execute the update statement
+            // execute the update statement and go to login page
             if ($update -> execute()) {
                 echo "Password reset successful! You can log in now.";
-                header("Location: ../login.html");
+                header("Location: login.php");
                 exit();
                 
             } else {

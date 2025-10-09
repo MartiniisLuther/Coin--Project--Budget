@@ -314,7 +314,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 formData.append('amount', budgetAmount);
                 formData.append('categories', JSON.stringify(categories));
 
-                const response = await fetch('php/budget_operations.php', {
+                const response = await fetch('/myapp/php/budget_operations.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -349,7 +349,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Function to load budget data for a specific month
     async function loadBudgetForMonth(month) {
         try {
-            const response = await fetch(`php/budget_operations.php?action=load_budget&month=${encodeURIComponent(month)}`);
+            const response = await fetch(`/myapp/php/budget_operations.php?action=load_budget&month=${encodeURIComponent(month)}`);
             const result = await response.json();
             
             if (result.success) {

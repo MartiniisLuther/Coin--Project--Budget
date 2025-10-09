@@ -37,7 +37,7 @@ if (!isset($_SESSION['username'])) {
                         <a href="#" class="nav-item linkAbout">About <i class="fas fa-caret-down"></i></a>
                         <ul class="nav-item-dropdown">
                             <li><a href="accountpage.html">Account</a></li>
-                            <li><a href="php/credentials/logout.php">LogOut</a></li>
+                            <li><a href="php/logout.php">LogOut</a></li>
                         </ul>
                     </li>
                 </ul>

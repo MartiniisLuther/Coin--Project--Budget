@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
-include '../database.php'; // includes the database connection file
+include 'database.php'; // includes the database connection file
 
 // check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // If username already exists, redirect to login page with error
     if ($stmt -> num_rows > 0) {
-        header("Location: ../../welcomepage.html?error=userexists");
+        header("Location: ../welcomepage.html?error=userexists");
         exit();
     } else {
         // insert new user
@@ -31,10 +31,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // execute the statement
         if ($stmt -> execute()) {
-            header("Location: ../../homepage.php?success=signup");
+            header("Location: ../homepage.php?success=signup");
             exit();
         } else {
-            header("Location: ../../welcomepage.html?error=server");
+            header("Location: ../welcomepage.html?error=server");
             exit();
         }
     }

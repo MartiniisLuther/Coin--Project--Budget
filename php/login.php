@@ -1,5 +1,5 @@
 <?php 
-include "../database.php"; // includes the database connection file
+include "database.php"; // includes the database connection file
 session_start(); // start the session
 
 // Check if the form is submitted
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION["username"] = $username;
 
             // redirect to the homepage after successful login
-            header("Location: ../../homepage.php");
+            header("Location: ../homepage.php");
             exit();
         } else {
             // Password is incorrect
