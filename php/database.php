@@ -45,14 +45,17 @@ if ($result && $row = $result -> fetch_assoc()) {
     }
 }
 
-
 // create MONTHLY BUDGETS table if not exists
 $createBudgetsTable =  
-"CREATE TABLE IF NOT EXISTS monthly_budget_amount (
+"CREATE TABLE IF NOT EXISTS budgets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     month VARCHAR(20) NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
+    budget_per_month DECIMAL(10, 2) NOT NULL,
+    total_spent_per_month DECIMAL(10, 2) NOT NULL,
+    category_name VARCHAR(100) NOT NULL,
+    budget_per_category DECIMAL(10, 2) NOT NULL,
+    total_spent_per_category DECIMAL(10, 2) DEFAULT 0,
     UNIQUE KEY uniq_user_month (user_id, month),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
@@ -61,52 +64,3 @@ if ($conn -> query($createBudgetsTable) !== TRUE) {
     die("Error creating budgets table: " . $conn -> error);
 }
 
-
-// create CATEGORY BUDGET ALLOCATIONS table if not exists for the per month allocated amounts
-$createCategoryAllocationsTable = 
-"CREATE TABLE IF NOT EXISTS category_budget_allocations (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    month VARCHAR(20) NOT NULL,
-    category_name VARCHAR(100) NOT NULL,
-    allocated_amount DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    UNIQUE KEY uniq_user_month_category (user_id, month, category_name),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-// execute the query for the category allocations table
-if ($conn -> query($createCategoryAllocationsTable) !== TRUE) {
-    die('Error creating category allocations table: ' . $conn -> error);
-}
-
-
-// create MONTHLY SPENDING SUMMARY table if not exists
-$createMonthlySpendingTable = 
-"CREATE TABLE IF NOT EXISTS monthly_spending_summary (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    month VARCHAR(20) NOT NULL,
-    total_spent DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    total_budget DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE KEY uniq_user_month (user_id, month)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-// execute the query for the monthly spending summary table
-if ($conn -> query($createMonthlySpendingTable) !== TRUE) {
-    die("Error creating monthly spending summary table: " . $conn -> error);
-}
-
-// create EXPENDITURE RECORDS table if not exists
-$createExpenditureTable = 
-"CREATE TABLE IF NOT EXISTS expenditure_records (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    month VARCHAR(20) NOT NULL,
-    category_name VARCHAR(100) NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-// execute the query for the expenditure records table
-if ($conn -> query($createExpenditureTable) !== TRUE) {
-    die("Error creating expenditure records table: " . $conn -> error);
-}

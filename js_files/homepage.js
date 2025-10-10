@@ -78,10 +78,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // fetch the monthly summary data and display it on a doughnut chart
     async function setupPerMonthDonut() {
-        const { spent, total } = await fetchPerMonthSummaryData();
+        const { total_spent_per_month, budget_per_month } = await fetchPerMonthSummaryData();
 
-        // handle edge case where total is 0 to avoid division by zero
-        if (!total || total <= 0) {
+        // handle edge case where total budget is 0 to avoid division by zero
+        if (!budget_per_month || budget_per_month <= 0) {
             const summaryText = document.getElementById("summaryText");
             if (summaryText) {
                 summaryText.textContent = "No spending data available.";
@@ -97,16 +97,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         // calculate the and draw donut chart
-        const percent = Math.round((spent / total) * 100);
+        const percent = Math.round((total_spent_per_month / budget_per_month) * 100);
         const summaryText = document.getElementById("summaryText");
         if (summaryText) {
-            summaryText.textContent = `${percent}% of €${total} spent.`;
+            summaryText.textContent = `${percent}% of € ${budget_per_month} spent.`;
         }
 
         // draw the doughnut chart
         const doughnutCanvas = document.getElementById("summaryDoughnut");
         if (doughnutCanvas) {
-            drawDoughnutChart(doughnutCanvas.getContext("2d"), spent, total);
+            drawDoughnutChart(doughnutCanvas.getContext("2d"), total_spent_per_month, budget_per_month);
         }
     }
     setupPerMonthDonut();  // call the function to setup the summary
@@ -115,12 +115,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     // fetch summary data from the backend
     async function fetchPerMonthSummaryData() {
         try {
-            const response = await fetch('/myapp/php/monthly_total_spending.php?action=fetch_monthly_summary_data');
+            const response = await fetch('/myapp/php/monthly_total_spending.php?action=fetch_monthly_total_n_budget');
             
             // handle non-OK responses
             if (!response.ok) {
                 console.warn(`fetchPerMonthSummaryData: Server responded with ${response.status}`);
-                return { spent: 0, total: 0 };
+                return { total_spent_per_month: 0, budget_per_month: 0 };
             }
             
             const data = await response.json(); // parse JSON response
@@ -128,18 +128,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             // validate the data
             if (!data || !data.success || !Array.isArray(data.data) || data.data.length === 0) {
                 console.warn('fetchPerMonthSummaryData: Invalid or empty data received', data);
-                return { spent: 0, total: 0 };
+                return { total_spent_per_month: 0, budget_per_month: 0 };
             }
 
             // use the most recent month's data
             const latest = data.data[0];
-            const spent = Number(latest.total_spent) || 0; // default to 0 if invalid
-            const total = Number(latest.total_spent) || 0; // default to 0 if invalid
+            const total_spent_per_month = Number(latest.total_spent_per_month) || 0; // default to 0 if invalid
+            const budget_per_month = Number(latest.budget_per_month) || 0; // default to 0 if invalid
 
-            return { spent, total };
+            return { total_spent_per_month, budget_per_month };
+
         } catch (error) {
             console.error('Error fetching summary data:', error);
-            return { spent: 0, total: 0 };
+            return { total_spent_per_month: 0, budget_per_month: 0 };
         }
     }
 
@@ -157,7 +158,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     //  create the 12 MOBTH-BAR charts
     async function setupBarChart() {
-        let spending = [];
+        let spending = []; // array to hold spending data for all 12 months
         try {
             spending = await fetchAllMonthsSummaryData();
         } catch (error) {
@@ -175,9 +176,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         //ensure -reverse order, so rightmost is the current month
         spending = spending.reverse();
+        // months.reverse();
 
         // generate month labels for the last 12 months
-
         const months = Array.from({ length: 12 }, (_, i) => {
             const d = new Date(new Date().getFullYear(), new Date().getMonth() - 11 + i, 1);
             return d.toLocaleDateString("default", { month: "short" });
@@ -212,9 +213,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // fetch all months' spending data from the backend
     async function fetchAllMonthsSummaryData() {
         try {
-            const response= await fetch('/myapp/php/monthly_total_spending.php?action=fetch_monthly_summary_data');
+            const response = await fetch('/myapp/php/all_months_total_spending.php?action=all_months_total_spending');
 
-            // handle non-OK responses
+            // handle non-OK responses by returning an array of 12 zeros
             if (!response.ok) {
                 console.warn(`fetchAllMonthsSummaryData: Server responded with ${response.status}`);
                 return Array(12).fill(0);
@@ -223,26 +224,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             const data = await response.json(); // parse JSON response
             // validate the data
             if (!data || !data.success || !Array.isArray(data.data) || data.data.length === 0) {
-                console.warn("Error: Invalid or empty data received");
+                console.warn("fetchAllMonthsSummaryData Error: Invalid or empty data received");
                 return Array(12).fill(0);
             }
 
-            // Sort data by month descending and extract total_spent
-            //const sortedData = data.data.sort((a, b) => new Date(b.month) - new Date(a.month)); // sort by month descending
-            const sortedData = data.data.sort(
-                (a, b) => new Date(`${a.month} 1, 2025`) - new Date(`${b.month} 1, 2025`))
-                .map(entry => Number(entry.total_spent) || 0);
+            // extract and sort the data by month
+            const spending = data.total_spent_per_month.map(item => Number(item) || 0);
 
-            // Get the last 12 months of data
-            let spending;
-            if (sortedData.length < 12) {
-                const missing = 12 - sortedData.length;
-                spending = [...Array(missing).fill(0), ...sortedData]; // pad with zeros if less than 12 months
-            } else {
-                spending = sortedData.slice(-12); // return only the last 12 months
+            // Ensure 12 values
+            if (spending.length < 12) {
+                const missing = 12 - spending.length;
+                return [...Array(missing).fill(0), ...spending];
             }
 
-            return spending;
+            return spending.slice(-12); // return only the last 12 months
+
         } catch (error) {
             console.log("Error fetching all months' summary data:", error);
             return Array(12).fill(0); // return an array of 12 zeros on error
