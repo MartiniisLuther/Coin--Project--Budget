@@ -1,16 +1,15 @@
 ## 💰 Coin Project
 
-A personal finance tracker built with HTML, CSS, JavaScript, PHP, and MySQL.  
-Designed for learning web development and managing monthly budgets.
+A simple user-friendly finance tracker built with HTML, CSS, JavaScript, and PHP. Track income and expenses, assign transactions to categories, set a monthly budget with per‑category allocations, and view visual reports and trends. Includes local user authentication and secure DB access (prepared statements) — no external services required; data stays on your local server. Lightweight and easy to extend for learning and experimentation with full‑stack web development.
 
 ## ✨ Features
 
 - **User accounts** — Sign up and log in with local accounts; security questions available for account recovery (no email integration).
 - **Password reset** — Recover or reset passwords using configured security questions.
 - **Dashboard** — Monthly overview showing total spent, percentage of budget used, top categories, and days remaining in the month.
-- **Categories** — Predefined spending categories (e.g., bills, transport). Assign transactions to categories to track category totals.
+- **Categories** — Predefined spending categories (e.g., rent, transport). Assign transactions to categories to track category totals.
 - **Budget management** — Set a total monthly budget and allocate amounts to categories for more granular tracking.
-- **Charts & reports** — Visualize spending with pie charts and historical graphs (e.g., last 11 months) to spot trends and remaining budget.
+- **Charts & reports** — Visualize spending with pie charts and historical graphs (e.g., last 12 months) to spot trends and remaining budget.
 - **Responsive UI** — Simple, mobile-friendly interface built with HTML, CSS, and JavaScript for a consistent experience across devices.
 - **Security & best practices** — Uses prepared statements for safe DB access; sensible defaults to avoid exposing credentials in version control.
 - **Extensible design** — Simple structure intended for easy improvement (additional categories, email integration, or richer analytics).
@@ -23,7 +22,7 @@ Designed for learning web development and managing monthly budgets.
 - Apache (XAMPP, MAMP, or a similar local server)  
 - Web browser (e.g., Firefox, Chrome)  
 - Code editor (e.g., VS Code)  
-- Optional: phpMyAdmin for easier DB import
+- phpMyAdmin for easier DB visualizations and management
 
 ### Running the Project
 1. Clone the repository:
@@ -35,19 +34,20 @@ Designed for learning web development and managing monthly budgets.
 	- Create a new database (e.g., coin_project) via phpMyAdmin or MySQL CLI.
 	- Import the provided SQL file found in the repo (search for *.sql, e.g., schema.sql or seed.sql).
 4. Configure the DB connection:
-	- Update the database connection file (php/database.php or the credentials file in php/credentials/) with your DB host, name, user, and password.
-	- Example variables to update: DB_HOST, DB_NAME, DB_USER, DB_PASS.
+	- Update the database connection file (php/database.php) with your DB host, name, user, and password.
+	- Example variables to update: $host, $user, $password, $database.
 5. Start services and open the app:
 	- Start Apache and MySQL using XAMPP/MAMP or your chosen stack.
-	- Open: http://localhost/myapp/ (or http://localhost/myapp/homepage.php)
+	- Open: http://localhost/myapp/ (or http://localhost/myapp/welcomepage.html)
 
 ### Quick Tips & Troubleshooting
-- Ensure PHP extensions (mysqli or pdo_mysql) are enabled.
-- If you see a connection error, double-check credentials and DB name in php/database.php.
-- Check web server/PHP error logs for 500 errors.
+- Ensure XAMPP → Manage Servers shows MySQL Database, ProFTPD, and Apache Web Server as Running.
+- In php/database.php include the MySQL host and port in $host, e.g.:
+	- $host = '127.0.0.1:3307'; // change 3307 to your MySQL port or other host:port as needed
+- If you see a connection error, double-check $host, $user, $password, and $database in php/database.php.
+- Check the web server/PHP error logs for 500 errors (XAMPP logs or /Applications/XAMPP/xamppfiles/logs/error_log).
 - Do not commit real credentials to version control — use environment variables or a local config file excluded by .gitignore.
-
-That's it — the app should be reachable at the local URL after the steps above.
+- After these steps the app should be reachable at the local URL.
 
 
 ### Project Structure
@@ -68,16 +68,27 @@ project-root/
 		│   ├── homepage.js
 		│   └── accountpage.js
 		├── php/
-		│   ├── credentials/
-		│   │   ├── login.php
-		│   │   ├── signup.php
-		│   │   ├── reset_password.php
-		│   │   └── logout.php
+		│   ├── login.php
+		│   ├── signup.php
+		│   ├── reset_password.php
+		│   ├── logout.php
 		│   ├── database.php
 		│   ├── budget_operations.php
 		│   └── ... (other PHP files)
+		├── screenshots/
+		│   ├── welcomepage.png
+		│   ├── homepage_preview.png
+		│   └── summary_month.png
 		└── README.md
 ```
+
+
+### Website Preview
+
+| ![Welcome page](screenshots/welcomepage.png) | ![Homepage preview](screenshots/homepage_preview.png) | ![Monthly summary](screenshots/summary_month.png) |
+|:--:|:--:|:--:|
+| *Welcome page* | *Homepage preview* | *Monthly summary* |
+
 
 ## 🎯 Goals
 
