@@ -1,0 +1,5 @@
+# Ignore image and temp files
+.DS_Store
+js_files/code/
+picts/
+
