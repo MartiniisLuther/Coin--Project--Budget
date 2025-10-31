@@ -28,7 +28,7 @@ switch ($action) {
         break;
 }
 
-// --- SAVE FUNCTION ---
+// --- SAVE BUDGET FUNCTION ---
 function saveBudget($conn, $user_id) {
     try {
         $month = $_POST['month'] ?? '';
@@ -43,30 +43,43 @@ function saveBudget($conn, $user_id) {
 
         // Save or update monthly budget total
         $stmt = $conn->prepare(
-            "INSERT INTO budgets (user_id, month, budget_per_month)
+            "INSERT INTO monthly_budgets (user_id, month, budget_per_month)
             VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE budget_per_month = VALUES(budget_per_month)
         ");
         $stmt->bind_param("isd", $user_id, $month, $amount);
         $stmt->execute();
 
-        // Delete existing categories for the month
-        $stmt = $conn->prepare("DELETE FROM budgets WHERE user_id = ? AND month = ? AND category_name IS NOT NULL");
-        $stmt->bind_param("is", $user_id, $month);
-        $stmt->execute();
+        // Get the monthly_budget_id
+        $monthly_budget_id = $conn->insert_id;
+        if ($monthly_budget_id == 0) {
+            // If no new row inserted, fetch the existing id
+            $stmt = $conn->prepare("SELECT id FROM monthly_budgets WHERE user_id = ? AND month = ?");
+            $stmt->bind_param("is", $user_id, $month);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $monthly_budget_id = $result->fetch_assoc()['id'];
+        }
 
+        // Delete existing categories for the month
+        $stmt = $conn->prepare(
+            "DELETE FROM category_budgets WHERE monthly_budget_id = ? ");
+        $stmt->bind_param("i", $monthly_budget_id);
+        $stmt->execute();
+        
         // Insert new category allocations
         if (!empty($categories)) {
             $stmt = $conn->prepare(
-                "INSERT INTO budgets (user_id, month, category_name, budget_per_category, budget_per_month, total_spent_per_month)
-                VALUES (?, ?, ?, ?, ?, 0)
+                "INSERT INTO category_budgets (monthly_budget_id, category_name, budget_per_category) 
+                VALUES (?, ?, ?)
             ");
             foreach ($categories as $category) {
-                $stmt->bind_param("issdd", $user_id, $month, $category['name'], $category['amount'], $amount);
+                $stmt->bind_param("isd", $monthly_budget_id, $category['name'], $category['amount']);
                 $stmt->execute();
             }
         }
 
+        // Commit transaction
         $conn->commit();
         echo json_encode([
             'success' => true,
@@ -93,10 +106,10 @@ function loadBudget($conn, $user_id) {
             throw new Exception('Month parameter is required.');
         }
 
-        // Fetch monthly total
+        // Fetch monthly total budget
         $stmt = $conn->prepare(
             "SELECT budget_per_month
-            FROM budgets
+            FROM monthly_budgets
             WHERE user_id = ? AND month = ?
             LIMIT 1
         ");
@@ -106,12 +119,13 @@ function loadBudget($conn, $user_id) {
         $row = $result->fetch_assoc();
         $budget_per_month = $row ? floatval($row['budget_per_month']) : 0;
 
-        // Fetch category allocations
+        // Fetch category allocations *cb-> category budget table mb-> monthly budget table
         $stmt = $conn->prepare(
-            "SELECT category_name, budget_per_category
-            FROM budgets
-            WHERE user_id = ? AND month = ? AND category_name IS NOT NULL
-            ORDER BY category_name
+            "SELECT cb.category_name, cb.budget_per_category
+            FROM category_budgets cb
+            JOIN monthly_budgets mb ON cb.monthly_budget_id = mb.id
+            WHERE mb.user_id = ? AND mb.month = ?
+            ORDER BY cb.category_name
         ");
         $stmt->bind_param("is", $user_id, $month);
         $stmt->execute();

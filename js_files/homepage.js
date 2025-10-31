@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    //choosing/adding categories, includes popup logics for different actions
+    // adding categories, includes popup logics for different actions
     const categoryPopup = document.getElementById("addCategoryPopup");
     const addCategoryBtn = document.getElementById("add_categories_btn");
     const closeCategoryBtn = document.getElementById("closeCategoryForm");
@@ -462,8 +462,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (result.success) {
                 // Clear existing categories
                 const categoriesContainer = document.getElementById("categories_container");
-                const existingCategories = categoriesContainer.querySelectorAll(".category_added");
-                existingCategories.forEach(cat => cat.remove());
+                
+                // Only clear categories if backend returned data
+                if (result.data.categories && result.data.categories.length > 0) {
+                    const existingCategories = categoriesContainer.querySelectorAll(".category_added");
+                    existingCategories.forEach(cat => cat.remove());
+                }
                 
                 // Set budget amount
                 const budgetInput = document.getElementById("budget_amount");
