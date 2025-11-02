@@ -453,6 +453,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         observer.observe(categoriesContainer, { childList: true, subtree: true });
     }
 
+    // function to amount budget for a specific month and feed it to the page
+    function loadBudgetIntoForm(data) {
+        const budgetInput = document.getElementById("budget_amount");
+        const saveBtn = document.getElementById("set_budget_btn");
+
+        // fill existing values
+        budgetInput.value = data.budget_per_month || "";
+        saveBtn.disabled = true;
+
+        // Enable save button only if amount changes
+        budgetInput.addEventListener("input", () => {
+            saveBtn.disabled = (budgetInput.value == data.budget_per_month)
+        });
+    }
+
     // Function to load budget data for a specific month
     async function loadBudgetForMonth(month) {
         try {
@@ -460,6 +475,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             const result = await response.json();
             
             if (result.success) {
+                // Load budget data into the form
+                loadBudgetIntoForm(result.data);
+
                 // Clear existing categories
                 const categoriesContainer = document.getElementById("categories_container");
                 
@@ -481,15 +499,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                     monthSelect.value = month;
                 }
                 
-                // Add categories if they exist
+                // Add categories to the page if they exist
                 if (result.data.categories && result.data.categories.length > 0) {
                     result.data.categories.forEach(category => {
                         const newCategory = createCategoryElement(category.name, category.amount);
                         categoriesContainer.appendChild(newCategory);
                     });
                 }
-                
-                // Update save button state
+
+               // Update save button state
                 updateSaveButtonState();
                 
                 return result.data;
@@ -502,7 +520,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             return null;
         }
     }
-
 
     // Handle month dropdown change
     const monthSelect = document.getElementById("month_select");
