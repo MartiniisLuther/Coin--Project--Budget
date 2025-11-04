@@ -53,8 +53,6 @@ $createBudgetsTable =
     month VARCHAR(20) NOT NULL,
     budget_per_month DECIMAL(10, 2) NOT NULL DEFAULT 0,
     total_spent_per_month DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uniq_user_month (user_id, month),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
@@ -75,15 +73,16 @@ if ($result && $row = $result -> fetch_assoc()) {
 $createCategoriesTable = 
 "CREATE TABLE IF NOT EXISTS category_budgets (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    month VARCHAR(20) NOT NULL,
     monthly_budget_id INT NOT NULL,
     category_name VARCHAR(100) NOT NULL,
     budget_per_category DECIMAL(10, 2) NOT NULL DEFAULT 0,
     total_spent_per_category DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY uniq_month_category (monthly_budget_id, category_name),
-    FOREIGN KEY (monthly_budget_id) REFERENCES monthly_budgets(id) ON DELETE CASCADE
+    UNIQUE KEY uniq_month_category (user_id, month, category_name),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+
 // execute the query for the categories table
 if ($conn -> query($createCategoriesTable) !== TRUE) {
     die("Error creating categories table: " . $conn -> error);

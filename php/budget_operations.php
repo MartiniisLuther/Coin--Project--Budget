@@ -143,7 +143,7 @@ function loadBudget($conn, $user_id) {
             'success' => true,
             'data' => [
                 'month' => $month,
-                'budget_per_month' => $budget_per_month,
+                'budget_per_month' => floatval($budget_per_month),
                 'categories' => $categories
             ]
         ]);

@@ -137,7 +137,7 @@ if (!isset($_SESSION['username'])) {
                     <h2>Summary in <span id="current_month">month</span></h2>
                     <div class="summary_pie">
                         <canvas id="summaryDoughnut" width="200" height="170"></canvas>
-                        <div class="summary_text" id="summaryText">0% of €<span id="budget_amount"></span> spent.</div>
+                        <div class="summary_text" id="summaryText">0% of €<span id="get_budget_amount"></span> spent.</div>
                     </div>
                     <!-- days left in month -->
                     <div class="days_left">

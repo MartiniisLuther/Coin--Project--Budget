@@ -210,6 +210,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     // call the function to setup the bar chart
     setupBarChart();
 
+    // adding categories, includes popup logics for different actions
+    const categoryPopup = document.getElementById("addCategoryPopup");
+    const addCategoryBtn = document.getElementById("add_categories_btn");
+    const closeCategoryBtn = document.getElementById("closeCategoryForm");
+
+    if (addCategoryBtn) {
+        addCategoryBtn.addEventListener("click", () => {
+            categoryPopup.classList.toggle("hidden");
+        });
+    }
+    if (closeCategoryBtn) {
+        closeCategoryBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (confirm ("Are you sure you want to quit?")) {
+                categoryPopup.classList.add("hidden");
+            }
+        });
+    }
+
     // fetch all months' spending data from the backend
     async function fetchAllMonthsSummaryData() {
         try {
@@ -245,26 +264,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-
-    // adding categories, includes popup logics for different actions
-    const categoryPopup = document.getElementById("addCategoryPopup");
-    const addCategoryBtn = document.getElementById("add_categories_btn");
-    const closeCategoryBtn = document.getElementById("closeCategoryForm");
-
-    if (addCategoryBtn) {
-        addCategoryBtn.addEventListener("click", () => {
-            categoryPopup.classList.toggle("hidden");
-        });
-    }
-    if (closeCategoryBtn) {
-        closeCategoryBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (confirm ("Are you sure you want to quit?")) {
-                categoryPopup.classList.add("hidden");
-            }
-        });
-    }
-
     // create categories, with delete functionality
     function createCategoryElement (name, amount, currency = "€") {
         const categoryDiv = document.createElement("div");
@@ -295,23 +294,39 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (submitCategoryBtn) {
         submitCategoryBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            const name = document.getElementById("category_name").value.trim();
-            const amount = parseFloat(document.getElementById("category_amount").value.trim() || 0);
-            if (!name || !amount) return alert ("Please fill in both fields.");
 
-            const exists = [...document.querySelectorAll(".category_added .category_title")]
-                .some(el => el.textContent.trim().toLowerCase() === name.toLowerCase());
-            if (exists) return alert("Category already exists!");
+            try {
+                console.log("Submit Category Clicked"); // Debug log, remove later
 
-            const newCategory = createCategoryElement(name, amount);
-            document.getElementById("categories_container").appendChild(newCategory);
+                const name = document.getElementById("category_name").value.trim();
+                const amountInput = document.getElementById("category_amount");
+                const amount = parseFloat(amountInput.value.trim() || 0);
 
-            document.getElementById("category_name").value = "";
-            document.getElementById("category_amount").value = "";
-            categoryPopup.classList.add("hidden");
+                if (!name || amount <= 0)  {
+                    alert ("Please fill in both fields."); 
+                    return;
+                }
 
-            // Update save button state after adding a category
-            updateSaveButtonState(); 
+                const exists = [...document.querySelectorAll(".category_added .category_title")]
+                    .some(el => el.textContent.trim().toLowerCase() === name.toLowerCase());
+                if (exists) return alert("Category already exists!");
+
+                const newCategory = createCategoryElement(name, amount);
+                document.getElementById("categories_container").appendChild(newCategory);
+
+                // Clear input fields and close popup
+                amountInput.value = "";
+                document.getElementById("category_name").value = "";
+                categoryPopup.classList.add("hidden");
+
+                /*  Update save button state after adding a category
+                    Short delay to ensure DOM updates before focusing 
+                */
+                setTimeout(updateSaveButtonState, 100);
+
+            } catch (error) {
+                console.log("Error adding category:", error);
+            }
         });
     }
 
@@ -453,18 +468,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         observer.observe(categoriesContainer, { childList: true, subtree: true });
     }
 
-    // function to amount budget for a specific month and feed it to the page
-    function loadBudgetIntoForm(data) {
+    // function to collect budget amount for a specific month and feed it to the page input
+    function loadBudgetIntoForm(data = {}) {
         const budgetInput = document.getElementById("budget_amount");
         const saveBtn = document.getElementById("set_budget_btn");
 
-        // fill existing values
-        budgetInput.value = data.budget_per_month || "";
+        if (!budgetInput || !saveBtn) return;
+
+        // extract budget value or default to empty string
+        const budgetValue = data?.budget_per_month ?? "";
+        budgetInput.value = budgetValue;         // fill existing values
         saveBtn.disabled = true;
 
         // Enable save button only if amount changes
         budgetInput.addEventListener("input", () => {
-            saveBtn.disabled = (budgetInput.value == data.budget_per_month)
+            const changed = budgetInput.value !== String(budgetValue);
+            saveBtn.disabled = !changed;
         });
     }
 
