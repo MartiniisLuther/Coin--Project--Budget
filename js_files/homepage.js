@@ -55,6 +55,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupDateAndProgress();
 
 
+    // Setup logic for the "Add Category" button and popup.
+    // Ensures listeners are attached only once and not duplicated.
+    function setupAddCategoryButton() {
+        const addCategoryBtn = document.getElementById("add_categories_btn");
+        const categoryPopup = document.getElementById("addCategoryPopup");
+        const closeCategoryBtn = document.getElementById("closeCategoryForm");
+
+        if (!addCategoryBtn || !categoryPopup) {
+            // Required DOM elements not found.
+            // console.warn("Add Category button or popup not found in the DOM.");
+            return;
+        }
+
+        // Helper to ensure event listeners are attached only once 
+        // by tracking a custom property.
+        if (!addCategoryBtn._listenerAttached) {
+            addCategoryBtn.addEventListener("click", () => {
+                categoryPopup.classList.toggle("hidden");
+            });
+            addCategoryBtn._listenerAttached = true;
+        }
+
+        if (closeCategoryBtn && !closeCategoryBtn._listenerAttached) {
+            closeCategoryBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (confirm("Are you sure you want to quit?")) {
+                    categoryPopup.classList.add("hidden");
+                }
+            });
+            closeCategoryBtn._listenerAttached = true;
+        }
+    }
+
+    // Initialize the add category button functionality
+    setupAddCategoryButton();
+
+
     // set up for the summary doughnut style pie chart
     function drawDoughnutChart(ctx, spent, total) {
         const radius = 80, centerX = 100, centerY = 90;
@@ -210,25 +247,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // call the function to setup the bar chart
     setupBarChart();
 
-    // adding categories, includes popup logics for different actions
-    const categoryPopup = document.getElementById("addCategoryPopup");
-    const addCategoryBtn = document.getElementById("add_categories_btn");
-    const closeCategoryBtn = document.getElementById("closeCategoryForm");
-
-    if (addCategoryBtn) {
-        addCategoryBtn.addEventListener("click", () => {
-            categoryPopup.classList.toggle("hidden");
-        });
-    }
-    if (closeCategoryBtn) {
-        closeCategoryBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (confirm ("Are you sure you want to quit?")) {
-                categoryPopup.classList.add("hidden");
-            }
-        });
-    }
-
     // fetch all months' spending data from the backend
     async function fetchAllMonthsSummaryData() {
         try {
@@ -301,16 +319,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const name = document.getElementById("category_name").value.trim();
                 const amountInput = document.getElementById("category_amount");
                 const amount = parseFloat(amountInput.value.trim() || 0);
+                const categoryPopup = document.getElementById("addCategoryPopup");
 
                 if (!name || amount <= 0)  {
                     alert ("Please fill in both fields."); 
                     return;
                 }
 
+                // check for duplicate category names (case-insensitive)
                 const exists = [...document.querySelectorAll(".category_added .category_title")]
                     .some(el => el.textContent.trim().toLowerCase() === name.toLowerCase());
                 if (exists) return alert("Category already exists!");
 
+                // create and append the new category
                 const newCategory = createCategoryElement(name, amount);
                 document.getElementById("categories_container").appendChild(newCategory);
 
@@ -337,7 +358,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const closeExpenseBtn = document.getElementById("closeExpenseForm");
     const submitExpenseBtn = document.getElementById("submitExpense");
 
-    const setBudgetBtn = document.getElementById("set_budget_btn");
+    const saveBudgetBtn = document.getElementById("set_budget_btn");
 
     function closeFormWithConfirm (form) {
         if (confirm("Are you sure you want to quit?")) form.classList.add("hidden");
@@ -405,8 +426,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // handle save button click validation
-    if (setBudgetBtn) {
-        setBudgetBtn.addEventListener("click", async (e) => {
+    if (saveBudgetBtn) {
+        saveBudgetBtn.addEventListener("click", async (e) => {
             e.preventDefault(); // prevent default form submission
 
             if (!hasAllocatedCategories()) {
@@ -491,44 +512,53 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function loadBudgetForMonth(month) {
         try {
             const response = await fetch(`/myapp/php/budget_operations.php?action=load_budget&month=${encodeURIComponent(month)}`);
+            
+            // handle non-OK responses
+            if (!response.ok) {
+                console.error(`Error loading budget: Server responded with ${response.status}`);
+                return null;
+            }
+            // parse JSON response
             const result = await response.json();
             
+            // process the result
             if (result.success) {
-                // Load budget data into the form
-                loadBudgetIntoForm(result.data);
+                // Cache DOM elements
+                const elements = {
+                    container: document.getElementById("categories_container"),
+                    budgetInput: document.getElementById("budget_amount"),
+                    monthSelect: document.getElementById("month_select")
+                }
+
+                // Ensure all required elements are present before proceeding
+                if (!elements.container || !elements.budgetInput || !elements.monthSelect) {
+                    console.error("One or more required DOM elements are missing.");
+                    return null;
+                }
+
+                // Use a safe default for data
+                const data = result.data || {};
 
                 // Clear existing categories
-                const categoriesContainer = document.getElementById("categories_container");
-                
-                // Only clear categories if backend returned data
-                if (result.data.categories && result.data.categories.length > 0) {
-                    const existingCategories = categoriesContainer.querySelectorAll(".category_added");
-                    existingCategories.forEach(cat => cat.remove());
-                }
-                
-                // Set budget amount
-                const budgetInput = document.getElementById("budget_amount");
-                if (budgetInput) {
-                    budgetInput.value = result.data.amount || "";
-                }
-                
-                // Set month dropdown
-                const monthSelect = document.getElementById("month_select");
-                if (monthSelect) {
-                    monthSelect.value = month;
-                }
-                
-                // Add categories to the page if they exist
-                if (result.data.categories && result.data.categories.length > 0) {
-                    result.data.categories.forEach(category => {
-                        const newCategory = createCategoryElement(category.name, category.amount);
-                        categoriesContainer.appendChild(newCategory);
+                elements.container.innerHTML = '';
+
+                // Populate amount into form
+                loadBudgetIntoForm(data);
+
+                // Rebuild categories if they exist
+                if (Array.isArray(data.categories)) {
+                    const fragment = document.createDocumentFragment();
+                    data.categories.forEach(category => {
+                        fragment.appendChild(createCategoryElement(category.name, category.amount));
                     });
+
+                    // Append the fragment to the container
+                    elements.container.appendChild(fragment);
                 }
 
-               // Update save button state
-                updateSaveButtonState();
-                
+                elements.monthSelect.value = month; // Set the selected month
+                updateSaveButtonState(); // Update save button state
+                // No need to re-setup add category button, as listeners are only attached once
                 return result.data;
             } else {
                 console.error('Error loading budget:', result.message);

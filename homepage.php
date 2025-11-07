@@ -97,37 +97,36 @@ if (!isset($_SESSION['username'])) {
                         <button id="add_categories_btn">+ Allocate Amount</button>
                         <!-- categories added dynamically --> 
                         <div class="categories_container" id="categories_container"> 
-                            <!-- adds cards dynamically -->
-                            <!-- should rather use a dropdown of pre-selected options ?????-->
+                            <!-- adds budget category cards here dynamically -->
+                        </div>
+                    </div>
 
-                            <!-- popup div to create categories -->
-                            <div class="add_category_popup hidden" id="addCategoryPopup">
-                                <div class="add_category_div">
-                                    <button id="closeCategoryForm" class="closeForm">&times</button>
-                                    <h3>Add Category</h3>
-                                    <form>
-                                        <label for="category_name">Category Name: </label>
-                                        <select id="category_name" name="category_name">
-                                            <!-- important to keep the names as they appear -->
-                                            <option value="Shopping">Shopping</option>
-                                            <option value="Health">Health</option>
-                                            <option value="Rent & Bills">Rent & Bills</option>
-                                            <option value="Insurance">Insurance</option>
-                                            <option value="Groceries">Groceries</option>
-                                            <option value="Restaurant">Restaurant</option>
-                                            <option value="Entertainment">Entertainment</option>
-                                            <option value="Transport">Transport</option>
-                                            <option value="Impromptu">Impromptu</option>
-                                            <option value="Others">Others</option>
-                                        </select>
+                    <!-- popup div to create categories -->
+                    <div class="add_category_popup hidden" id="addCategoryPopup">
+                        <div class="add_category_div">
+                            <button id="closeCategoryForm" class="closeForm">&times</button>
+                            <h3>Add Category</h3>
+                            <form>
+                                <label for="category_name">Category Name: </label>
+                                <select id="category_name" name="category_name">
+                                    <!-- important to keep the names as they appear -->
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Health">Health</option>
+                                    <option value="Rent & Bills">Rent & Bills</option>
+                                    <option value="Insurance">Insurance</option>
+                                    <option value="Groceries">Groceries</option>
+                                    <option value="Restaurant">Restaurant</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Transport">Transport</option>
+                                    <option value="Impromptu">Impromptu</option>
+                                    <option value="Others">Others</option>
+                                </select>
 
-                                        <!-- <input type="text" id="category_name" name="category_name" placeholder="Name" required /> -->
-                                        <label for="category_amount">Amount: </label>
-                                        <input type="number" id="category_amount" name="category_amount" placeholder="Amount" required />
-                                        <button type="submit" id="submitCategory">save</button>
-                                    </form>
-                                </div>
-                            </div>
+                                <!-- <input type="text" id="category_name" name="category_name" placeholder="Name" required /> -->
+                                <label for="category_amount">Amount: </label>
+                                <input type="number" id="category_amount" name="category_amount" placeholder="Amount" required />
+                                <button type="submit" id="submitCategory">Submit Category</button>
+                            </form>
                         </div>
                     </div>
                 </div>

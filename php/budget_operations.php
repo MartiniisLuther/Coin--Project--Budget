@@ -41,7 +41,7 @@ function saveBudget($conn, $user_id) {
 
         $conn->begin_transaction();
 
-        // Save or update monthly budget total
+        // Save or update monthly budget
         $stmt = $conn->prepare(
             "INSERT INTO monthly_budgets (user_id, month, budget_per_month)
             VALUES (?, ?, ?)
@@ -63,18 +63,18 @@ function saveBudget($conn, $user_id) {
 
         // Delete existing categories for the month
         $stmt = $conn->prepare(
-            "DELETE FROM category_budgets WHERE monthly_budget_id = ? ");
-        $stmt->bind_param("i", $monthly_budget_id);
+            "DELETE FROM category_budgets WHERE user_id = ? AND month = ?");
+        $stmt->bind_param("is", $user_id, $month);
         $stmt->execute();
         
         // Insert new category allocations
         if (!empty($categories)) {
             $stmt = $conn->prepare(
-                "INSERT INTO category_budgets (monthly_budget_id, category_name, budget_per_category) 
-                VALUES (?, ?, ?)
+                "INSERT INTO category_budgets (user_id, month, monthly_budget_id, category_name, budget_per_category) 
+                VALUES (?, ?, ?, ?, ?)
             ");
             foreach ($categories as $category) {
-                $stmt->bind_param("isd", $monthly_budget_id, $category['name'], $category['amount']);
+                $stmt->bind_param("isisd", $user_id, $month, $monthly_budget_id, $category['name'], $category['amount']);
                 $stmt->execute();
             }
         }
@@ -117,9 +117,9 @@ function loadBudget($conn, $user_id) {
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        $budget_per_month = $row ? floatval($row['budget_per_month']) : 0;
+        $budget_per_month = $row ? floatval($row['budget_per_month']) : '';
 
-        // Fetch category allocations *cb-> category budget table mb-> monthly budget table
+        // Fetch category allocations * cb-> category budget table mb-> monthly budget table
         $stmt = $conn->prepare(
             "SELECT cb.category_name, cb.budget_per_category
             FROM category_budgets cb

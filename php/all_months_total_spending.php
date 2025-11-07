@@ -46,7 +46,7 @@ function all_months_total_spending($conn, $user_id) {
         $sql = 
         "   SELECT month AS ym,
                 COALESCE(SUM(total_spent_per_month), 0) AS total_spent_per_month
-            FROM budgets
+            FROM monthly_budgets
             WHERE user_id = ?
             GROUP BY month
             ORDER BY STR_TO_DATE(CONCAT('2025 ', month), '%Y %M') DESC

@@ -31,7 +31,7 @@ function fetch_monthly_total_n_budget($conn, $user_id) {
     try {
         // Prepare query to get month and total_spent for the authenticated user
         $sql = 
-        "SELECT month, total_spent_per_month, budget_per_month
+        "SELECT month, budget_per_month, total_spent_per_month
             FROM monthly_budgets 
             WHERE user_id = ? 
             ORDER BY STR_TO_DATE(CONCAT('2025 ', month), '%Y %M') DESC
