@@ -299,6 +299,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (confirm("Are you sure you want to delete this category?")) {
                 categoryDiv.remove();
                 updateSaveButtonState(); // Update save button state after deletion
+                syncBudgetWithCategories(); // Sync budget after deletion
             }
         });
 
@@ -306,11 +307,42 @@ document.addEventListener("DOMContentLoaded", async () => {
         return categoryDiv;
     }
 
+    // Function to sum budgets for categories
+    function calculateTotalCategoryBudget() {
+        const amounts = Array.from(document.querySelectorAll(".category_added .category_amount"));
+        let total = 0;
+        amounts.forEach(el => {
+            //remove non-numeric except dots
+            const val = parseFloat(el.textContent.replace(/[^0-9.-]+/g, ""));
+            if (!isNaN(val)) total += val;
+        });
+        return total;
+    }
+
+    // Function sync budget input with category budgets
+    function syncBudgetWithCategories() {
+        const budgetInput = document.getElementById("budget_amount");
+        if (!budgetInput) return;
+        const totalCategoryBudget = calculateTotalCategoryBudget();
+        const categoryCount = document.querySelectorAll(".category_added").length;
+        const currentBudgetValue = parseFloat(budgetInput.value) || "0";
+
+        // If total category budget > budget input, set budget input to total
+        if (totalCategoryBudget > currentBudgetValue) {
+            budgetInput.value = totalCategoryBudget;
+        }
+
+        // If 10 categories and total != current budget, set budget to total
+        if (categoryCount >= 10 && totalCategoryBudget !== currentBudgetValue) {
+            budgetInput.value = totalCategoryBudget; 
+        }
+    }
+
     
     // display the created categories onto the page
     const submitCategoryBtn = document.getElementById("submitCategory");
     if (submitCategoryBtn) {
-        submitCategoryBtn.addEventListener("click", (e) => {
+        submitCategoryBtn.addEventListener("click", (e) => { 
             e.preventDefault();
 
             try {
@@ -343,7 +375,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 /*  Update save button state after adding a category
                     Short delay to ensure DOM updates before focusing 
                 */
-                setTimeout(updateSaveButtonState, 100);
+                setTimeout(() => {
+                    updateSaveButtonState();
+                    syncBudgetWithCategories();
+                }, 100);
 
             } catch (error) {
                 console.log("Error adding category:", error);
@@ -352,7 +387,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // expense tracking section, also includes popup logic
+    // Expense tracking section, also includes popup logic
     const addExpenseBtn = document.getElementById("add_expense_btn");
     const expenseForm = document.getElementById("addExpenseForm");
     const closeExpenseBtn = document.getElementById("closeExpenseForm");
@@ -449,6 +484,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                 amount: parseFloat(cat.querySelector(".category_amount").textContent.replace(/[^0-9.]/g, ""))
             }));
 
+            // Ensure total category amounts matches budget input value
+            const totalCategoryBudget = calculateTotalCategoryBudget();
+            if (Math.abs(totalCategoryBudget - parseFloat(budgetAmount)) > 0.01) {
+                alert(`The total of category budget amounts: €${totalCategoryBudget.toFixed(2)} \n  must match budget amount: €${parseFloat(budgetAmount).toFixed(2)}.`);
+                syncBudgetWithCategories();
+                return;
+            }
+
             // Save to database
             try {
                 const formData = new FormData();
@@ -477,12 +520,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // Monitor category changes to update save button state
+    // Monitor category changes to update save button state and sync budget
     const categoriesContainer = document.getElementById("categories_container");
     if (categoriesContainer) {
         // create a MutationObserver to watch for changes in the categories container
         const observer = new MutationObserver(() => {
             updateSaveButtonState();
+            syncBudgetWithCategories();
         });
 
         // Start observing the categories container for child list changes
