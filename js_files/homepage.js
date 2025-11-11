@@ -280,9 +280,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.log("Error fetching all months' summary data:", error);
             return Array(12).fill(0); // return an array of 12 zeros on error
         }
-    }
+    } 
 
-    // create categories, with delete functionality
+
+    // create BUDGET CATEGORIES, with delete functionality
     function createCategoryElement (name, amount, currency = "€") {
         const categoryDiv = document.createElement("div");
         categoryDiv.className = "category_added";
@@ -299,7 +300,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (confirm("Are you sure you want to delete this category?")) {
                 categoryDiv.remove();
                 updateSaveButtonState(); // Update save button state after deletion
-                syncBudgetWithCategories(); // Sync budget after deletion
+                syncBudgetWithCategories(); // Sync budget after deletion of category
             }
         });
 
@@ -319,7 +320,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return total;
     }
 
-    // Function sync budget input with category budgets
+    // Function to sync budget input with category budgets
     function syncBudgetWithCategories() {
         const budgetInput = document.getElementById("budget_amount");
         if (!budgetInput) return;
@@ -387,17 +388,79 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+
+    // Global storage for category budgets per month
+    let categoryBudgets = {};
+
     // Expense tracking section, also includes popup logic
     const addExpenseBtn = document.getElementById("add_expense_btn");
     const expenseForm = document.getElementById("addExpenseForm");
     const closeExpenseBtn = document.getElementById("closeExpenseForm");
     const submitExpenseBtn = document.getElementById("submitExpense");
 
-    const saveBudgetBtn = document.getElementById("set_budget_btn");
+    const expenseCategorySelect = document.getElementById("expense_categories");
+    const budgetAmountField = document.getElementById("budgeted_amount");
 
+    // Function to render budget amount into expense form based on selected category
+    function renderBudgetAmountForCategory(category) {
+        if (!budgetAmountField) return;
+
+        const budgetValue = (category && categoryBudgets && categoryBudgets[category] !== undefined) 
+            ? Number(categoryBudgets[category]) : 0;
+
+        // show with 2 decimal places and no currency symbol
+        budgetAmountField.textContent = budgetValue ? budgetValue.toFixed(2) : "0.00";
+    }
+
+    // Listen for changes on EXPENSE Popup menu and load Budget amount into field
+    if (expenseCategorySelect) {
+        expenseCategorySelect.addEventListener("change", (e) => {
+            renderBudgetAmountForCategory(e.target.value);
+        });
+    }
+
+    // Set initial value for currently selected category if any
+    if (expenseCategorySelect.value) {
+        renderBudgetAmountForCategory(expenseCategorySelect.value);
+    }
+
+    // When opening the expense form, ensure displayed budget amount is current
+    if (addExpenseBtn) {
+        addExpenseBtn.addEventListener("click", () => {
+            // Ensure categoryBudgets has been populated by loadBudgetForMonth
+            const selExpCat = expenseCategorySelect ? expenseCategorySelect.value : null;
+            if (selExpCat) {
+                renderBudgetAmountForCategory(selExpCat);
+            }
+        });
+    }
+
+    // Ensure submitExpenseBtn reads the selected category value & numeric input correctly
+    if (submitExpenseBtn) {
+        submitExpenseBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            const expenseCategory = expenseCategorySelect ? expenseCategorySelect.value : null;
+            const amountInput = document.getElementById("new_expense_amount");
+            const amount = amountInput ? parseFloat(amountInput.value) : 0;
+
+            // validate amount
+            if (!amount || amount <= 0) return ("Please enter a valid amount.");
+
+            // update the category amount in the overview
+            if (expenseCategory)  updateCategoryAmount(expenseCategory, amount);
+
+            // close the expense form
+            if (expenseForm) expenseForm.classList.add("hidden");
+        });
+    }
+
+
+    // Close form on confirm
     function closeFormWithConfirm (form) {
         if (confirm("Are you sure you want to quit?")) form.classList.add("hidden");
     }
+
     // close the expense form when the background is clicked
     if (addExpenseBtn && expenseForm) {
         addExpenseBtn.addEventListener("click", () => expenseForm.classList.toggle("hidden"));
@@ -405,6 +468,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (e.target === expenseForm) closeFormWithConfirm(expenseForm);
         });
     }
+
     // close the expense form when the close button is clicked
     if (closeExpenseBtn && expenseForm) {
         closeExpenseBtn.addEventListener("click", (e) => {
@@ -413,12 +477,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // submit and update categories on the page
-    function updateCategoryAmount(category, amount) {
+    
+    // Submit and Update EXPENSE categories on the page
+    function updateCategoryAmount(expenseCategory, amount) {
         document.querySelectorAll(".each_exp_overview").forEach(cat => {
-            if (cat.querySelector(".exp_name").textContent.trim() === category) {
-                const current = parseFloat(cat.querySelector(".exp_amount").textContent.replace(/[^0-9.]/g, "")) || 0;
-                cat.querySelector(".exp_amount").innerHTML = `<span id="currency_option">€</span>${(current + amount).toFixed(2)}`;
+            if (cat.querySelector(".exp_name").textContent.trim() === expenseCategory) {
+                const current = parseFloat(cat.querySelector("#expense_amount").textContent.replace(/[^0-9.]/g, "")) || 0;
+                cat.querySelector("#expense_amount").innerHTML = `<span id="currency_option">€</span>${(current + amount).toFixed(2)}`;
             };
         });
     }
@@ -426,41 +491,47 @@ document.addEventListener("DOMContentLoaded", async () => {
     // submit the expense form and add the expense to the overview
     if (submitExpenseBtn) {
         submitExpenseBtn.addEventListener("click", () => {
-            const category = document.getElementById("category").value;
-            const amount = parseFloat(document.getElementById("amount").value);
+            const expenseCategory = document.getElementById("expense_category").value;
+            const amount = parseFloat(document.getElementById("new_expense_amount").value);
             if (!amount || amount <= 0) return alert ("Please enter a valid amount.");
-            updateCategoryAmount(category, amount);
+            // update the category amount in the overview
+            updateCategoryAmount(expenseCategory, amount);
             expenseForm.classList.add("hidden");
         });
     }
 
-    // check if there are allocated categories
+
+    // check if there are allocated categories under + Allocate Amount 
     function hasAllocatedCategories() {
         const categoriesContainer = document.getElementById("categories_container");
         const allocatedCategories = categoriesContainer.querySelectorAll(".category_added");
         return allocatedCategories.length > 0; // returns true if there are categories
     }
 
-    // Update save button state based on category allocation
+    // Reference to the save budget button
+    const saveBudgetBtn = document.getElementById("set_budget_btn");
+
+    // Update saveBudgetBtn state based on category allocation
     function updateSaveButtonState() {
-        const saveButton = document.getElementById("set_budget_btn");
+        // const saveButton = document.getElementById("set_budget_btn");
         const hasCategories = hasAllocatedCategories();
 
-        if (saveButton) {
-            saveButton.disabled = !hasCategories;
+        if (saveBudgetBtn) {
+            saveBudgetBtn.disabled = !hasCategories;
             if (!hasCategories) {
-                saveButton.style.opacity = "0.5";
-                saveButton.style.cursor = "not-allowed";
-                saveButton.title = "Please add at least one category to enable saving.";
+                saveBudgetBtn.style.opacity = "0.5";
+                saveBudgetBtn.style.cursor = "not-allowed";
+                saveBudgetBtn.title = "Please add at least one category to enable saving.";
             } else {
-                saveButton.style.opacity = "1";
-                saveButton.style.cursor = "pointer";
-                saveButton.title = "Save Budget";
+                saveBudgetBtn.style.opacity = "1";
+                saveBudgetBtn.style.cursor = "pointer";
+                saveBudgetBtn.title = "Save Budget";
             }
         }
     }
 
-    // handle save button click validation
+
+    // handle saveBudgetBtn click validation
     if (saveBudgetBtn) {
         saveBudgetBtn.addEventListener("click", async (e) => {
             e.preventDefault(); // prevent default form submission
@@ -582,27 +653,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 // Use a safe default for data
                 const data = result.data || {};
+                elements.container.innerHTML = ''; // Clear existing categories
+                loadBudgetIntoForm(data); // Populate amount into form
 
-                // Clear existing categories
-                elements.container.innerHTML = '';
+                // Reset global categoryBudgets each time month changes
+                categoryBudgets = {};
 
-                // Populate amount into form
-                loadBudgetIntoForm(data);
-
-                // Rebuild categories if they exist
+                // Rebuild categories if they exist & store their budget
                 if (Array.isArray(data.categories)) {
                     const fragment = document.createDocumentFragment();
-                    data.categories.forEach(category => {
-                        fragment.appendChild(createCategoryElement(category.name, category.amount));
+                    data.categories.forEach(budgetCategory => {
+                        fragment.appendChild(createCategoryElement(budgetCategory.name, budgetCategory.amount));
+                        categoryBudgets[budgetCategory.name] = budgetCategory.amount; // store category budget
                     });
-
                     // Append the fragment to the container
                     elements.container.appendChild(fragment);
                 }
 
                 elements.monthSelect.value = month; // Set the selected month
                 updateSaveButtonState(); // Update save button state
-                // No need to re-setup add category button, as listeners are only attached once
+
                 return result.data;
             } else {
                 console.error('Error loading budget:', result.message);

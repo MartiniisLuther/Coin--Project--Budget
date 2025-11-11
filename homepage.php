@@ -145,7 +145,7 @@ if (!isset($_SESSION['username'])) {
                     </div>
                 </div>
             </div>
-            <!-- right container with different expenditure categories -->
+            <!-- RIGHT CONTAINER with different EXPENSE-CATEGORIES  -->
             <div class="right_container">
                 <div class="exp_heading">
                     <h2>Expenditure & Overview</h2>
@@ -164,7 +164,8 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Shopping</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>0
+                                    <span id="currency_option">€</span>
+                                    <span id="expense_amount">0</span>
                                 </div>
                             </div>
                         </div>
@@ -177,7 +178,8 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Health</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>0 
+                                    <span id="currency_option">€</span>
+                                    <span id="expense_amount">0</span>
                                 </div>
                             </div>                      
                         </div>
@@ -190,7 +192,8 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Rent & Bills</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>0
+                                    <span id="currency_option">€</span>
+                                    <span id="expense_amount">0</span>
                                 </div>
                             </div>
                         </div>
@@ -203,7 +206,8 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Insurance</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>0
+                                    <span id="currency_option">€</span>
+                                    <span id="expense_amount">0</span>
                                 </div>
                             </div>
                         </div>
@@ -216,7 +220,8 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Groceries</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>0
+                                    <span id="currency_option">€</span>
+                                    <span id="expense_amount">0</span>
                                 </div>
                             </div>
                         </div>
@@ -229,7 +234,8 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Restaurant</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>0
+                                    <span id="currency_option">€</span>
+                                    <span id="expense_amount">0</span>
                                 </div>
                             </div>
                         </div>
@@ -241,7 +247,8 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Entertainment</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>0
+                                    <span id="currency_option">€</span>
+                                    <span id="expense_amount">0</span>
                                 </div>
                             </div>
                         </div>
@@ -254,7 +261,8 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Transport</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>0
+                                    <span id="currency_option">€</span>
+                                    <span id="expense_amount">0</span>
                                 </div>
                             </div>
                         </div>
@@ -267,7 +275,8 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Impromptu</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>0
+                                    <span id="currency_option">€</span>
+                                    <span id="expense_amount">0</span>
                                 </div>
                             </div>
                         </div>
@@ -280,7 +289,8 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Others</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>0
+                                    <span id="currency_option">€</span>
+                                    <span id="expense_amount">0</span>
                                 </div>
                             </div>
                         </div>
@@ -302,8 +312,8 @@ if (!isset($_SESSION['username'])) {
                     <button class="closeForm" id="closeExpenseForm">&times;</button>
                     <h3>Add Expense</h3>
                     <form>
-                        <label for="category">Category:</label>
-                        <select id="category">
+                        <label for="expense_categories">Category:</label>
+                        <select id="expense_categories">
                             <!-- important to keep the names as they appear -->
                             <option value="Shopping">Shopping</option>
                             <option value="Health">Health</option>
@@ -317,15 +327,31 @@ if (!isset($_SESSION['username'])) {
                             <option value="Others">Others</option>
                         </select>
 
-                        <label for="amount">Budget Amount:</label>
-                        <input type="number" id="amount" min="0" required />
+                        <!-- <label for="cost">Add New Expense:</label>
+                        <input type="number" id="new_expense_amount" min="0" required /> -->
+                        <span class="exp_header">Add New Expense:</span>
+                        <div class="exp_amounts_div editable">
+                            <span class="currency_option">€</span>
+                            <input type="number" id="new_expense_amount" min="0" required />
+                        </div>
 
-                        <label for="amount_left">Spent Amount:</label>
-                        <input type="number" id="amount" min="0" required />
+                        <!-- <label for="amount">Budget Amount:</label>
+                        <input type="number" id="budgeted_amount" readonly /> -->
+                        <span class="exp_header">Budget Amount:</span>
+                        <div class="exp_amounts_div">
+                            <span class="currency_option">€</span>
+                            <span id="budgeted_amount">0</span>
+                        </div>
 
-                        <label for="cost">Cost Amount:</label>
-                        <input type="number" id="amount" min="0" required />
+                        <!-- <label for="amount_left">Spent Amount:</label>
+                        <input type="number" id="spent_amount" readonly /> -->
+                        <span class="exp_header">Spent Amount:</span>
+                        <div class="exp_amounts_div">
+                            <span class="currency_option">€</span>
+                            <span id="spent_amount">0</span>
+                        </div>
 
+                        <!-- submit button -->
                         <button type="submit" id="submitExpense">Submit</button>
                     </form>
                 </div>
