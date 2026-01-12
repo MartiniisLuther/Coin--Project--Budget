@@ -19,8 +19,10 @@ if (!isset($_SESSION['username'])) {
     <link rel="stylesheet" href="css_files/accountpage.css">
 
     <!-- Link to JavaScript files -->
-    <script src="js_files/homepage.js" defer></script>
-    <script src="js_files/accountpage.js"></script>
+    <!-- <script src="js_files/homepage.js" defer></script> -->
+    <script src="/myapp/js_files/budget_api.js"></script>
+    <script src="/myapp/js_files/homepage_ui.js"></script>
+    <script src="/myapp/js_files/accountpage.js"></script>
 
     <!--links to various icons, from flaticon & fontawesome-->
     <script src="https://kit.fontawesome.com/8d07e5d887.js" crossorigin="anonymous"></script>
@@ -73,7 +75,7 @@ if (!isset($_SESSION['username'])) {
                         <!-- <div class="exp_amount"> -->
                             <span id="currency_option">€</span>
                         <!-- </div> -->
-                        <input type="number" id="budget_amount" placeholder="Enter amount" />
+                        <input type="number" id="budget_amount" placeholder="Budget amount" disabled style="cursor: not-allowed;"/>
                         <!-- save budget button -->
                         <button type="submit" id="set_budget_btn">save</button>
                     </div>
@@ -82,12 +84,17 @@ if (!isset($_SESSION['username'])) {
                         <label for="month_select">Month:</label>
                         <select id="month_select">
                             <?php
+                            $year = date('Y');
                             $currentMonth = date('F');
-                            $months = ['January', 'February', 'March', 'April', 'May', 'June', 
-                                     'July', 'August', 'September', 'October', 'November', 'December'];
+                            $months = [
+                                'January','February','March','April','May','June',
+                                'July','August','September','October','November','December'
+                            ];
+
                             foreach ($months as $month) {
+                                $value = "$year-$month";
                                 $selected = ($month === $currentMonth) ? 'selected' : '';
-                                echo "<option value=\"$month\" $selected>$month</option>";
+                                echo "<option value=\"$value\" $selected>$month $year</option>";
                             }
                             ?>
                         </select>
@@ -97,36 +104,37 @@ if (!isset($_SESSION['username'])) {
                         <button id="add_categories_btn">+ Allocate Amount</button>
                         <!-- categories added dynamically --> 
                         <div class="categories_container" id="categories_container"> 
-                            <!-- adds budget category cards here dynamically -->
+                            <!-- adds cards dynamically -->
+                            <!-- should rather use a dropdown of pre-selected options ?????-->
                         </div>
-                    </div>
 
-                    <!-- popup div to create categories -->
-                    <div class="add_category_popup hidden" id="addCategoryPopup">
-                        <div class="add_category_div">
-                            <button id="closeCategoryForm" class="closeForm">&times</button>
-                            <h3>Add Category</h3>
-                            <form>
-                                <label for="category_name">Category Name: </label>
-                                <select id="category_name" name="category_name">
-                                    <!-- important to keep the names as they appear -->
-                                    <option value="Shopping">Shopping</option>
-                                    <option value="Health">Health</option>
-                                    <option value="Rent & Bills">Rent & Bills</option>
-                                    <option value="Insurance">Insurance</option>
-                                    <option value="Groceries">Groceries</option>
-                                    <option value="Restaurant">Restaurant</option>
-                                    <option value="Entertainment">Entertainment</option>
-                                    <option value="Transport">Transport</option>
-                                    <option value="Impromptu">Impromptu</option>
-                                    <option value="Others">Others</option>
-                                </select>
+                        <!-- popup div to create categories -->
+                        <div class="add_category_popup hidden" id="addCategoryPopup">
+                            <div class="add_category_div">
+                                <button id="closeCategoryForm" class="closeForm">&times</button>
+                                <h3>Add Category</h3>
+                                <form>
+                                    <label for="category_name">Category Name: </label>
+                                    <select id="category_name" name="category_name">
+                                        <!-- important to keep the names as they appear -->
+                                        <option value="Shopping">Shopping</option>
+                                        <option value="Health">Health</option>
+                                        <option value="Rent & Bills">Rent & Bills</option>
+                                        <option value="Insurance">Insurance</option>
+                                        <option value="Groceries">Groceries</option>
+                                        <option value="Restaurant">Restaurant</option>
+                                        <option value="Entertainment">Entertainment</option>
+                                        <option value="Transport">Transport</option>
+                                        <option value="Impromptu">Impromptu</option>
+                                        <option value="Others">Others</option>
+                                    </select>
 
-                                <!-- <input type="text" id="category_name" name="category_name" placeholder="Name" required /> -->
-                                <label for="category_amount">Amount: </label>
-                                <input type="number" id="category_amount" name="category_amount" placeholder="Amount" required />
-                                <button type="submit" id="submitCategory">Submit Category</button>
-                            </form>
+                                    <!-- <input type="text" id="category_name" name="category_name" placeholder="Name" required /> -->
+                                    <label for="category_amount">Amount: </label>
+                                    <input type="number" id="category_amount" name="category_amount" placeholder="Amount" required />
+                                    <button type="submit" id="submitCategory">save</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -136,7 +144,7 @@ if (!isset($_SESSION['username'])) {
                     <h2>Summary in <span id="current_month">month</span></h2>
                     <div class="summary_pie">
                         <canvas id="summaryDoughnut" width="200" height="170"></canvas>
-                        <div class="summary_text" id="summaryText">0% of €<span id="get_budget_amount"></span> spent.</div>
+                        <div class="summary_text" id="summaryText">0% of €<span id="budget_amount"></span> spent.</div>
                     </div>
                     <!-- days left in month -->
                     <div class="days_left">
@@ -145,7 +153,7 @@ if (!isset($_SESSION['username'])) {
                     </div>
                 </div>
             </div>
-            <!-- RIGHT CONTAINER with different EXPENSE-CATEGORIES  -->
+            <!-- right container with different expenditure categories -->
             <div class="right_container">
                 <div class="exp_heading">
                     <h2>Expenditure & Overview</h2>
@@ -164,8 +172,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Shopping</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>
-                                    <span id="expense_amount">0</span>
+                                    <span id="currency_option">€</span>0
                                 </div>
                             </div>
                         </div>
@@ -178,8 +185,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Health</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>
-                                    <span id="expense_amount">0</span>
+                                    <span id="currency_option">€</span>0 
                                 </div>
                             </div>                      
                         </div>
@@ -192,8 +198,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Rent & Bills</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>
-                                    <span id="expense_amount">0</span>
+                                    <span id="currency_option">€</span>0
                                 </div>
                             </div>
                         </div>
@@ -206,8 +211,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Insurance</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>
-                                    <span id="expense_amount">0</span>
+                                    <span id="currency_option">€</span>0
                                 </div>
                             </div>
                         </div>
@@ -220,8 +224,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Groceries</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>
-                                    <span id="expense_amount">0</span>
+                                    <span id="currency_option">€</span>0
                                 </div>
                             </div>
                         </div>
@@ -234,8 +237,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Restaurant</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>
-                                    <span id="expense_amount">0</span>
+                                    <span id="currency_option">€</span>0
                                 </div>
                             </div>
                         </div>
@@ -247,8 +249,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Entertainment</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>
-                                    <span id="expense_amount">0</span>
+                                    <span id="currency_option">€</span>0
                                 </div>
                             </div>
                         </div>
@@ -261,8 +262,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Transport</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>
-                                    <span id="expense_amount">0</span>
+                                    <span id="currency_option">€</span>0
                                 </div>
                             </div>
                         </div>
@@ -275,8 +275,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Impromptu</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>
-                                    <span id="expense_amount">0</span>
+                                    <span id="currency_option">€</span>0
                                 </div>
                             </div>
                         </div>
@@ -289,8 +288,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Others</div>
                                 <div class="exp_amount">
-                                    <span id="currency_option">€</span>
-                                    <span id="expense_amount">0</span>
+                                    <span id="currency_option">€</span>0
                                 </div>
                             </div>
                         </div>
@@ -312,8 +310,8 @@ if (!isset($_SESSION['username'])) {
                     <button class="closeForm" id="closeExpenseForm">&times;</button>
                     <h3>Add Expense</h3>
                     <form>
-                        <label for="expense_categories">Category:</label>
-                        <select id="expense_categories">
+                        <label for="category">Category:</label>
+                        <select id="category">
                             <!-- important to keep the names as they appear -->
                             <option value="Shopping">Shopping</option>
                             <option value="Health">Health</option>
@@ -327,31 +325,15 @@ if (!isset($_SESSION['username'])) {
                             <option value="Others">Others</option>
                         </select>
 
-                        <!-- <label for="cost">Add New Expense:</label>
-                        <input type="number" id="new_expense_amount" min="0" required /> -->
-                        <span class="exp_header">Add New Expense:</span>
-                        <div class="exp_amounts_div editable">
-                            <span class="currency_option">€</span>
-                            <input type="number" id="new_expense_amount" min="0" required />
-                        </div>
+                        <label for="amount">Budget Amount:</label>
+                        <input type="number" id="amount" min="0" required />
 
-                        <!-- <label for="amount">Budget Amount:</label>
-                        <input type="number" id="budgeted_amount" readonly /> -->
-                        <span class="exp_header">Budget Amount:</span>
-                        <div class="exp_amounts_div">
-                            <span class="currency_option">€</span>
-                            <span id="budgeted_amount">0</span>
-                        </div>
+                        <label for="amount_left">Spent Amount:</label>
+                        <input type="number" id="amount" min="0" required />
 
-                        <!-- <label for="amount_left">Spent Amount:</label>
-                        <input type="number" id="spent_amount" readonly /> -->
-                        <span class="exp_header">Spent Amount:</span>
-                        <div class="exp_amounts_div">
-                            <span class="currency_option">€</span>
-                            <span id="spent_amount">0</span>
-                        </div>
+                        <label for="cost">Cost Amount:</label>
+                        <input type="number" id="amount" min="0" required />
 
-                        <!-- submit button -->
                         <button type="submit" id="submitExpense">Submit</button>
                     </form>
                 </div>
