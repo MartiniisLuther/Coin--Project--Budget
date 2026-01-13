@@ -35,6 +35,13 @@ function updateDateDisplay() {
     });
 }
 
+/* ---------------- STATE TRACKING ---------------- */
+// Track the last saved state to compare current state
+let lastSavedState = {
+    month: null,
+    categories: []
+};
+
 
 /* ---------------- ALLOCATE AMOUNT BUTTON FUNCTIONS ---------------- */
 // This section entails the logic for the "Add Category" button and popup.
@@ -124,6 +131,7 @@ function setupCategorySubmission() {
         }
 
         updateAllocatedTotal();
+        updateSaveButtonState();
     });
 }
 
@@ -153,6 +161,54 @@ function collectCategoriesFromUI() {
 }
 
 
+/* ---------------- COMPARE CATEGORIES ---------------- */
+// Check if current categories match last saved state
+function categoriesMatch(current, saved) {
+    if (current.length !== saved.length) return false;
+
+    // Sort both arrays by category name for comparison
+    const sortedCurrent = [...current].sort((a, b) => a.name.localeCompare(b.name));
+    const sortedSaved = [...saved].sort((a, b) => a.name.localeCompare(b.name));
+
+    return sortedCurrent.every((cat, i) => {
+        return cat.name === sortedSaved[i].name &&
+            cat.amount === sortedSaved[i].amount;
+    });
+}
+
+
+
+/* ---------------- UPDATE SAVE BUTTON STATE ---------------- */
+// Enable/disable save button based on whether categories have changed
+function updateSaveButtonState() {
+    const setBudgetBtn = document.getElementById("set_budget_btn");
+    const monthSelect = document.getElementById("month_select");
+
+    if (!setBudgetBtn || !monthSelect) return;
+
+    const currentMonth = monthSelect.value;
+    const currentCategories = collectCategoriesFromUI();
+
+    // Check if current selection is on same month
+    const shouldDisable = 
+        lastSavedState.month === currentMonth && 
+        categoriesMatch(currentCategories, lastSavedState.categories);
+
+    setBudgetBtn.disabled = shouldDisable;
+
+    // Visual feedback
+    if (shouldDisable) {
+        setBudgetBtn.style.cursor = "not-allowed";
+        setBudgetBtn.style.opacity = "0.5";
+    } else {
+        setBudgetBtn.style.cursor = "pointer";
+        setBudgetBtn.style.opacity = "1";
+    }
+
+}
+
+
+
 /* ---------------- SAVE BUDGET ---------------- */
 function setupBudgetSave() {
     const setBudgetBtn = document.getElementById("set_budget_btn");
@@ -161,6 +217,9 @@ function setupBudgetSave() {
 
     setBudgetBtn.addEventListener("click", async (e) => {
         e.preventDefault();
+
+        // Double-check button isnt disabled
+        if (setBudgetBtn.disabled) return;
 
         const budgetAmount = document.getElementById("budget_amount").value;
         const month = document.getElementById("month_select").value;
@@ -180,6 +239,13 @@ function setupBudgetSave() {
             });
 
             if (result && result.success) {
+                // Update last saved state
+                lastSavedState = {
+                    month: month,
+                    categories: categories.map(cat => ({ ...cat })) // Deep copy
+                };
+
+                updateSaveButtonState();
                 alert("Budget saved successfully!");
             } else {
                 alert("Failed to save budget.");
@@ -210,9 +276,17 @@ async function loadBudgetForMonth(month) {
             if (budgetInput) {
                 budgetInput.value = "";
             }
+
+            // Reset last saved state
+            lastSavedState = {
+                month: month,
+                categories: []
+            };
+            updateSaveButtonState();
             return;
         }
 
+        // Clear existing categories
         if (categoriesContainer) {
             categoriesContainer.innerHTML = "";
         }
@@ -222,25 +296,50 @@ async function loadBudgetForMonth(month) {
             budgetInput.value = data.amount || "";
         }
 
+        // 
+        const loadedCategories = [];
+
         // Check if categories exist and is an array
         if (data.categories && Array.isArray(data.categories) && categoriesContainer) {
             data.categories.forEach(cat => {
                 categoriesContainer.appendChild(
                     createCategoryElement(cat.name, cat.amount)
                 );
+
+                // Track loaded categories for state comparison
+                loadedCategories.push({
+                    name: cat.name,
+                    amount: cat.amount
+                });
             });
         }
 
+        // Update last saved state
+        lastSavedState = {
+            month: month,
+            categories: loadedCategories
+        };
+
         updateAllocatedTotal();
+        updateSaveButtonState();
+
     } catch (err) {
         console.error("Error loading budget:", err);
         if (categoriesContainer) {
             categoriesContainer.innerHTML = "";
         }
+
         const budgetInput = document.getElementById("budget_amount");
         if (budgetInput) {
             budgetInput.value = "";
         }
+
+        // Reset last saved state
+        lastSavedState = {
+            month: month,
+            categories: []
+        };
+        updateSaveButtonState();
     }
 }
 
