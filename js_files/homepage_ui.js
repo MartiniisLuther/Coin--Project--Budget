@@ -1,5 +1,13 @@
 // homepage_ui.js — UI logic only
 
+/* ---------------- STATE TRACKING ---------------- */
+// Track the last saved state to compare current state
+let lastSavedState = {
+    month: null,
+    categories: []
+};
+
+
 /* ---------------- NAVBAR DROPDOWN ---------------- */
 // This provides the About options in the navbar
 function setupNavbarDropdown() {
@@ -35,13 +43,6 @@ function updateDateDisplay() {
     });
 }
 
-/* ---------------- STATE TRACKING ---------------- */
-// Track the last saved state to compare current state
-let lastSavedState = {
-    month: null,
-    categories: []
-};
-
 
 /* ---------------- ALLOCATE AMOUNT BUTTON FUNCTIONS ---------------- */
 // This section entails the logic for the "Add Category" button and popup.
@@ -52,11 +53,13 @@ function setupCategoryPopup() {
     
     if (!addCategoryBtn || !categoryPopup) return;
 
+    // Show popup
     addCategoryBtn.addEventListener("click", () => {
         console.log("Opening category popup"); // Debug log
         categoryPopup.classList.remove("hidden");
     });
 
+    // Close popup
     if (closeCategoryBtn) {
         closeCategoryBtn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -86,6 +89,7 @@ function createCategoryElement(name, amount, currency = "€") {
         if (confirm("Delete this category?")) {
             categoryDiv.remove();
             updateAllocatedTotal();
+            updateSaveButtonState();
         }
     });
 
@@ -103,6 +107,7 @@ function setupCategorySubmission() {
     
     if (!submitCategoryBtn || !categoriesContainer) return;
 
+    // Submit new category
     submitCategoryBtn.addEventListener("click", (e) => {
         e.preventDefault();
 
@@ -177,7 +182,6 @@ function categoriesMatch(current, saved) {
 }
 
 
-
 /* ---------------- UPDATE SAVE BUTTON STATE ---------------- */
 // Enable/disable save button based on whether categories have changed
 function updateSaveButtonState() {
@@ -204,9 +208,7 @@ function updateSaveButtonState() {
         setBudgetBtn.style.cursor = "pointer";
         setBudgetBtn.style.opacity = "1";
     }
-
 }
-
 
 
 /* ---------------- SAVE BUDGET ---------------- */
@@ -296,7 +298,6 @@ async function loadBudgetForMonth(month) {
             budgetInput.value = data.amount || "";
         }
 
-        // 
         const loadedCategories = [];
 
         // Check if categories exist and is an array
@@ -344,6 +345,83 @@ async function loadBudgetForMonth(month) {
 }
 
 
+/* --------------- UPDATE BUDGETED AMOUNT ---------------- */
+// Get the budgeted amount for a selected category and feed it to the expense popup
+function updateBudgetedAmount(categoryName) {
+    const budgetedAmountInput = document.getElementById("budgeted_amount");
+    if (!budgetedAmountInput) return;
+
+    // Find the category in the DOM
+    const categories = document.querySelectorAll(".category_added");
+    let budgetedAmount = 0;
+
+    for (const cat of categories) {
+        const titleElement = cat.querySelector(".category_title");
+        if (titleElement && titleElement.textContent.trim() === categoryName) {
+            const amountElement = cat.querySelector(".category_amount");
+            if (amountElement) {
+                budgetedAmount = parseFloat(
+                    amountElement.textContent.replace(/[^\d.-]/g, "")
+                ) || 0;
+            }
+            break;
+        }
+    }
+
+    budgetedAmountInput.value = budgetedAmount > 0 ? budgetedAmount.toFixed(2) : "0.00";
+}
+
+
+/* --------------- ADD EXPENSES POPUP SETUP ---------------- */
+// This section entails the logic for the "Add Expenses" button and popup.
+function setupExpensesPopup() {
+    const addExpenseBtn = document.getElementById("add_expense_btn");
+    const expenseForm = document.getElementById("addExpenseForm");
+    const closeExpenseBtn = document.getElementById("closeExpenseForm");
+    const submitExpenseBtn = document.getElementById("submitExpense");
+    const categorySelect = document.getElementById("category");
+    const budgetedAmountInput = document.getElementById("budgeted_amount");
+
+    if (!addExpenseBtn || !expenseForm) return;
+
+    // Show popup
+    addExpenseBtn.addEventListener("click", () => {
+        console.log("Opening expenses popup"); // Debug log
+        expenseForm.classList.toggle("hidden");
+        
+        // Update budgeted amount when popup opens
+        if (categorySelect && budgetedAmountInput) {
+            updateBudgetedAmount(categorySelect.value);
+        }
+    });
+
+    // Close popup
+    if (closeExpenseBtn) {
+        closeExpenseBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (confirm("Are you sure you want to quit?")) {
+                expenseForm.classList.add("hidden");
+            }
+        });
+    }
+
+    // Update budgeted amount when category changes
+    if (categorySelect && budgetedAmountInput) {
+        categorySelect.addEventListener("change", (e) => {
+            updateBudgetedAmount(e.target.value);
+        });
+    }
+
+    // Submit expense (placeholder logic)
+    if (submitExpenseBtn) {
+        submitExpenseBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            alert("Expense submission not yet implemented.");
+        });
+    }
+}
+
+
 /* ---------------- SETUP MONTH SELECTOR ---------------- */
 function setupMonthSelector() {
     const monthSelect = document.getElementById("month_select");
@@ -369,6 +447,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupCategorySubmission();
     setupBudgetSave();
     const monthSelect = setupMonthSelector();
+    setupExpensesPopup();
 
     // Load initial budget data
     if (monthSelect) {

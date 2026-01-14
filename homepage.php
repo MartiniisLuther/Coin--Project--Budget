@@ -325,14 +325,14 @@ if (!isset($_SESSION['username'])) {
                             <option value="Others">Others</option>
                         </select>
 
-                        <label for="amount">Budget Amount:</label>
-                        <input type="number" id="amount" min="0" required />
+                        <label for="cost">Spent Amount:</label>
+                        <input type="number" id="amount" min="0" placeholder="enter amount" required />
 
-                        <label for="amount_left">Spent Amount:</label>
-                        <input type="number" id="amount" min="0" required />
+                        <label for="amount">Budgeted Amount:</label>
+                        <input type="number" id="budgeted_amount" disabled style="cursor: not-allowed;" />
 
-                        <label for="cost">Cost Amount:</label>
-                        <input type="number" id="amount" min="0" required />
+                        <label for="amount_left">Total Spent:</label>
+                        <input type="number" id="amount_left" disabled style="cursor: not-allowed;" />
 
                         <button type="submit" id="submitExpense">Submit</button>
                     </form>
