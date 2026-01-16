@@ -1,5 +1,6 @@
 # Ignore image and temp files
 .DS_Store
 js_files/code/
+js_files/homepage_copy.js
 picts/
 

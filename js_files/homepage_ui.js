@@ -1,4 +1,4 @@
-// homepage_ui.js — UI logic only
+// homepage_ui.js — UI logic for normalized database schema
 
 /* ---------------- STATE TRACKING ---------------- */
 // Track the last saved state to compare current state
@@ -55,7 +55,7 @@ function setupCategoryPopup() {
 
     // Show popup
     addCategoryBtn.addEventListener("click", () => {
-        console.log("Opening category popup"); // Debug log
+        console.log("Opening category popup");
         categoryPopup.classList.remove("hidden");
     });
 
@@ -73,12 +73,20 @@ function setupCategoryPopup() {
 
 /* ---------------- CREATE CATEGORY ELEMENT ---------------- */
 // This section adds the Budget categories to the homepage dynamically
-function createCategoryElement(name, amount, currency = "€") {
+// Simple display - only shows category name and allocated amount
+function createCategoryElement(name, allocated, spent = 0, currency = "€") {
     const categoryDiv = document.createElement("div");
     categoryDiv.className = "category_added";
+    
+    // Store spent amount as data attribute for potential use elsewhere
+    categoryDiv.dataset.spent = spent;
+    categoryDiv.dataset.allocated = allocated;
+    
     categoryDiv.innerHTML = `
         <div class="category_title">${name}</div>
-        <div class="category_amount"><span class="currency_option">${currency}</span>${amount}</div>
+        <div class="category_amount">
+            <span class="currency_option">${currency}</span>${allocated.toFixed(2)}
+        </div>
     `;
 
     // Delete button
@@ -127,7 +135,8 @@ function setupCategorySubmission() {
             return;
         }
 
-        categoriesContainer.appendChild(createCategoryElement(name, amount));
+        // When adding new category, spent is 0
+        categoriesContainer.appendChild(createCategoryElement(name, amount, 0));
 
         document.getElementById("category_name").value = "";
         document.getElementById("category_amount").value = "";
@@ -211,6 +220,36 @@ function updateSaveButtonState() {
 }
 
 
+/* ---------------- CONVERT MONTH FORMAT ---------------- */
+// Helper function to convert month string to first day of month format
+// Handles formats like "2026-January" or "January 2026" -> "2026-01-01"
+function convertToFirstDayOfMonth(monthStr) {
+    if (!monthStr) return null;
+    
+    // If already in YYYY-MM-DD format, convert to first day
+    if (/^\d{4}-\d{2}-\d{2}$/.test(monthStr)) {
+        const parts = monthStr.split('-');
+        return `${parts[0]}-${parts[1]}-01`;
+    }
+    
+    // If in YYYY-MM format, add -01
+    if (/^\d{4}-\d{2}$/.test(monthStr)) {
+        return `${monthStr}-01`;
+    }
+    
+    // Try to parse as date and convert
+    try {
+        const date = new Date(monthStr);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        return `${year}-${month}-01`;
+    } catch (e) {
+        console.error("Could not parse month:", monthStr);
+        return null;
+    }
+}
+
+
 /* ---------------- SAVE BUDGET ---------------- */
 function setupBudgetSave() {
     const setBudgetBtn = document.getElementById("set_budget_btn");
@@ -224,7 +263,9 @@ function setupBudgetSave() {
         if (setBudgetBtn.disabled) return;
 
         const budgetAmount = document.getElementById("budget_amount").value;
-        const month = document.getElementById("month_select").value;
+        const monthSelect = document.getElementById("month_select");
+        
+        if (!monthSelect) return;
 
         if (!budgetAmount || budgetAmount <= 0) {
             alert("Add at least one category.");
@@ -232,25 +273,41 @@ function setupBudgetSave() {
         }
 
         const categories = collectCategoriesFromUI();
+        
+        if (categories.length === 0) {
+            alert("Add at least one category.");
+            return;
+        }
+
+        // Convert month to first day format (e.g., "2026-01-01")
+        const month = convertToFirstDayOfMonth(monthSelect.value);
+        
+        if (!month) {
+            alert("Invalid month format.");
+            return;
+        }
 
         try {
             const result = await BudgetAPI.saveBudget({
-                month,
+                month: month,
                 budgetTotal: budgetAmount,
-                categories
+                categories: categories
             });
 
             if (result && result.success) {
                 // Update last saved state
                 lastSavedState = {
-                    month: month,
+                    month: monthSelect.value, // Store original format
                     categories: categories.map(cat => ({ ...cat })) // Deep copy
                 };
 
                 updateSaveButtonState();
                 alert("Budget saved successfully!");
+                
+                // Reload to show updated spent amounts
+                await loadBudgetForMonth(monthSelect.value);
             } else {
-                alert("Failed to save budget.");
+                alert(result?.message || "Failed to save budget.");
             }
 
         } catch (err) {
@@ -262,26 +319,35 @@ function setupBudgetSave() {
 
 
 /* ---------------- LOAD BUDGET ---------------- */
-async function loadBudgetForMonth(month) {
+// UPDATED: Now handles the new schema response format
+async function loadBudgetForMonth(monthStr) {
     const categoriesContainer = document.getElementById("categories_container");
+    const budgetInput = document.getElementById("budget_amount");
+    
+    // Convert month to first day format for API call
+    const month = convertToFirstDayOfMonth(monthStr);
+    
+    if (!month) {
+        console.error("Invalid month format:", monthStr);
+        return;
+    }
     
     try {
         const data = await BudgetAPI.loadBudget(month);
         
         // Handle null or error response
-        if (!data) {
+        if (!data || !data.success) {
             console.log("No budget data found for", month);
             if (categoriesContainer) {
                 categoriesContainer.innerHTML = "";
             }
-            const budgetInput = document.getElementById("budget_amount");
             if (budgetInput) {
                 budgetInput.value = "";
             }
 
             // Reset last saved state
             lastSavedState = {
-                month: month,
+                month: monthStr,
                 categories: []
             };
             updateSaveButtonState();
@@ -293,31 +359,45 @@ async function loadBudgetForMonth(month) {
             categoriesContainer.innerHTML = "";
         }
         
-        const budgetInput = document.getElementById("budget_amount");
+        // Set total budget amount
         if (budgetInput) {
-            budgetInput.value = data.amount || "";
+            budgetInput.value = data.total_budget || "";
         }
 
         const loadedCategories = [];
 
+        // NEW SCHEMA: data structure is now:
+        // {
+        //   success: true,
+        //   total_budget: "243.00",
+        //   categories: [
+        //     { id: 1, name: "Shopping", allocated: "120.00", spent: "0.00" },
+        //     { id: 2, name: "Health", allocated: "123.00", spent: "0.00" }
+        //   ],
+        //   total_spent: "0.00"
+        // }
+
         // Check if categories exist and is an array
         if (data.categories && Array.isArray(data.categories) && categoriesContainer) {
             data.categories.forEach(cat => {
+                const allocated = parseFloat(cat.allocated) || 0;
+                const spent = parseFloat(cat.spent) || 0;
+                
                 categoriesContainer.appendChild(
-                    createCategoryElement(cat.name, cat.amount)
+                    createCategoryElement(cat.name, allocated, spent)
                 );
 
-                // Track loaded categories for state comparison
+                // Track loaded categories for state comparison (allocated amounts only)
                 loadedCategories.push({
                     name: cat.name,
-                    amount: cat.amount
+                    amount: allocated
                 });
             });
         }
 
         // Update last saved state
         lastSavedState = {
-            month: month,
+            month: monthStr,
             categories: loadedCategories
         };
 
@@ -330,14 +410,13 @@ async function loadBudgetForMonth(month) {
             categoriesContainer.innerHTML = "";
         }
 
-        const budgetInput = document.getElementById("budget_amount");
         if (budgetInput) {
             budgetInput.value = "";
         }
 
         // Reset last saved state
         lastSavedState = {
-            month: month,
+            month: monthStr,
             categories: []
         };
         updateSaveButtonState();
@@ -372,6 +451,30 @@ function updateBudgetedAmount(categoryName) {
 }
 
 
+/* --------------- POPULATE EXPENSE CATEGORY DROPDOWN ---------------- */
+// NEW: Populate the expense form category dropdown with current budget categories
+function populateExpenseCategoryDropdown() {
+    const categorySelect = document.getElementById("category");
+    if (!categorySelect) return;
+
+    // Get all current categories
+    const categories = [...document.querySelectorAll(".category_title")]
+        .map(el => el.textContent.trim())
+        .filter(name => name); // Remove empty strings
+
+    // Clear existing options
+    categorySelect.innerHTML = '<option value="">Select Category</option>';
+
+    // Add category options
+    categories.forEach(categoryName => {
+        const option = document.createElement("option");
+        option.value = categoryName;
+        option.textContent = categoryName;
+        categorySelect.appendChild(option);
+    });
+}
+
+
 /* --------------- ADD EXPENSES POPUP SETUP ---------------- */
 // This section entails the logic for the "Add Expenses" button and popup.
 function setupExpensesPopup() {
@@ -386,11 +489,14 @@ function setupExpensesPopup() {
 
     // Show popup
     addExpenseBtn.addEventListener("click", () => {
-        console.log("Opening expenses popup"); // Debug log
+        console.log("Opening expenses popup");
         expenseForm.classList.toggle("hidden");
         
+        // Populate category dropdown with current categories
+        populateExpenseCategoryDropdown();
+        
         // Update budgeted amount when popup opens
-        if (categorySelect && budgetedAmountInput) {
+        if (categorySelect && budgetedAmountInput && categorySelect.value) {
             updateBudgetedAmount(categorySelect.value);
         }
     });
@@ -412,11 +518,11 @@ function setupExpensesPopup() {
         });
     }
 
-    // Submit expense (placeholder logic)
+    // Submit expense (placeholder logic - will need expenses API)
     if (submitExpenseBtn) {
         submitExpenseBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            alert("Expense submission not yet implemented.");
+            alert("Expense submission not yet implemented. Need expenses_controller.php");
         });
     }
 }
@@ -438,7 +544,7 @@ function setupMonthSelector() {
 
 /* ---------------- INITIALIZATION ---------------- */
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log("Initializing homepage UI..."); // Debug log
+    console.log("Initializing homepage UI...");
     
     // Setup UI components
     setupNavbarDropdown();
