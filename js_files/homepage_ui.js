@@ -74,13 +74,16 @@ function setupCategoryPopup() {
 /* ---------------- CREATE CATEGORY ELEMENT ---------------- */
 // This section adds the Budget categories to the homepage dynamically
 // Simple display - only shows category name and allocated amount
-function createCategoryElement(name, allocated, spent = 0, currency = "€") {
+function createCategoryElement(name, allocated, spent = 0, categoryId = null, currency = "€") {
     const categoryDiv = document.createElement("div");
     categoryDiv.className = "category_added";
     
-    // Store spent amount as data attribute for potential use elsewhere
+    // Store data attributes for use elsewhere
     categoryDiv.dataset.spent = spent;
     categoryDiv.dataset.allocated = allocated;
+    if (categoryId) {
+        categoryDiv.dataset.categoryId = categoryId; // Store category ID from database
+    }
     
     categoryDiv.innerHTML = `
         <div class="category_title">${name}</div>
@@ -382,9 +385,10 @@ async function loadBudgetForMonth(monthStr) {
             data.categories.forEach(cat => {
                 const allocated = parseFloat(cat.allocated) || 0;
                 const spent = parseFloat(cat.spent) || 0;
+                const categoryId = cat.id; // Get category ID from backend
                 
                 categoriesContainer.appendChild(
-                    createCategoryElement(cat.name, allocated, spent)
+                    createCategoryElement(cat.name, allocated, spent, categoryId)
                 );
 
                 // Track loaded categories for state comparison (allocated amounts only)
@@ -403,6 +407,7 @@ async function loadBudgetForMonth(monthStr) {
 
         updateAllocatedTotal();
         updateSaveButtonState();
+        updateExpenditureCards(); // Update the overview cards
 
     } catch (err) {
         console.error("Error loading budget:", err);
@@ -475,6 +480,72 @@ function populateExpenseCategoryDropdown() {
 }
 
 
+/* --------------- UPDATE EXPENDITURE CARDS ---------------- */
+// Update the expenditure overview cards with spent amounts
+function updateExpenditureCards() {
+    const categories = document.querySelectorAll(".category_added");
+    
+    categories.forEach(cat => {
+        const categoryName = cat.querySelector(".category_title")?.textContent.trim();
+        const spent = parseFloat(cat.dataset.spent) || 0;
+        
+        if (!categoryName) return;
+        
+        // Find the overview card by matching the exp_name
+        const overviewCards = document.querySelectorAll(".each_exp_overview");
+        overviewCards.forEach(card => {
+            const cardName = card.querySelector(".exp_name")?.textContent.trim();
+            if (cardName === categoryName) {
+                const amountDisplay = card.querySelector(".expense-amount");
+                if (amountDisplay) {
+                    amountDisplay.textContent = `€${spent.toFixed(2)}`;
+                }
+            }
+        });
+    });
+}
+
+/* --------------- GET CATEGORY ID BY NAME ---------------- */
+// Helper to get category ID from the DOM based on category name
+function getCategoryIdByName(categoryName) {
+    const categories = document.querySelectorAll(".category_added");
+    
+    for (const cat of categories) {
+        const titleElement = cat.querySelector(".category_title");
+        if (titleElement && titleElement.textContent.trim() === categoryName) {
+            // Category ID is stored in the data from backend when loaded
+            return cat.dataset.categoryId ? parseInt(cat.dataset.categoryId) : null;
+        }
+    }
+    
+    return null;
+}
+
+/* --------------- UPDATE CATEGORY DISPLAY WITH SPENT AMOUNT ---------------- */
+// Update the spent amount display for a category on the main page
+function updateCategorySpentDisplay(categoryName, spentAmount) {
+    const categories = document.querySelectorAll(".category_added");
+    
+    for (const cat of categories) {
+        const titleElement = cat.querySelector(".category_title");
+        if (titleElement && titleElement.textContent.trim() === categoryName) {
+            // Update the data attribute
+            cat.dataset.spent = spentAmount;
+            
+            // You can add visual feedback here if needed
+            // For example, flash the category or update a progress bar
+            cat.style.transition = "background-color 0.3s";
+            const originalBg = cat.style.backgroundColor;
+            cat.style.backgroundColor = "#4CAF50";
+            setTimeout(() => {
+                cat.style.backgroundColor = originalBg;
+            }, 300);
+            
+            break;
+        }
+    }
+}
+
 /* --------------- ADD EXPENSES POPUP SETUP ---------------- */
 // This section entails the logic for the "Add Expenses" button and popup.
 function setupExpensesPopup() {
@@ -484,6 +555,8 @@ function setupExpensesPopup() {
     const submitExpenseBtn = document.getElementById("submitExpense");
     const categorySelect = document.getElementById("category");
     const budgetedAmountInput = document.getElementById("budgeted_amount");
+    const spentAmountInput = document.getElementById("spent_amount");
+    const totalSpentInput = document.getElementById("total_spent");
 
     if (!addExpenseBtn || !expenseForm) return;
 
@@ -495,9 +568,14 @@ function setupExpensesPopup() {
         // Populate category dropdown with current categories
         populateExpenseCategoryDropdown();
         
+        // Reset form
+        if (spentAmountInput) spentAmountInput.value = "";
+        if (totalSpentInput) totalSpentInput.value = "";
+        
         // Update budgeted amount when popup opens
         if (categorySelect && budgetedAmountInput && categorySelect.value) {
             updateBudgetedAmount(categorySelect.value);
+            updateTotalSpent(categorySelect.value);
         }
     });
 
@@ -507,23 +585,129 @@ function setupExpensesPopup() {
             e.preventDefault();
             if (confirm("Are you sure you want to quit?")) {
                 expenseForm.classList.add("hidden");
+                // Reset form
+                if (expenseForm.tagName === "FORM") {
+                    expenseForm.reset();
+                }
             }
         });
     }
 
-    // Update budgeted amount when category changes
+    // Update budgeted amount and total spent when category changes
     if (categorySelect && budgetedAmountInput) {
         categorySelect.addEventListener("change", (e) => {
             updateBudgetedAmount(e.target.value);
+            updateTotalSpent(e.target.value);
         });
     }
 
-    // Submit expense (placeholder logic - will need expenses API)
+    // Submit expense
     if (submitExpenseBtn) {
-        submitExpenseBtn.addEventListener("click", (e) => {
+        submitExpenseBtn.addEventListener("click", async (e) => {
             e.preventDefault();
-            alert("Expense submission not yet implemented. Need expenses_controller.php");
+            await submitExpense();
         });
+    }
+}
+
+/* --------------- UPDATE TOTAL SPENT ---------------- */
+// Get and display the current total spent for a category
+function updateTotalSpent(categoryName) {
+    const totalSpentInput = document.getElementById("total_spent");
+    if (!totalSpentInput) return;
+
+    const categories = document.querySelectorAll(".category_added");
+    
+    for (const cat of categories) {
+        const titleElement = cat.querySelector(".category_title");
+        if (titleElement && titleElement.textContent.trim() === categoryName) {
+            const spent = parseFloat(cat.dataset.spent) || 0;
+            totalSpentInput.value = spent.toFixed(2);
+            break;
+        }
+    }
+}
+
+/* --------------- SUBMIT EXPENSE ---------------- */
+// Handle expense submission - adds amount to total spent
+async function submitExpense() {
+    const categorySelect = document.getElementById("category");
+    const spentAmountInput = document.getElementById("spent_amount");
+    const monthSelect = document.getElementById("month_select");
+    const expenseForm = document.getElementById("addExpenseForm");
+
+    if (!categorySelect || !spentAmountInput || !monthSelect) {
+        alert("Form elements not found");
+        return;
+    }
+
+    const categoryName = categorySelect.value;
+    const spentAmount = parseFloat(spentAmountInput.value);
+    const currentMonth = monthSelect.value;
+
+    // Validate inputs
+    if (!categoryName) {
+        alert("Please select a category");
+        return;
+    }
+
+    if (!spentAmount || spentAmount <= 0) {
+        alert("Please enter a valid amount");
+        return;
+    }
+
+    // Get category ID
+    const categoryId = getCategoryIdByName(categoryName);
+    
+    if (!categoryId) {
+        alert("Could not find category ID. Please reload the page.");
+        return;
+    }
+
+    // Use current date for expense
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+
+    try {
+        // Add expense via API
+        const result = await ExpensesAPI.addExpense({
+            categoryId: categoryId,
+            amount: spentAmount,
+            expenseDate: today
+        });
+
+        if (result && result.success) {
+            alert(`Expense of €${spentAmount.toFixed(2)} added to ${categoryName}!`);
+            
+            // Update the category's spent data attribute
+            const categories = document.querySelectorAll(".category_added");
+            categories.forEach(cat => {
+                const titleElement = cat.querySelector(".category_title");
+                if (titleElement && titleElement.textContent.trim() === categoryName) {
+                    // Update with new total from backend
+                    cat.dataset.spent = result.new_total_spent;
+                }
+            });
+            
+            // Update expenditure overview cards
+            updateExpenditureCards();
+            
+            // Close the popup
+            if (expenseForm) {
+                expenseForm.classList.add("hidden");
+            }
+            
+            // Reset form
+            if (spentAmountInput) spentAmountInput.value = "";
+            const totalSpentInput = document.getElementById("total_spent");
+            if (totalSpentInput) totalSpentInput.value = "";
+            
+        } else {
+            alert(result?.message || "Failed to add expense");
+        }
+
+    } catch (err) {
+        console.error("Error submitting expense:", err);
+        alert("Error adding expense. Please try again.");
     }
 }
 
