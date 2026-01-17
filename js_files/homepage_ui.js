@@ -462,19 +462,21 @@ function populateExpenseCategoryDropdown() {
     const categorySelect = document.getElementById("category");
     if (!categorySelect) return;
 
-    // Get all current categories
-    const categories = [...document.querySelectorAll(".category_title")]
-        .map(el => el.textContent.trim())
-        .filter(name => name); // Remove empty strings
+    // Get all current categories from the budget section
+    const categories = [...document.querySelectorAll(".category_added")].map(cat => ({
+        name: cat.querySelector(".category_title")?.textContent.trim(),
+        id: cat.dataset.categoryId
+    })).filter(cat => cat.name && cat.id); // Only include if both name and ID exist
 
     // Clear existing options
     categorySelect.innerHTML = '<option value="">Select Category</option>';
 
-    // Add category options
-    categories.forEach(categoryName => {
+    // Add category options with data-id attribute
+    categories.forEach(category => {
         const option = document.createElement("option");
-        option.value = categoryName;
-        option.textContent = categoryName;
+        option.value = category.name;
+        option.dataset.categoryId = category.id; // Store category ID in option
+        option.textContent = category.name;
         categorySelect.appendChild(option);
     });
 }
@@ -506,6 +508,20 @@ function updateExpenditureCards() {
 }
 
 /* --------------- GET CATEGORY ID BY NAME ---------------- */
+// Helper to get category ID from the dropdown's selected option
+function getCategoryIdFromDropdown() {
+    const categorySelect = document.getElementById("category");
+    if (!categorySelect) return null;
+    
+    const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+    if (!selectedOption) return null;
+    
+    // Get category ID from the selected option's data attribute
+    const categoryId = selectedOption.dataset.categoryId;
+    return categoryId ? parseInt(categoryId) : null;
+}
+
+/* --------------- GET CATEGORY ID BY NAME (Legacy) ---------------- */
 // Helper to get category ID from the DOM based on category name
 function getCategoryIdByName(categoryName) {
     const categories = document.querySelectorAll(".category_added");
@@ -656,11 +672,11 @@ async function submitExpense() {
         return;
     }
 
-    // Get category ID
-    const categoryId = getCategoryIdByName(categoryName);
+    // Get category ID from the selected dropdown option
+    const categoryId = getCategoryIdFromDropdown();
     
     if (!categoryId) {
-        alert("Could not find category ID. Please reload the page.");
+        alert("Could not find category ID. Please select a category from the dropdown.");
         return;
     }
 

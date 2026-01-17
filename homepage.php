@@ -173,7 +173,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Shopping</div>
                                 <div class="exp_amount">
-                                    <span class="expense-amount">€0</span>
+                                    <span class="expense-amount">€0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -186,7 +186,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Health</div>
                                 <div class="exp_amount">
-                                    <span class="expense-amount">€0</span>
+                                    <span class="expense-amount">€0.00</span>
                                 </div>
                             </div>                      
                         </div>
@@ -199,7 +199,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Rent & Bills</div>
                                 <div class="exp_amount">
-                                    <span class="expense-amount">€0</span>
+                                    <span class="expense-amount">€0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -212,7 +212,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Insurance</div>
                                 <div class="exp_amount">
-                                    <span class="expense-amount">€0</span>
+                                    <span class="expense-amount">€0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -225,7 +225,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Groceries</div>
                                 <div class="exp_amount">
-                                    <span class="expense-amount">€0</span>
+                                    <span class="expense-amount">€0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -238,7 +238,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Restaurant</div>
                                 <div class="exp_amount">
-                                    <span class="expense-amount">€0</span>
+                                    <span class="expense-amount">€0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -250,7 +250,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Entertainment</div>
                                 <div class="exp_amount">
-                                    <span class="expense-amount">€0</span>
+                                    <span class="expense-amount">€0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -263,7 +263,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Transport</div>
                                 <div class="exp_amount">
-                                    <span class="expense-amount">€0</span>
+                                    <span class="expense-amount">€0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -276,7 +276,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Impromptu</div>
                                 <div class="exp_amount">
-                                    <span class="expense-amount">€0</span>
+                                    <span class="expense-amount">€0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -289,7 +289,7 @@ if (!isset($_SESSION['username'])) {
                             <div class="exp_values">
                                 <div class="exp_name">Others</div>
                                 <div class="exp_amount">
-                                    <span class="expense-amount">€0</span>
+                                    <span class="expense-amount">€0.00</span>
                                     <!-- <span id="currency_option">€</span>0 -->
                                 </div>
                             </div>
