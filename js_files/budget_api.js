@@ -18,18 +18,6 @@ const BudgetAPI = (() => {
             })
             .then(data => {
                 if (data.success) {
-                    // Expected structure from backend:
-                    // {
-                    //   success: true,
-                    //   monthly_budget_id: 1,
-                    //   month: "2026-01-01",
-                    //   total_budget: "243.00",
-                    //   categories: [
-                    //     { id: 1, name: "Shopping", allocated: "120.00", spent: "0.00" },
-                    //     { id: 2, name: "Health", allocated: "123.00", spent: "0.00" }
-                    //   ],
-                    //   total_spent: "0.00"
-                    // }
                     return data;
                 } else {
                     console.warn("Load budget returned unsuccessful:", data.message);
@@ -57,21 +45,19 @@ const BudgetAPI = (() => {
         formData.append("budgetTotal", budgetTotal);
         formData.append("categories", JSON.stringify(categories));
 
-        return fetch(BASE_URL, {
+        return fetch("/myapp/php/monthly_budget_controller.php", {
             method: "POST",
             body: formData
         })
         .then(res => {
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             return res.json();
         })
         .then(data => {
-            // Expected response:
-            // { success: true, monthly_budget_id: 1, message: "Budget saved successfully" }
-            // OR
-            // { success: false, message: "Error message" }
+            if (data.success && data.monthly_sums_id) {
+                // Set global currentMonthlySumsId so expenses know the active month
+                window.currentMonthlySumsId = data.monthly_sums_id;
+            }
             return data;
         })
         .catch(err => {

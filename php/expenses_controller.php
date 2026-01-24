@@ -1,6 +1,5 @@
 <?php
-// expenses_controller.php
-// Handles adding expenses to categories
+// expenses_controller.php — Add expenses tied to monthly_sums_id
 
 session_start();
 require_once 'database.php';
@@ -14,91 +13,78 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-$action = $_POST['action'] ?? '';
 
-if ($action === 'add_expense') {
-    addExpense($conn, $user_id);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Invalid action']);
+// Expect POST: monthly_sums_id, expense_category, expense_amount
+if (empty($_POST['monthly_sums_id']) || empty($_POST['expense_category']) || empty($_POST['expense_amount'])) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+    exit;
 }
 
-/**
- * Add a new expense (adds to total spent for a category)
- */
-function addExpense($conn, $user_id) {
-    try {
-        $category_id = $_POST['category_id'] ?? '';
-        $amount = $_POST['amount'] ?? 0;
-        $expense_date = $_POST['expense_date'] ?? '';
+$monthly_sums_id = (int)$_POST['monthly_sums_id'];
+$expense_category = trim($_POST['expense_category']);
+$expense_amount = (float)$_POST['expense_amount'];
 
-        // Validate inputs
-        if (empty($category_id) || empty($amount) || $amount <= 0 || empty($expense_date)) {
-            echo json_encode(['success' => false, 'message' => 'Missing required fields']);
-            return;
-        }
-
-        // Verify the category belongs to the user
-        $stmt = $conn->prepare(
-            "SELECT bc.id, bc.category_name
-            FROM budget_categories bc
-            INNER JOIN monthly_budgets mb ON bc.monthly_budget_id = mb.id
-            WHERE bc.id = ? AND mb.user_id = ?
-        ");
-        $stmt->bind_param("ii", $category_id, $user_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows === 0) {
-            echo json_encode(['success' => false, 'message' => 'Invalid category or access denied']);
-            return;
-        }
-
-        $category = $result->fetch_assoc();
-        $category_name = $category['category_name'];
-
-        // Insert expense into database
-        $stmt = $conn->prepare(
-            "INSERT INTO expenses (user_id, category_id, amount, description, expense_date)
-            VALUES (?, ?, ?, ?, ?)
-        ");
-        
-        $description = "Expense for {$category_name}";
-        $stmt->bind_param("iidss", $user_id, $category_id, $amount, $description, $expense_date);
-        
-        if (!$stmt->execute()) {
-            throw new Exception("Failed to insert expense: " . $stmt->error);
-        }
-
-        $expense_id = $conn->insert_id;
-
-        // Get the new total spent for this category in the current month
-        $stmt = $conn->prepare(
-            "SELECT COALESCE(SUM(e.amount), 0) as total_spent
-            FROM expenses e
-            WHERE e.user_id = ? 
-                AND e.category_id = ?
-                AND YEAR(e.expense_date) = YEAR(?)
-                AND MONTH(e.expense_date) = MONTH(?)
-        ");
-        $stmt->bind_param("iiss", $user_id, $category_id, $expense_date, $expense_date);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        $new_total_spent = $row['total_spent'];
-
-        echo json_encode([
-            'success' => true,
-            'expense_id' => $expense_id,
-            'category_name' => $category_name,
-            'new_total_spent' => number_format($new_total_spent, 2, '.', ''),
-            'message' => 'Expense added successfully'
-        ]);
-
-    } catch (Exception $e) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Error adding expense: ' . $e->getMessage()
-        ]);
-    }
+if ($expense_amount <= 0) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Expense amount must be positive']);
+    exit;
 }
+
+// ----------------------------------------------------------------------------
+// STEP 1: Verify monthly_sums_id belongs to user
+$stmtCheck = $conn->prepare("SELECT monthly_expense FROM monthly_sums WHERE monthly_sums_id = ? AND user_id = ?");
+$stmtCheck->bind_param("ii", $monthly_sums_id, $user_id);
+$stmtCheck->execute();
+$resultCheck = $stmtCheck->get_result();
+
+if ($resultCheck->num_rows !== 1) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Invalid monthly_sums reference']);
+    exit;
+}
+
+// ----------------------------------------------------------------------------
+// STEP 2: Insert expense
+$stmtInsert = $conn->prepare(
+    "INSERT INTO expenses_categories (monthly_sums_id, expense_category, expense_amount)
+    VALUES (?, ?, ?)
+");
+$stmtInsert->bind_param("isd", $monthly_sums_id, $expense_category, $expense_amount);
+
+if (!$stmtInsert->execute()) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Error inserting expense: ' . $conn->error]);
+    exit;
+}
+
+// ----------------------------------------------------------------------------
+// STEP 3: Update total monthly_expense
+$stmtUpdate = $conn->prepare(
+    "UPDATE monthly_sums
+    SET monthly_expense = monthly_expense + ?
+    WHERE monthly_sums_id = ?
+");
+$stmtUpdate->bind_param("di", $expense_amount, $monthly_sums_id);
+$stmtUpdate->execute();
+
+// ----------------------------------------------------------------------------
+// STEP 4: Return new total for this category in this month
+$stmtTotal = $conn->prepare(
+    "SELECT SUM(expense_amount) AS total_spent
+    FROM expenses_categories
+    WHERE monthly_sums_id = ? AND expense_category = ?
+");
+$stmtTotal->bind_param("is", $monthly_sums_id, $expense_category);
+$stmtTotal->execute();
+$totalResult = $stmtTotal->get_result();
+$totalRow = $totalResult->fetch_assoc();
+$new_total_spent = (float)$totalRow['total_spent'];
+
+echo json_encode([
+    'success' => true,
+    'message' => 'Expense added successfully',
+    'new_total_spent' => $new_total_spent
+]);
+exit;
 ?>

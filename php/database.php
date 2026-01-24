@@ -1,5 +1,6 @@
 <?php
 // database.php — Database connection and setup (No timestamps version)
+
 // MySQL connection parameters
 $host = '127.0.0.1:3307';
 $user = "root";
@@ -21,13 +22,12 @@ if (!$conn->select_db($database)) {
     }
     $conn->select_db($database);
 }
-
-// ============================================================================
+// ---------------------------------------------------------------------------
 // TABLE 1: USERS
-// ============================================================================
+// This table stores user credentials and security info
 $createUsersTable = 
 "CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -39,66 +39,61 @@ if ($conn->query($createUsersTable) !== TRUE) {
     die("Error creating users table: " . $conn->error);
 }
 
-// ============================================================================
-// TABLE 2: MONTHLY_BUDGETS (One row per user per month)
-// ============================================================================
+// ---------------------------------------------------------------------------
+// TABLE 2: MONTHLY_SUMS
+// This table manages total monthly budgets and expenses per user
 $createMonthlyBudgetsTable =  
-"CREATE TABLE IF NOT EXISTS monthly_budgets (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+"CREATE TABLE IF NOT EXISTS monthly_sums (
+    monthly_sums_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    budget_month DATE NOT NULL COMMENT 'First day of month: 2026-01-01',
-    total_budget DECIMAL(10, 2) NOT NULL,
-    UNIQUE KEY uniq_user_month (user_id, budget_month),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_user_month (user_id, budget_month)
+    month_value DATE NOT NULL,
+    monthly_budget DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    monthly_expense DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    UNIQUE KEY uniq_user_month (user_id, month_value),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
 if ($conn->query($createMonthlyBudgetsTable) !== TRUE) {
-    die("Error creating monthly_budgets table: " . $conn->error);
+    die("Error creating monthly_sums table: " . $conn->error);
 }
 
-// ============================================================================
-// TABLE 3: BUDGET_CATEGORIES (Multiple categories per monthly budget)
-// ============================================================================
-$createCategoriesTable =
-"CREATE TABLE IF NOT EXISTS budget_categories (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    monthly_budget_id INT NOT NULL,
-    category_name VARCHAR(100) NOT NULL,
-    allocated_amount DECIMAL(10, 2) NOT NULL,
-    UNIQUE KEY uniq_budget_category (monthly_budget_id, category_name),
-    FOREIGN KEY (monthly_budget_id) REFERENCES monthly_budgets(id) ON DELETE CASCADE,
-    INDEX idx_monthly_budget (monthly_budget_id)
+
+// ----------------------------------------------------------------------------
+// TABLE 3: BUDGET_CATEGORIES (Multiple categories)
+// This table stores individual categories for each month
+$createBudgetCategoriesTable =
+"CREATE TABLE IF NOT EXISTS budgets_categories (
+    budgets_categories_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    monthly_sums_id INT NOT NULL,
+    budget_category VARCHAR(100) NOT NULL,
+    budget_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    UNIQUE KEY uniq_month_category (monthly_sums_id, budget_category),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (monthly_sums_id) REFERENCES monthly_sums(monthly_sums_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
-if ($conn->query($createCategoriesTable) !== TRUE) {
-    die("Error creating budget_categories table: " . $conn->error);
+if ($conn->query($createBudgetCategoriesTable) !== TRUE) {
+    die("Error creating budgets_categories table: " . $conn->error);
 }
 
-// ============================================================================
-// TABLE 4: EXPENSES (Tracks actual spending)
-// ============================================================================
+// ---------------------------------------------------------------------------
+// TABLE 4: EXPENSES_CATEGORIES
+// This table records category expenses for each month
 $createExpensesTable =
-"CREATE TABLE IF NOT EXISTS expenses (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    category_id INT NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
-    description VARCHAR(255),
-    expense_date DATE NOT NULL COMMENT 'Date when expense occurred',
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES budget_categories(id) ON DELETE CASCADE,
-    INDEX idx_user_date (user_id, expense_date),
-    INDEX idx_category_date (category_id, expense_date)
+"CREATE TABLE IF NOT EXISTS expenses_categories (
+    expenses_categories_id INT AUTO_INCREMENT PRIMARY KEY,
+    monthly_sums_id INT NOT NULL,
+    expense_category VARCHAR(100) NOT NULL,
+    expense_amount DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (monthly_sums_id) REFERENCES monthly_sums(monthly_sums_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
 if ($conn->query($createExpensesTable) !== TRUE) {
-    die("Error creating expenses table: " . $conn->error);
+    die("Error creating expenses_categories table: " . $conn->error);
 }
 
-// ============================================================================
 // RESET AUTO_INCREMENT FOR USERS TABLE IF EMPTY
-// ============================================================================
 $result = $conn->query("SELECT COUNT(*) AS count FROM users");
 if ($result && $row = $result->fetch_assoc()) {
     if ((int)$row['count'] === 0) {

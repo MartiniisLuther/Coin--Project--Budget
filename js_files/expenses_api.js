@@ -1,42 +1,42 @@
-// expenses_api.js
-// Handles expense-related backend communication
+// expenses_api.js — Handles expense-related backend communication
 const ExpensesAPI = (() => {
     const BASE_URL = "/myapp/php/expenses_controller.php";
 
     /**
-     * Add a new expense (adds to total spent for category)
+     * Add a new expense for a category
      * @param {Object} expenseData
-     * @param {number} expenseData.categoryId - Budget category ID
-     * @param {number} expenseData.amount - Expense amount to add
-     * @param {string} expenseData.expenseDate - Date in YYYY-MM-DD format
-     * @returns {Promise<Object>} Response with success status and updated totals
+     * @param {number} expenseData.monthlySumsId - The active monthly_sums_id
+     * @param {string} expenseData.categoryName - Category name e.g. "Shopping"
+     * @param {number} expenseData.amount - Expense amount
+     * @returns {Promise<Object>} Backend response
      */
-    function addExpense({ categoryId, amount, expenseDate }) {
+    function addExpense({ monthlySumsId, categoryName, amount }) {
+        console.log("ExpensesAPI.addExpense called with:", { monthlySumsId, categoryName, amount });
+        
         const formData = new FormData();
-        formData.append("action", "add_expense");
-        formData.append("category_id", categoryId);
-        formData.append("amount", amount);
-        formData.append("expense_date", expenseDate);
+        formData.append("monthly_sums_id", monthlySumsId);
+        formData.append("expense_category", categoryName);
+        formData.append("expense_amount", amount);
+
+        // Debug: Log FormData contents
+        console.log("FormData contents:");
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
 
         return fetch(BASE_URL, {
             method: "POST",
             body: formData
-        })
+        }) 
         .then(res => {
+            console.log("Response status:", res.status);
             if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
+                throw new Error(`HTTP ${res.status}`);
             }
             return res.json();
         })
         .then(data => {
-            // Expected response:
-            // {
-            //   success: true,
-            //   expense_id: 1,
-            //   category_name: "Shopping",
-            //   new_total_spent: "145.50",
-            //   message: "Expense added successfully"
-            // }
+            console.log("Response data:", data);
             return data;
         })
         .catch(err => {
@@ -45,7 +45,5 @@ const ExpensesAPI = (() => {
         });
     }
 
-    return {
-        addExpense
-    };
+    return { addExpense };
 })();
