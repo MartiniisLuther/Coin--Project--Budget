@@ -47,10 +47,10 @@ if ($resultCheck->num_rows !== 1) {
 // ----------------------------------------------------------------------------
 // STEP 2: Insert expense
 $stmtInsert = $conn->prepare(
-    "INSERT INTO expenses_categories (monthly_sums_id, expense_category, expense_amount)
-    VALUES (?, ?, ?)
+    "INSERT INTO expenses_categories (user_id, monthly_sums_id, expense_category, expense_amount)
+    VALUES (?, ?, ?, ?)
 ");
-$stmtInsert->bind_param("isd", $monthly_sums_id, $expense_category, $expense_amount);
+$stmtInsert->bind_param("iisd", $user_id, $monthly_sums_id, $expense_category, $expense_amount);
 
 if (!$stmtInsert->execute()) {
     http_response_code(500);
@@ -63,9 +63,9 @@ if (!$stmtInsert->execute()) {
 $stmtUpdate = $conn->prepare(
     "UPDATE monthly_sums
     SET monthly_expense = monthly_expense + ?
-    WHERE monthly_sums_id = ?
+    WHERE monthly_sums_id = ? AND user_id = ?
 ");
-$stmtUpdate->bind_param("di", $expense_amount, $monthly_sums_id);
+$stmtUpdate->bind_param("dii", $expense_amount, $monthly_sums_id);
 $stmtUpdate->execute();
 
 // ----------------------------------------------------------------------------

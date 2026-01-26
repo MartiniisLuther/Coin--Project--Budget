@@ -24,6 +24,7 @@ if (!isset($_SESSION['username'])) {
     <script src="/myapp/js_files/expenses_api.js"></script>
     <script src="/myapp/js_files/homepage_ui.js"></script>
     <script src="/myapp/js_files/accountpage.js"></script>
+    <script src="/myapp/js_files/charts_controller.js"></script>
 
     <!--links to various icons, from flaticon & fontawesome-->
     <script src="https://kit.fontawesome.com/8d07e5d887.js" crossorigin="anonymous"></script>
@@ -120,7 +121,7 @@ if (!isset($_SESSION['username'])) {
                                         <!-- important to keep the names as they appear -->
                                         <option value="Shopping">Shopping</option>
                                         <option value="Health">Health</option>
-                                        <option value="Rent & Bills">Rent & Bills</option>
+                                        <option value="Rent">Rent</option>
                                         <option value="Insurance">Insurance</option>
                                         <option value="Groceries">Groceries</option>
                                         <option value="Restaurant">Restaurant</option>
@@ -197,7 +198,7 @@ if (!isset($_SESSION['username'])) {
                                 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAC80lEQVR4nO3XS28SUQAF4GsEChQp70dbjT+gG2NcNl25gAYsNE105a4u1LrTv2LTRF27l2dLaYGWUiotj0jj2r2C3fXeY+4MFlFqhzozTA0nOQkZYPKdGTIJhIwyyiiyBXX/LdT9z9HwJVD3NlH3fUfNw9tE1ZtA1f0MtcmbRGvB8fQUGv5V1P2nqPsgtMbrBape4Mgj9tADVNwUFfd7VLy3iRaChn8BDX/7Qvihm+OBjy6xB64WDpzhYeNfoOajA8KBAydQdgIlB0XZsTIs/IKAvwx83yG25AD27BS7NnXvBI6mplH1tc/g1UvAS3aOByvaQIsTLeSdk+oNqHnenAuv9IGX/4T/xLNd3gnQgnVNvUdl1XMqDe68EM52xNKC9RRFx7TyAw5dK71w9z/BWcEKlue9AeTGnyo/oOKKyw1nObF02/JBjQGf5YazbQvYlgU0a24qP6DsbMsNZ1vjYNlxPqCtwgBHS2444900g2ZM35QfsG9vivjf4MU+8MJ5cEsPnGXE0nXTJ+UHlGxJaXBrL3y7D3yzg98wCaVpY1L5AXv2V124TRY4WzcKxbrxpfIDSvYZueEsbQRLjQFJ/QxRI7QwUZQTzlJjoAnDPlErKFgfyQVnSYNQxPQP1RuwSXQ0ZzmWA84SBtC47pifU7UBwogty2LPs/xXeOZv8A4+YQCL64UiboiqihcGgFyjWXO+P9zUhaf7wBMinMX1oHF9np9L9QHCiKz5Ds2Y6WXgHTxFTHePDDN0w/RuUPjZgJjuLRl2kDJN0rTxZBB45+qf8O8SLYSmDKtS4d2rr39NtBLEdbNS4d0nj26WaCWIEatU+NmAGLESLWXQAURrYVd9QDAcxSAlWktwNGDIufJ3IBCKtiQPCEW+Eq0lEIoUBrgDOaK1BB9EnkgdMB+KLhOt5e7ysj4QihQlDNidm5tT99+X1NyPRDyBcHTnPDz/mfHPEC1naWnp+nxo8XEwHE0FQtEvvPw1P8bfG7ZvlFH+t/wAbO4Rr+e4FiQAAAAASUVORK5CYII=" alt="light--v1">                            
                             </div>
                             <div class="exp_values">
-                                <div class="exp_name">Rent & Bills</div>
+                                <div class="exp_name">Rent</div>
                                 <div class="exp_amount">
                                     <span class="expense-amount">€0.00</span>
                                 </div>
@@ -317,7 +318,7 @@ if (!isset($_SESSION['username'])) {
                             <!-- important to keep the names as they appear -->
                             <option value="Shopping">Shopping</option>
                             <option value="Health">Health</option>
-                            <option value="Rent & Bills">Rent & Bills</option>
+                            <option value="Rent">Rent</option>
                             <option value="Insurance">Insurance</option>
                             <option value="Groceries">Groceries</option>
                             <option value="Restaurant">Restaurant</option>

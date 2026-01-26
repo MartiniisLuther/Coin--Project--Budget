@@ -68,9 +68,12 @@ $createBudgetCategoriesTable =
     monthly_sums_id INT NOT NULL,
     budget_category VARCHAR(100) NOT NULL,
     budget_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+
     UNIQUE KEY uniq_month_category (monthly_sums_id, budget_category),
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (monthly_sums_id) REFERENCES monthly_sums(monthly_sums_id) ON DELETE CASCADE
+
+    FOREIGN KEY (monthly_sums_id)
+    REFERENCES monthly_sums(monthly_sums_id)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
 if ($conn->query($createBudgetCategoriesTable) !== TRUE) {
@@ -83,10 +86,14 @@ if ($conn->query($createBudgetCategoriesTable) !== TRUE) {
 $createExpensesTable =
 "CREATE TABLE IF NOT EXISTS expenses_categories (
     expenses_categories_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
     monthly_sums_id INT NOT NULL,
     expense_category VARCHAR(100) NOT NULL,
     expense_amount DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (monthly_sums_id) REFERENCES monthly_sums(monthly_sums_id) ON DELETE CASCADE
+
+    FOREIGN KEY (monthly_sums_id)
+    REFERENCES monthly_sums(monthly_sums_id)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
 if ($conn->query($createExpensesTable) !== TRUE) {
