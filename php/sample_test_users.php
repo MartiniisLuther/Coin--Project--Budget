@@ -171,26 +171,30 @@ $conn->begin_transaction();
 try {
 
     // PREPARED STATEMENTS (ONCE)
+    // Table 1: users
     $userStmt = $conn->prepare(
         "INSERT INTO users (name, username, password, security_question, security_answer)
          VALUES (?, ?, ?, ?, ?)"
     );
 
+    // Table 2: monthly_sums
     $monthStmt = $conn->prepare(
         "INSERT INTO monthly_sums (user_id, month_value, monthly_budget, monthly_expense)
          VALUES (?, ?, ?, 0)"
     );
 
+    // Table 3: budgets_categories
     $budgetStmt = $conn->prepare(
         "INSERT INTO budgets_categories
          (user_id, monthly_sums_id, budget_category, budget_amount)
          VALUES (?, ?, ?, ?)"
     );
 
+    // Table 4: expenses_categories
     $expenseStmt = $conn->prepare(
         "INSERT INTO expenses_categories
-         (monthly_sums_id, expense_category, expense_amount)
-         VALUES (?, ?, ?)"
+         (user_id, monthly_sums_id, expense_category, expense_amount)
+         VALUES (?, ?, ?, ?)"
     );
 
     $updateMonthStmt = $conn->prepare(
@@ -238,7 +242,7 @@ try {
             // INSERT EXPENSES
             $totalSpent = 0;
             foreach ($data['expenses'] as [$cat, $amount]) {
-                $expenseStmt->bind_param("isd", $monthlySumsId, $cat, $amount);
+                $expenseStmt->bind_param("iisd", $userId, $monthlySumsId, $cat, $amount);
                 $expenseStmt->execute();
                 $totalSpent += $amount;
             }
