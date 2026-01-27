@@ -183,7 +183,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    width: 30%;
+    width: 40%;
     /* border: 1px solid green; */
     border-radius: 1rem;
     padding: 1rem;
@@ -218,14 +218,144 @@ body {
     color: #1a1a1a;
 }
 
-/* styles the div with pie chart */
+/* Summary Card adjustments */
+.summary_card {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Styles the div with pie chart */
 .summary_pie {
-    /* border: gold 1px solid; */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 1rem;
     border: rgba(128, 128, 128, 0.3) 1px solid;
     border-radius: 1rem;
-    padding: 5px;
-    margin-bottom: 1rem;
+    padding: 1rem;
+    width: 100%;
 }
+
+/* Styles the donut div */
+.summary_donut {
+    display: flex;
+    position: relative;
+    padding-bottom: 10px;
+    justify-content: center;
+    align-items: center;
+    align-self: flex-end;
+    flex: 1;
+    min-width: 200px;
+}
+
+.donut_baseline {
+    width: 70%;
+    height: 4px;
+    background: #421414;
+    border-radius: 2px;
+    margin: 0 auto;
+}
+
+#summaryDonut {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Legend styles */
+.chart_Legend {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px;
+    border-radius: 1rem;
+    border: rgba(128, 128, 128, 0.3) 1px solid;
+    flex: 1;
+    min-width: 180px;
+}
+
+.legend_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.legend_color {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.legend_label {
+    color: #666;
+    flex: 1;
+}
+
+.legend_value {
+    color: #333;
+    font-weight: 600;
+}
+
+.legend_total {
+    border-top: 2px solid #ddd;
+    padding-top: 12px;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+.legend_total .legend_label {
+    color: #333;
+}
+
+/* styles the days left div */
+.summary_card .days_left {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.5rem;
+    width: 100%;
+    margin-bottom: 1rem;
+    border: rgba(128, 128, 128, 0.3) 1px solid;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); */
+    border-radius: 1rem;
+    padding: 5px;
+    text-align: center;
+}
+
+/* styles the days left bar */
+#daysProgress {
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #d4ab37; 
+}
+
+/* Firefox */
+#daysProgress::-moz-progress-bar {
+  background-color: teal;
+  border-radius: 8px;
+}
+/* Chrome/Safari */
+#daysProgress::-webkit-progress-bar {
+  background-color: #d4ab37;
+  border-radius: 8px;
+}
+#daysProgress::-webkit-progress-value {
+  background-color: teal;
+  border-radius: 8px;
+}
+/* slow edge (old) */
+#daysProgress::-ms-fill {
+  background-color: teal;
+  border-radius: 8px;
+}
+
 
 
 /* styles the card titles */
@@ -355,51 +485,6 @@ h2 {
     color: darkred;
 }
 
-/* styles the days left div */
-.summary_card .days_left {
-    display: flex;
-    flex-direction: column;
-    font-size: 1.5rem;
-    width: 210px;
-    margin-bottom: 1rem;
-    border: rgba(128, 128, 128, 0.3) 1px solid;
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); */
-    border-radius: 1rem;
-    padding: 5px;
-    text-align: center;
-}
-
-/* styles the days left bar */
-#daysProgress {
-  width: 100%;
-  height: 16px; /* or use var(--progress-bar-height) if defined */
-  border-radius: 8px;
-  border: none;
-  appearance: none;
-  -webkit-appearance: none;
-  background-color: #d4ab37; /* fallback for non-pseudo */
-}
-
-/* Firefox */
-#daysProgress::-moz-progress-bar {
-  background-color: teal;
-  border-radius: 8px;
-}
-/* Chrome/Safari */
-#daysProgress::-webkit-progress-bar {
-  background-color: #d4ab37;
-  border-radius: 8px;
-}
-#daysProgress::-webkit-progress-value {
-  background-color: teal;
-  border-radius: 8px;
-}
-/* slow edge (old) */
-#daysProgress::-ms-fill {
-  background-color: teal;
-  border-radius: 8px;
-}
-
 /* styles the right container with categories */
 
 /* styles the title expenditure card */
@@ -488,7 +573,6 @@ h2 {
     /* prevent shrinking */
 }
 
-/* KI generiete */
 /* Icon styling */
 .exp_icon {
     margin-right: 1rem;   
@@ -538,13 +622,6 @@ h2 {
     border-radius: 5px;
     /* text-shadow: 0 0 5px #d4af37; */
 }
-
-/* styles the currency under the expenses */
-/* font-weight: 300; */
-/*
-.exp_amount #currency_option {
-}
-*/
 
 /* h3 */
 .months-overview h3 {
@@ -672,26 +749,27 @@ h2 {
     background: #c9a74c;
 }
 
-/* media queries - up to 1300px*/
+
+/* -------------------------------- MEDIA QUERIES ---------------------------------------- */
+/* Media queries - up to 1300px */
 @media screen and (max-width: 1300px) {
-    /* resize the main container */
+    /* Resize the main container */
     .content_container {
         flex-direction: column;
         padding: 2rem;
         align-items: center;
     }
 
-    /* resize the left side container */
+    /* Resize the left side container */
     .left_container {
         flex-direction: row;
         width: 100%;
         margin-bottom: 2rem;
         align-items: center;
         justify-content: center;
-        /* border: 1px solid rgba(128, 128, 128, 0.5); */
     }
 
-    /* styles the budget card */
+    /* Styles the budget card */
     .budget_card { 
         width: 50%;
         margin-bottom: 2rem;
@@ -702,86 +780,109 @@ h2 {
         margin-bottom: 2rem;
     }
 
-    /* redesign the right side container */
+    /* Redesign the right side container */
     .right_container {
         width: 100%;
     }
 }
 
-/* up to 990px */
+/* Up to 990px */
 @media screen and (max-width: 990px) {
-    /* resize the welcome card */
+    /* Resize the welcome card */
     .welcome-card .p1 {
         font-size: 2rem;
         padding: 1.5rem;
     }
 
-    /* styles the left_container */
+    /* Styles the left_container */
     .left_container {
         flex-direction: row;
         width: 100%;
         align-items: center;
     }
 
-    /* styles the right_container */
+    /* Styles the right_container */
     .right_container {
         width: 100%;
     }
 
-    /* styles the budget card */
+    /* Styles the budget card */
     .budget_card, .summary_card {
         width: 100%;
     }
 }
 
-/* up to 850 px */
+/* Up to 850px */
 @media screen and (max-width: 850px) {
-    /* resize the welcome card */
+    /* Resize the welcome card */
     .welcome-card .p1 {
         font-size: 2rem;
         padding: 1.5rem;
     }
 
-    /* styles the left_container */
+    /* Styles the left_container */
     .left_container {
         flex-direction: column;
         width: 100%;
         align-items: center;
     }
 
-    /* styles the each category cards */
+    /* Stack chart and legend vertically on smaller screens */
+    .summary_pie {
+        flex-direction: column;
+    }
+
+    .summary_donut {
+        width: 100%;
+    }
+
+    .chart_Legend {
+        width: 100%;
+    }
+
+    /* Styles the each category cards */
     .each_exp_overview {
         flex-direction: column;
-        min-width: 110px; /* this is needed */
+        min-width: 110px;
         border-radius: 1.5rem;
         padding: 1rem;
     }
 
     .exp_categories_group {
-        justify-content: center; /* aligns items left */
+        justify-content: center;
     }
 }
 
-/* up to 500px */
+/* Up to 500px */
 @media screen and (max-width: 550px) {
     .welcome-card .p1 {
-        font-size: 1.5rem;;
+        font-size: 1.5rem;
     }
 
-    /* styles the each category cards */
+    /* Smaller legend font on mobile */
+    .legend_item {
+        font-size: 12px;
+    }
+
+    .legend_color {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* Styles the each category cards */
     .each_exp_overview {
         display: flex;
         flex-direction: column;
-        min-width: 130px; /* this is needed */
+        min-width: 130px;
         border-radius: 1.5rem;
         padding: 1rem;
     }
 
     .exp_categories_group {
-        justify-content: center; /* aligns items left */
+        justify-content: center;
     }
 
-    /* div for the two pop up menu*/
+    /* Div for the two pop up menu */
     .add_category_div, 
     .add_expense_div {
         width: 80%;

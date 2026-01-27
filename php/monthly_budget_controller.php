@@ -32,8 +32,8 @@ switch ($action) {
     case 'save_budget':
         saveBudget($conn, $user_id);
         break;
-    case 'get_budget_months':
-        getMonthlyBudget($conn, $user_id);
+    case 'fetch_month_summary':
+        fetchMonthSummary($conn, $user_id);
         break;
     default:
         send_json(['success' => false, 'message' => 'Invalid action']);
@@ -271,19 +271,57 @@ function loadBudget($conn, $user_id) {
     }
 }
     
-// -------------------------- GET MONTHLY BUDGETS --------------------------
-function getMonthlyBudget($conn, $user_id) {
-    $res = $conn->query(
-        "SELECT month_value 
-        FROM monthly_sums 
-        WHERE user_id=$user_id 
-        ORDER BY month_value ASC
-    ");
-    $months = [];
-    while ($row = $res->fetch_assoc()) {
-        $months[] = $row['month_value'];
+// -------------------------- FETCH MONTH SUMMARY - TOTAL BUDGET & TOTAL EXPENSES --------------------------
+function fetchMonthSummary($conn, $user_id) {
+    try {
+        $monthly_sums_id = $_GET['monthly_sums_id'] ?? null;
+
+        if (!$monthly_sums_id) {
+            send_json(['success' => false, 'message' => 'monthly_sums_id required']);
+        }
+
+        // Verify ownership and get summary data
+        $stmt = $conn->prepare(
+            "SELECT monthly_budget, monthly_expense
+            FROM monthly_sums
+            WHERE monthly_sums_id = ? AND user_id = ?"
+        );
+
+        // Error log
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+
+        $stmt->bind_param("ii", $monthly_sums_id, $user_id);
+
+        // Error failed to execute statement
+        if (!$stmt->execute()) {
+            throw new Exception("Execute failed: " . $stmt->error);
+        }
+
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 0) {
+            send_json([
+                'success' => false,
+                'message' => 'No data found for this month'
+            ]);
+        }
+
+        $row = $result->fetch_assoc();
+
+        send_json([
+            'success' => true,
+            'monthly_budget' => (float)$row['monthly_budget'],
+            'monthly_expense' => (float)$row['monthly_expense']
+        ]);
+
+    } catch (Exception $error) {
+        send_json([
+            'success' => false,
+            'message' => 'Error fetching summary: ' .$error->getMessage()
+        ]);
     }
-    send_json(['success' => true, 'months' => $months]);
 }
 
 ?>

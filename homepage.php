@@ -19,7 +19,6 @@ if (!isset($_SESSION['username'])) {
     <link rel="stylesheet" href="css_files/accountpage.css">
 
     <!-- Link to JavaScript files -->
-    <!-- <script src="js_files/homepage.js" defer></script> -->
     <script src="/myapp/js_files/budget_api.js"></script>
     <script src="/myapp/js_files/expenses_api.js"></script>
     <script src="/myapp/js_files/homepage_ui.js"></script>
@@ -77,7 +76,7 @@ if (!isset($_SESSION['username'])) {
                         <!-- <div class="exp_amount"> -->
                             <span id="currency_option">€</span>
                         <!-- </div> -->
-                        <input type="number" id="budget_amount" placeholder="Budget amount" disabled style="cursor: not-allowed;"/>
+                        <input type="number" id="budget_amount" placeholder="0.00" disabled style="cursor: not-allowed;"/>
                         <!-- save budget button -->
                         <button type="submit" id="set_budget_btn">save</button>
                     </div>
@@ -143,10 +142,31 @@ if (!isset($_SESSION['username'])) {
 
                 <!-- spent so far in the current month-->
                 <div class="summary_card">
-                    <h2>Summary in <span id="current_month">month</span></h2>
+                    <h2>Overview</span></h2>
                     <div class="summary_pie">
-                        <canvas id="summaryDoughnut" width="200" height="170"></canvas>
-                        <div class="summary_text" id="summaryText">0% of €<span id="budget_amount"></span> spent.</div>
+                        <!-- <div class="summary_text" id="summaryText"><span id="budget_amount"></span></div> -->
+                        <!-- overview chart -->
+                        <div class="summary_donut">
+                            <canvas id="summaryDonut" width="400" height="300"></canvas>
+                            <!-- <div class="donut_baseline"></div> -->
+                        </div>
+                        <!-- legend -->
+                        <div class="chart_Legend" id="chartLegend">
+                            <div class="legend_item">
+                                <span class="legend_color" style="background-color: #008080;"></span>
+                                <span class="legend_label">Spent:</span>
+                                <span class="legend_value"></span>
+                            </div>
+                            <div class="legend_item">
+                                <span class="legend_color" style="background-color: #d4af37;"></span>
+                                <span class="legend_label">Remaining:</span>
+                                <span class="legend_value"></span>
+                            </div>
+                            <div class="legend_item legend_total">
+                                <span class="legend_label">Total Budget:</span>
+                                <span class="legend_value"></span>
+                            </div>  
+                        </div>
                     </div>
                     <!-- days left in month -->
                     <div class="days_left">

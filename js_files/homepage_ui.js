@@ -310,9 +310,20 @@ function setupBudgetSave() {
 
                 updateSaveButtonState();
                 alert("Budget saved successfully!");
-                
+
                 // Reload to show updated spent amounts
                 await loadBudgetForMonth(monthSelect.value);
+
+                // Dispatch event to update charts instantly
+                const budgetSavedEvent = new CustomEvent('budgetSaved', {
+                    detail: {
+                        monthlySumsId: result.monthly_sums_id,
+                        budgetTotal: budgetAmount,
+                        month: month
+                    }
+                });
+                window.dispatchEvent(budgetSavedEvent);
+
             } else {
                 alert(result?.message || "Failed to save budget.");
             }
@@ -331,6 +342,7 @@ async function loadBudgetForMonth(monthStr) {
     const categoriesContainer = document.getElementById("categories_container");
     const budgetInput = document.getElementById("budget_amount");
 
+    // Debug
     console.log("Loading budget for month:", monthStr);
 
     // Convert month to month year format for API call
@@ -370,7 +382,7 @@ async function loadBudgetForMonth(monthStr) {
             return;
         }
 
-        // Clear existing categories 
+        // Clear existing categories completely
         if (categoriesContainer) {
             categoriesContainer.innerHTML = "";
         }
@@ -411,6 +423,15 @@ async function loadBudgetForMonth(monthStr) {
         updateAllocatedTotal();
         updateSaveButtonState();
         updateExpenditureCards(); // Update the overview cards with fresh data
+
+        // Dispatch custom event to notify other components that month data has loaded
+        const monthLoadedEvent = new CustomEvent('monthDataLoaded', {
+            detail: {
+                monthlySumsId: window.currentMonthlySumsId,
+                month: monthStr
+            }
+        });
+        window.dispatchEvent(monthLoadedEvent);
 
     } catch (err) {
         console.error("Error loading budget:", err);
@@ -696,6 +717,7 @@ async function submitExpense() {
             amount: spentAmount
         });
 
+        // Debug log
         console.log("ExpensesAPI.addExpense result:", result);
 
         if (!result?.success) {
@@ -720,6 +742,17 @@ async function submitExpense() {
         if (budgetedAmountInput) budgetedAmountInput.value = "";
 
         alert(`€${spentAmount.toFixed(2)} added to ${categoryName}`);
+
+        // Dispatch event to update charts instantly
+        const expenseAddedEvent = new CustomEvent('expenseAdded', {
+            detail: {
+                monthlySumsId: window.currentMonthlySumsId,
+                categoryName: categoryName,
+                amount: spentAmount,
+                newTotalSpent: result.new_total_spent
+            }
+        });
+        window.dispatchEvent(expenseAddedEvent);
 
     } catch (err) {
         console.error("Error submitting expense:", err);
