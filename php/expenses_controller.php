@@ -65,7 +65,7 @@ $stmtUpdate = $conn->prepare(
     SET monthly_expense = monthly_expense + ?
     WHERE monthly_sums_id = ? AND user_id = ?
 ");
-$stmtUpdate->bind_param("dii", $expense_amount, $monthly_sums_id);
+$stmtUpdate->bind_param("dii", $expense_amount, $monthly_sums_id, $user_id);
 $stmtUpdate->execute();
 
 // ----------------------------------------------------------------------------

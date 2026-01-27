@@ -11,10 +11,9 @@ const ExpensesAPI = (() => {
      * @returns {Promise<Object>} Backend response
      */
     function addExpense({ monthlySumsId, categoryName, amount }) {
-        console.log("ExpensesAPI.addExpense called with:", {userID, monthlySumsId, categoryName, amount });
+        console.log("ExpensesAPI.addExpense called with:", { monthlySumsId, categoryName, amount });
         
         const formData = new FormData();
-        formData.append("user_id", userID)
         formData.append("monthly_sums_id", monthlySumsId);
         formData.append("expense_category", categoryName);
         formData.append("expense_amount", amount);
