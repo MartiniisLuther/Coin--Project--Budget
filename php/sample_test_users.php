@@ -126,40 +126,140 @@ $users = [
         'security_question' => 'mother_maiden',
         'security_answer' => 'hoffmann',
         'months' => [
+
+            // PAST MONTHS (last 6 months)
+            '2025-07-01' => [
+                'categories' => [
+                    'Rent' => 600,
+                    'Groceries' => 190,
+                    'Transport' => 55,
+                    'Entertainment' => 80
+                ],
+                'expenses' => [
+                    ['Rent', 600],
+                    ['Groceries', 175],
+                    ['Transport', 50],
+                    ['Entertainment', 60]
+                ]
+            ],
+
+            '2025-08-01' => [
+                'categories' => [
+                    'Rent' => 610,
+                    'Groceries' => 195,
+                    'Transport' => 60,
+                    'Entertainment' => 85
+                ],
+                'expenses' => [
+                    ['Rent', 610],
+                    ['Groceries', 180],
+                    ['Transport', 58],
+                    ['Entertainment', 90]
+                ]
+            ],
+
+            '2025-09-01' => [
+                'categories' => [
+                    'Rent' => 620,
+                    'Groceries' => 200,
+                    'Transport' => 60,
+                    'Entertainment' => 90
+                ],
+                'expenses' => [
+                    ['Rent', 620],
+                    ['Groceries', 195],
+                    ['Transport', 62],
+                    ['Entertainment', 85]
+                ]
+            ],
+
+            '2025-10-01' => [
+                'categories' => [
+                    'Rent' => 620,
+                    'Groceries' => 205,
+                    'Transport' => 65,
+                    'Entertainment' => 95
+                ],
+                'expenses' => [
+                    ['Rent', 620],
+                    ['Groceries', 210],
+                    ['Transport', 70],
+                    ['Entertainment', 110]
+                ]
+            ],
+
+            '2025-11-01' => [
+                'categories' => [
+                    'Rent' => 630,
+                    'Groceries' => 210,
+                    'Transport' => 65,
+                    'Entertainment' => 100
+                ],
+                'expenses' => [
+                    ['Rent', 630],
+                    ['Groceries', 205],
+                    ['Transport', 60],
+                    ['Entertainment', 95]
+                ]
+            ],
+
+            '2025-12-01' => [
+                'categories' => [
+                    'Rent' => 620,
+                    'Groceries' => 200,
+                    'Transport' => 60,
+                    'Entertainment' => 90
+                ],
+                'expenses' => [
+                    ['Rent', 620],
+                    ['Groceries', 180],
+                    ['Transport', 55],
+                    ['Entertainment', 110]
+                ]
+            ],
+
+            // CURRENT MONTH
             '2026-01-01' => [
                 'categories' => [
                     'Rent' => 650,
                     'Groceries' => 220,
-                    'Health' => 80
+                    'Health' => 80,
+                    'Shopping' => 100
                 ],
                 'expenses' => [
                     ['Rent', 650],
                     ['Groceries', 210],
-                    ['Health', 40]
+                    ['Health', 40],
+                    ['Shopping', 95],
+                    ['Groceries', 35]
                 ]
-            ]
-        ]
-    ],
+            ],
 
-    // USER 5
-    [
-        'name' => 'Tom Richter',
-        'username' => 'tomr',
-        'password' => 'tompass',
-        'security_question' => 'pet_name',
-        'security_answer' => 'rex',
-        'months' => [
+            // FUTURE MONTH (no expenses yet – tests empty state & graphs)
             '2026-02-01' => [
                 'categories' => [
-                    'Groceries' => 300,
-                    'Shopping' => 150,
-                    'Restaurant' => 120
+                    'Rent' => 650,
+                    'Groceries' => 240,
+                    'Health' => 100,
+                    'Restaurant' => 120,
+                    'Entertainment' => 80
                 ],
                 'expenses' => [
-                    ['Groceries', 120],
-                    ['Restaurant', 55],
-                    ['Shopping', 90],
-                    ['Groceries', 95]
+                    // intentionally empty
+                ]
+            ],
+
+            // FAR FUTURE (partial expenses)
+            '2026-03-01' => [
+                'categories' => [
+                    'Rent' => 650,
+                    'Groceries' => 260,
+                    'Transport' => 90,
+                    'Entertainment' => 120
+                ],
+                'expenses' => [
+                    ['Groceries', 45],
+                    ['Transport', 30]
                 ]
             ]
         ]
