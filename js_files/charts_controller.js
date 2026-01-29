@@ -20,71 +20,93 @@ function setupDayProgress() {
 }
 
 
-/* ---------------- SUMMARY DONUT (Canvas Only) ---------------- */
-// Draw the donut chart on canvas (legend is in HTML)
+/* ---------------- SUMMARY DONUT WITH WARNING ZONES ---------------- */
+// Draw the half-donut chart with color-coded budget warnings
 function initHalfDonutChart(ctx, spent, total) {
     const canvasWidth = ctx.canvas.width;
     const canvasHeight = ctx.canvas.height;
 
     const safeTotal = Math.max(total, 1);
-    const progress = Math.min(spent / safeTotal, 1);
+    const spentRatio = Math.min(spent / safeTotal, 1);
 
-    // Thickness based ONLY on height (prevents fat look)
-    const thickness = Math.max(16, Math.min(24, canvasHeight * 0.15));
-
+    // Ring dimensions
+    const thickness = Math.max(18, Math.min(28, canvasHeight * 0.15));
     const radius = (canvasWidth / 2) - thickness - 12;
     const centerX = canvasWidth / 2;
     const centerY = canvasHeight - thickness - 12;
 
+    // Angles
     const startAngle = Math.PI;
     const endAngle = 0;
-    const spentAngle = startAngle + progress * Math.PI;
+    const spentEndAngle = startAngle + (spentRatio * Math.PI);
 
+    // Determine color based on spending percentage
+    let spentColor;
+    let statusText;
+    if (spentRatio <= 0.5) {
+        spentColor = "#4CAF50";  // Green - Safe
+        statusText = "On Track";
+    } else if (spentRatio <= 0.75) {
+        spentColor = "#FFA726";  // Orange - Warning
+        statusText = "Watch Out";
+    } else if (spentRatio <= 0.9) {
+        spentColor = "#FF7043";  // Deep Orange - Caution
+        statusText = "Caution";
+    } else {
+        spentColor = "#EF5350";  // Red - Over/Near Limit
+        statusText = spent > total ? "Over Budget!" : "Almost There";
+    }
+
+    // Clear canvas
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     ctx.lineCap = "round";
 
-    /* Base line (fixed visual anchor) */
+    /* ---------- BASELINE ---------- */
     ctx.beginPath();
-    ctx.moveTo(centerX - radius, centerY + thickness / 2 + 6);
-    ctx.lineTo(centerX + radius, centerY + thickness / 2 + 6);
+    ctx.moveTo(centerX - radius - thickness/4, centerY + 10);
+    ctx.lineTo(centerX + radius + thickness/4, centerY + 10);
     ctx.lineWidth = 5;
     ctx.strokeStyle = "#ddd";
     ctx.stroke();
 
-    /* Remaining */
+    /* ---------- BACKGROUND (REMAINING) ---------- */
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, startAngle, endAngle);
     ctx.lineWidth = thickness;
-    ctx.strokeStyle = "#d4af37";
+    ctx.strokeStyle = "#e8e8e8";
     ctx.stroke();
 
-    /* Spent */
+    /* ---------- SPENT (COLOR-CODED) ---------- */
     ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, startAngle, spentAngle);
+    ctx.arc(centerX, centerY, radius, startAngle, spentEndAngle);
     ctx.lineWidth = thickness;
-    ctx.strokeStyle = "#008080";
+    ctx.strokeStyle = spentColor;
     ctx.stroke();
 
-    /* Needle */
-    // const needleAngle = spentAngle;
-    // const needleLength = radius * 0.9;
-
-    // ctx.beginPath();
-    // ctx.moveTo(centerX, centerY);
-    // ctx.lineTo(
-    //     centerX + needleLength * Math.cos(needleAngle),
-    //     centerY + needleLength * Math.sin(needleAngle)
-    // );
-    // ctx.lineWidth = 2;
-    // ctx.strokeStyle = "#444";
-    // ctx.stroke();
-
-    /* Percentage text */
+    /* ---------- PERCENTAGE TEXT ---------- */
     ctx.fillStyle = "#333";
-    ctx.font = "bold 22px Arial";
+    ctx.font = "bold 28px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(`${Math.round(progress * 100)}%`, centerX, centerY - radius * 0.35);
+    ctx.fillText(
+        `${Math.round(spentRatio * 100)}%`,
+        centerX,
+        centerY - radius * 0.45
+    );
+
+    /* ---------- STATUS TEXT ---------- */
+    ctx.fillStyle = spentColor;
+    ctx.font = "bold 14px Arial";
+    ctx.fillText(statusText, centerX, centerY - radius * 0.25);
+
+    /* ---------- AMOUNT TEXT ---------- */
+    ctx.fillStyle = "#666";
+    ctx.font = "13px Arial";
+    ctx.fillText(
+        `€${spent.toFixed(0)} / €${total.toFixed(0)}`,
+        centerX,
+        centerY - radius * 0.05
+    );
 }
 
 
