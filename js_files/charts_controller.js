@@ -20,14 +20,15 @@ function setupDayProgress() {
 }
 
 
-/* ---------------- SUMMARY DONUT WITH WARNING ZONES ---------------- */
-// Draw the half-donut chart with color-coded budget warnings
+/* ---------------- SUMMARY DONUT WITH WARNING LABELS ---------------- */
+// Draws the half-donut chart with color-coded budget warnings
 function initHalfDonutChart(ctx, spent, total) {
     const canvasWidth = ctx.canvas.width;
     const canvasHeight = ctx.canvas.height;
 
     const safeTotal = Math.max(total, 1);
     const spentRatio = Math.min(spent / safeTotal, 1);
+    const remainingRatio = Math.max(1 - spentRatio, 0);
 
     // Ring dimensions
     const thickness = Math.max(18, Math.min(28, canvasHeight * 0.15));
@@ -40,22 +41,28 @@ function initHalfDonutChart(ctx, spent, total) {
     const endAngle = 0;
     const spentEndAngle = startAngle + (spentRatio * Math.PI);
 
-    // Determine color based on spending percentage
-    let spentColor;
-    let statusText;
+    // Determine color and status based on spending percentage
+    let spentColor, statusIcon, statusColor;
     if (spentRatio <= 0.5) {
-        spentColor = "#4CAF50";  // Green - Safe
-        statusText = "On Track";
+        spentColor = "#4CAF50";     // Green
+        statusIcon = "✓";
+        statusColor = "#4CAF50";
     } else if (spentRatio <= 0.75) {
-        spentColor = "#FFA726";  // Orange - Warning
-        statusText = "Watch Out";
+        spentColor = "#FFA726";     // Orange
+        statusIcon = "⚠";
+        statusColor = "#FFA726";
     } else if (spentRatio <= 0.9) {
-        spentColor = "#FF7043";  // Deep Orange - Caution
-        statusText = "Caution";
+        spentColor = "#FF7043";     // Deep Orange
+        statusIcon = "⚠";
+        statusColor = "#FF7043";
     } else {
-        spentColor = "#EF5350";  // Red - Over/Near Limit
-        statusText = spent > total ? "Over Budget!" : "Almost There";
+        spentColor = "#EF5350";     // Red
+        statusIcon = spent > total ? "✕" : "!";
+        statusColor = "#EF5350";
     }
+
+    // Remaining is always gold - representing available budget
+    const remainingColor = "#d4af37";
 
     // Clear canvas
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -65,48 +72,104 @@ function initHalfDonutChart(ctx, spent, total) {
     ctx.beginPath();
     ctx.moveTo(centerX - radius - thickness/4, centerY + 10);
     ctx.lineTo(centerX + radius + thickness/4, centerY + 10);
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 4;
     ctx.strokeStyle = "#ddd";
     ctx.stroke();
 
-    /* ---------- BACKGROUND (REMAINING) ---------- */
+    /* ---------- BACKGROUND TRACK ---------- */
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, startAngle, endAngle);
     ctx.lineWidth = thickness;
     ctx.strokeStyle = "#e8e8e8";
     ctx.stroke();
 
-    /* ---------- SPENT (COLOR-CODED) ---------- */
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, startAngle, spentEndAngle);
-    ctx.lineWidth = thickness;
-    ctx.strokeStyle = spentColor;
-    ctx.stroke();
+    /* ---------- REMAINING BUDGET (GOLD) ---------- */
+    if (remainingRatio > 0 && spent <= total) {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, spentEndAngle, endAngle);
+        ctx.lineWidth = thickness;
+        ctx.strokeStyle = remainingColor;
+        ctx.stroke();
+    }
 
-    /* ---------- PERCENTAGE TEXT ---------- */
-    ctx.fillStyle = "#333";
-    ctx.font = "bold 28px Arial";
+    /* ---------- SPENT AMOUNT (COLOR-CODED) ---------- */
+    if (spentRatio > 0) {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle, spentEndAngle);
+        ctx.lineWidth = thickness;
+        ctx.strokeStyle = spentColor;
+        ctx.stroke();
+    }
+
+    /* ---------- STATUS ICON ---------- */
+    ctx.fillStyle = statusColor;
+    ctx.font = "bold 20px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
+    ctx.fillText(statusIcon, centerX - radius * 0.7, centerY - radius * 0.35);
+
+    /* ---------- PERCENTAGE ---------- */
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 28px Arial";
     ctx.fillText(
         `${Math.round(spentRatio * 100)}%`,
         centerX,
         centerY - radius * 0.45
     );
 
-    /* ---------- STATUS TEXT ---------- */
-    ctx.fillStyle = spentColor;
-    ctx.font = "bold 14px Arial";
-    ctx.fillText(statusText, centerX, centerY - radius * 0.25);
-
-    /* ---------- AMOUNT TEXT ---------- */
+    /* ---------- SPENT LABEL ---------- */
     ctx.fillStyle = "#666";
     ctx.font = "13px Arial";
+    ctx.fillText("spent", centerX, centerY - radius * 0.25);
+
+    /* ---------- AMOUNTS WITH COLOR INDICATORS ---------- */
+    ctx.font = "bold 12px Arial";
+    
+    // Spent amount (colored)
+    ctx.fillStyle = spentColor;
+    ctx.textAlign = "left";
     ctx.fillText(
-        `€${spent.toFixed(0)} / €${total.toFixed(0)}`,
-        centerX,
+        `€${spent.toFixed(0)}`,
+        centerX - radius * 0.6,
         centerY - radius * 0.05
     );
+    
+    // Separator
+    ctx.fillStyle = "#999";
+    ctx.textAlign = "center";
+    ctx.fillText("/", centerX, centerY - radius * 0.05);
+    
+    // Total budget
+    ctx.fillStyle = "#333";
+    ctx.textAlign = "right";
+    ctx.fillText(
+        `€${total.toFixed(0)}`,
+        centerX + radius * 0.6,
+        centerY - radius * 0.05
+    );
+
+    /* ---------- BUDGET STATUS MINI-LEGEND ---------- */
+    const remaining = total - spent;
+    if (remaining > 0) {
+        ctx.fillStyle = "#d4af37";
+        ctx.font = "bold 12px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(
+            `€${remaining.toFixed(0)} left`,
+            centerX,
+            centerY + radius * 0.15
+        );
+    } else if (spent > total) {
+        const overspent = spent - total;
+        ctx.fillStyle = statusColor;
+        ctx.font = "bold 12px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(
+            `€${overspent.toFixed(0)} over budget`,
+            centerX,
+            centerY + radius * 0.15
+        );
+    }
 }
 
 
@@ -274,7 +337,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupMonthChangeListener();
     setupBudgetUpdateListener();
     setupExpenseUpdateListener();
-    // resizeSummaryDonut();
 
     // Wait for initial budget load
     setTimeout(async () => {

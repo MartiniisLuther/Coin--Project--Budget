@@ -228,7 +228,7 @@ body {
 /* Styles the div with pie chart */
 .summary_pie {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
     align-items: stretch;
     gap: 1rem;
@@ -828,9 +828,9 @@ h2 {
     }
 
     /* Stack chart and legend vertically on smaller screens */
-    .summary_pie {
+    /* .summary_pie {
         flex-direction: column;
-    }
+    } */
 
     .summary_donut {
         width: 100%;
