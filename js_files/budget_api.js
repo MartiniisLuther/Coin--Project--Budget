@@ -1,7 +1,7 @@
 // budget_api.js
 // Handles backend communication with normalized database schema
 const BudgetAPI = (() => {
-    const BASE_URL = "/myapp/php/monthly_budget_controller.php";
+    const BASE_URL = "/myapp/php/budget_and_expense_manager.php";
 
     /**
      * Load budget data for a specific month
@@ -45,7 +45,7 @@ const BudgetAPI = (() => {
         formData.append("budgetTotal", budgetTotal);
         formData.append("categories", JSON.stringify(categories));
 
-        return fetch("/myapp/php/monthly_budget_controller.php", {
+        return fetch("/myapp/php/budget_and_expense_manager.php", {
             method: "POST",
             body: formData
         })
