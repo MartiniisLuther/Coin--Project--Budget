@@ -1,5 +1,9 @@
 // charts_controller.js - UI logic to render the charts on the page
 
+/* ---------------- GLOBAL STATE ---------------- */
+// Flag to prevent multiple simultaneous bar chart updates
+let isUpdatingBarChart = false;
+
 /* ---------------- DAYS TRACKING ---------------- */
 // Track the days progress to last day to map the difference as progress bar
 function setupDayProgress() {

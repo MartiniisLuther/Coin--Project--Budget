@@ -218,50 +218,53 @@ $users = [
                 ]
             ],
 
-            // CURRENT MONTH
+            // JAN 2026 — GREEN (≤ 50%)
             '2026-01-01' => [
                 'categories' => [
                     'Rent' => 650,
                     'Groceries' => 220,
                     'Health' => 80,
-                    'Shopping' => 100
+                    'Entertainment' => 100
                 ],
                 'expenses' => [
-                    ['Rent', 650],
-                    ['Groceries', 210],
-                    ['Health', 40],
-                    ['Shopping', 95],
-                    ['Groceries', 35]
+                    ['Groceries', 90],
+                    ['Health', 30],
+                    ['Entertainment', 40]
+                    // total ≈ 160 / 1050 ≈ 15%
                 ]
             ],
 
-            // FUTURE MONTH (no expenses yet – tests empty state & graphs)
+            // FEB 2026 — ORANGE (≤ 75%)
             '2026-02-01' => [
                 'categories' => [
                     'Rent' => 650,
                     'Groceries' => 240,
-                    'Health' => 100,
-                    'Restaurant' => 120,
-                    'Entertainment' => 80
-                ],
-                'expenses' => [
-                    // intentionally empty
-                ]
-            ],
-
-            // FAR FUTURE (partial expenses)
-            '2026-03-01' => [
-                'categories' => [
-                    'Rent' => 650,
-                    'Groceries' => 260,
                     'Transport' => 90,
                     'Entertainment' => 120
                 ],
                 'expenses' => [
-                    ['Groceries', 45],
-                    ['Transport', 30]
+                    ['Rent', 650],
+                    ['Groceries', 140],
+                    ['Transport', 60]
+                    // total ≈ 850 / 1100 ≈ 77% (borderline orange)
                 ]
-            ]
+            ],
+
+            // MAR 2026 — DEEP ORANGE (≤ 90%)
+            '2026-03-01' => [
+                'categories' => [
+                    'Rent' => 650,
+                    'Groceries' => 260,
+                    'Shopping' => 150,
+                    'Health' => 100
+                ],
+                'expenses' => [
+                    ['Rent', 650],
+                    ['Groceries', 200],
+                    ['Shopping', 90]
+                    // total ≈ 940 / 1160 ≈ 81%
+                ]
+            ]            
         ]
     ]
 ];

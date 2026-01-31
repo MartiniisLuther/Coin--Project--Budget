@@ -101,12 +101,55 @@ function saveBudget($conn, $user_id) {
             $row = $result->fetch_assoc();
             $monthly_sums_id = $row['monthly_sums_id'];
 
+            // Get list of new category names
+            $newCategoryNames = array_filter(array_map(function($cat) {
+                return $cat['name'] ?? '';
+            }, $categories));
+
+            // Delete expenses for categories that are being removed
+            if (count($newCategoryNames) > 0) {
+                // Build placeholders for IN clause
+                $placeholders = str_repeat('?,', count($newCategoryNames) -1) . '?';
+
+                $stmt = $conn->prepare(
+                    "DELETE FROM expenses_categories
+                    WHERE monthly_sums_id = ?
+                    AND expense_category NOT IN ($placeholders)"
+                );
+
+                // Bind parameters: monthly_sums_id + all category names
+                $types = 'i' . str_repeat('s', count($newCategoryNames));
+                $stmt->bind_param($types, $monthly_sums_id, ...$newCategoryNames);
+                $stmt->execute();
+            } else {
+                // If no categories remain, delete all expenses for this month
+                $stmt = $conn->prepare(
+                    "DELETE FROM expenses_categories
+                    WHERE monthly_sums_id = ?"
+                );
+                $stmt->bind_param("i", $monthly_sums_id);
+                $stmt->execute();
+            }
+
+            // Recalculate monthly_expense from remaining expenses
             $stmt = $conn->prepare(
-                "UPDATE monthly_sums
-                SET monthly_budget = ?
+                "SELECT COALESCE(SUM(expense_amount), 0) AS total_expense
+                FROM expenses_categories
                 WHERE monthly_sums_id = ?"
             );
-            $stmt->bind_param("di", $budgetTotal, $monthly_sums_id);
+            $stmt->bind_param("i", $monthly_sums_id);
+            $stmt->execute();
+            $expenseResult = $stmt->get_result();
+            $expenseRow = $expenseResult->fetch_assoc();
+            $newMonthlyExpense = $expenseRow['total_expense'];
+
+            // Update monthly budget and recalculated expense total
+            $stmt = $conn->prepare(
+                "UPDATE monthly_sums
+                SET monthly_budget = ?, monthlY_expense = ?
+                WHERE monthly_sums_id = ?"
+            );
+            $stmt->bind_param("ddi", $budgetTotal, $newMonthlyExpense, $monthly_sums_id);
             $stmt->execute();
 
             // Delete existing categories
@@ -120,8 +163,8 @@ function saveBudget($conn, $user_id) {
         } else {
             // Insert new monthly budget
             $stmt = $conn->prepare(
-                "INSERT INTO monthly_sums (user_id, month_value, monthly_budget)
-                VALUES (?, ?, ?)"
+                "INSERT INTO monthly_sums (user_id, month_value, monthly_budget, monthly_expense)
+                VALUES (?, ?, ?, 0.00)"
             );
             $stmt->bind_param("isd", $user_id, $month, $budgetTotal);
             $stmt->execute();
@@ -130,7 +173,7 @@ function saveBudget($conn, $user_id) {
             $monthly_sums_id = $conn->insert_id;
         }
 
-        // Insert categories
+        // Insert new budget categories
         $stmt = $conn->prepare(
             "INSERT INTO budgets_categories (user_id, monthly_sums_id, budget_category, budget_amount)
             VALUES(?, ?, ?, ?)"
