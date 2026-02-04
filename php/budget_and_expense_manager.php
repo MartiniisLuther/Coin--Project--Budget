@@ -1,31 +1,47 @@
 <?php
-// budget_and_expense_manager.php
+/** budget_and_expense_manager.php 
+ * Central API endpoint for budget- and expense-related operations.
+ * Handles loading, saving, and summarizing budget and expense data
+ * for authenticated users. 
+*/
+
+
+// ---------------------------------------------------------------------------
+// RESPONSE & ERROR CONFIGURATION
 header('Content-Type: application/json; charset=utf-8');
 
 // NOTE: display_errors = 0 to prevent HTML output in JSON responses
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
-// Set JSON header before any output
-header('Content-Type: application/json; charset=utf-8');
-
 include "database.php";
 session_start();
 
-// For simplicity, assume user is logged in and we have user_id
+
+// ---------------------------------------------------------------------------
+// q
+// All actions require an authenticated user session
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit;
 }
 $user_id = $_SESSION['user_id'];
 
-// Helper: send JSON and exit
+
+/**
+ * Sends a JSON response and terminates execution.
+ * 
+ * @param array $data - Response payload
+ * @return void
+ */
 function send_json($data) {
     echo json_encode($data);
     exit;
 }
 
-// Get action
+
+// ---------------------------------------------------------------------------
+// ROUTING: ACTION DISPATCHER
 $action = $_REQUEST['action'] ?? '';
 
 // Choose what action to take
@@ -39,15 +55,24 @@ switch ($action) {
     case 'fetch_month_summary':
         fetchMonthSummary($conn, $user_id);
         break;
-    case 'fetch_12_months_spending':
-        fetch12MonthsSpending($conn, $user_id);
+    case 'fetch_6_months_spending':
+        fetchSixMonthsSpending($conn, $user_id);
         break;
     default:
         send_json(['success' => false, 'message' => 'Invalid action']);
 }
 
 
-// ------------------------------- SAVE BUDGET --------------------------------
+// ---------------------------------------------------------------------------
+// SAVE BUDGET
+/**
+ * Creates or updates a monthly budget and its categories.
+ * Existing expenses are reconciled if categories are removed.
+ *
+ * @param mysqli $conn Database connection
+ * @param int    $user_id Authenticated user ID
+ * @return void
+ */
 function saveBudget($conn, $user_id) {
     $month = $_POST['month'] ?? null;
     $budgetTotal = $_POST['budgetTotal'] ?? 0;
@@ -210,7 +235,15 @@ function saveBudget($conn, $user_id) {
 }
 
 
-// -------------------------- LOAD BUDGET ----------------------------------
+// ---------------------------------------------------------------------------
+// LOAD BUDGET
+/**
+ * Loads a monthly budget with category allocations and spent amounts.
+ *
+ * @param mysqli $conn Database connection
+ * @param int    $user_id Authenticated user ID
+ * @return void
+ */
 function loadBudget($conn, $user_id) {
     try {
         $month = $_GET['month'] ?? null;
@@ -321,7 +354,15 @@ function loadBudget($conn, $user_id) {
 }
 
 
-// -------------------------- FETCH MONTH SUMMARY - TOTAL BUDGET & TOTAL EXPENSES --------------------------
+// ---------------------------------------------------------------------------
+// FETCH MONTH SUMMARY - TOTAL BUDGET & TOTAL EXPENSES
+/**
+ * Fetches the total budget and expenses for a given month.
+ *
+ * @param mysqli $conn Database connection
+ * @param int    $user_id Authenticated user ID
+ * @return void
+ */
 function fetchMonthSummary($conn, $user_id) {
     try {
         $monthly_sums_id = $_GET['monthly_sums_id'] ?? null;
@@ -374,9 +415,15 @@ function fetchMonthSummary($conn, $user_id) {
     }
 }
 
-
-// -------------------------- FETCH 12 MONTHS SPENDING --------------------------
-function fetch12MonthsSpending($conn, $user_id) {
+// ---------------------------------------------------------------------------
+// FETCH 6 MONTHS SPENDING
+/**
+ * Fetches total spent and budgeted amounts for the last 6 months.
+ * @param mysqli $conn Database connection
+ * @param int    $user_id Authenticated user ID
+ * @return void
+ */
+function fetchSixMonthsSpending($conn, $user_id) {
     try {
         // Get spending data for last 6 months for this user
         $stmt = $conn->prepare(

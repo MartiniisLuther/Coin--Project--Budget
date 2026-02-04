@@ -1,56 +1,96 @@
-## 💰 Coin Project
+# Coin Project - Budget Management Web Application
 
-A simple user-friendly finance tracker built with HTML, CSS, JavaScript, and PHP. Track income and expenses, assign transactions to categories, set a monthly budget with per‑category allocations, and view visual reports and trends. Includes local user authentication and secure DB access (prepared statements) — no external services required; data stays on your local server. Lightweight and easy to extend for learning and experimentation with full‑stack web development.
+## Project Overview
+This project is a locally hosted budget management web application developed as part of the Java & Web Development portfolio course. The aim of the project is to design and implement a complete full-stack web application that allows users to manage personal budgets, record expenses, and visualize spending patterns over time.
 
-## ✨ Features
+The application focuses on practical web development concepts, including frontend user interface design, backend logic, database interaction, and secure handling of user data. All data is stored locally, and no external services or APIs are required.
 
-- **User accounts** — Sign up and log in with local accounts; security questions available for account recovery (no email integration).
-- **Password reset** — Recover or reset passwords using configured security questions.
-- **Dashboard** — Monthly overview showing total spent, percentage of budget used, top categories, and days remaining in the month.
-- **Categories** — Predefined spending categories (e.g., rent, transport). Assign transactions to categories to track category totals.
-- **Budget management** — Set a total monthly budget and allocate amounts to categories for more granular tracking.
-- **Charts & reports** — Visualize spending with pie charts and historical graphs (e.g., last 12 months) to spot trends and remaining budget.
-- **Responsive UI** — Simple, mobile-friendly interface built with HTML, CSS, and JavaScript for a consistent experience across devices.
-- **Security & best practices** — Uses prepared statements for safe DB access; sensible defaults to avoid exposing credentials in version control.
-- **Extensible design** — Simple structure intended for easy improvement (additional categories, email integration, or richer analytics).
 
-## 🚀 Getting Started
+## Purpose and Goals
+
+**Functional Goal:**
+Provide users with a simple and intuitive way to define monthly budgets, allocate funds to predefined categories, record expenses, and review spending summaries using visual charts.
+
+**Learning Goal:**
+Gain hands-on experience in full-stack web development using PHP and relational databases, while applying best practices such as prepared statements, modular code structure, and version control with GitHub.
+
+**Scope:**
+The application is intentionally limited to local execution to keep the focus on core web development concepts rather than deployment or third-party integrations.
+
+
+## Core Features
+
+- **User authentication** — Supports local user registration and login. Account recovery is handled via security questions rather than email integration.
+- **Budget management** — Users can define a total monthly budget via allocation of amounts to predefined categories.
+- **Expense tracking** — Expenses can be added per category and are persisted in the database for monthly summaries and historical analysis.
+- **Data visualization** — The application provides graphical representations of spending using charts, including monthly summaries and a historical overview of the last six months.
+- **Responsive user interface** — The layout adapts to different screen sizes, allowing the application to be used on both desktop and mobile devices.
+- **Secure database interaction** — All database operations use prepared statements to reduce the risk of SQL injection and improve overall robustness.
+
+
+## Technology Stack
+
+**Frontend**
+- HTML
+- CSS
+- JavaScript
+
+**Backend**
+- PHP
+
+**Database**
+- MySQL or MariaDB
+
+**Development Environment**
+- Apache Web Server (via XAMPP, MAMP, or equivalent)
+- phpMyAdmin for database inspection and management
+- Visual Studio Code or a comparable code editor
+
+> **Note:** XAMPP is used solely as a local development environment and is not considered part of the system architecture.
+
+
+## Installation and Run Instructions
 
 ### Prerequisites
-- PHP 8+ with mysqli or pdo_mysql enabled  
-- MySQL (or MariaDB) server  
-- Apache (XAMPP, MAMP, or a similar local server)  
-- Web browser (e.g., Firefox, Chrome)  
-- Code editor (e.g., VS Code)  
-- phpMyAdmin for easier DB visualizations and management
 
-### Running the Project
+To run the application locally, the following components are required:
+
+- **PHP 8 or higher** with `mysqli` or `pdo_mysql` enabled
+- **MySQL or MariaDB** database server
+- **Apache Web Server**
+- A modern web browser (Google Chrome was used for this project)
+- **phpMyAdmin** (recommended for database management)
+
+
+### Setup Steps
+
 1. Clone the repository:
 	```bash
 	git clone https://github.com/martiniisluther/Coin--Project--Budget.git
 	```
-2. Place the cloned folder inside your local server web root (e.g., /Applications/XAMPP/xamppfiles/htdocs/myapp or C:\xampp\htdocs\myapp).
-3. Create and import the database:
-	- Create a new database (e.g., coin_project) via phpMyAdmin or MySQL CLI.
-	- Import the provided SQL file found in the repo (search for *.sql, e.g., schema.sql or seed.sql).
-4. Configure the DB connection:
-	- Update the database connection file (php/database.php) with your DB host, name, user, and password.
-	- Example variables to update: $host, $user, $password, $database.
-5. Start services and open the app:
-	- Start Apache and MySQL using XAMPP/MAMP or your chosen stack.
-	- Open: http://localhost/myapp/ (or http://localhost/myapp/welcomepage.html)
 
-### Quick Tips & Troubleshooting
-- Ensure XAMPP → Manage Servers shows MySQL Database, ProFTPD, and Apache Web Server as Running.
-- In php/database.php include the MySQL host and port in $host, e.g.:
-	- $host = '127.0.0.1:3307'; // change 3307 to your MySQL port or other host:port as needed
-- If you see a connection error, double-check $host, $user, $password, and $database in php/database.php.
-- Check the web server/PHP error logs for 500 errors (XAMPP logs or /Applications/XAMPP/xamppfiles/logs/error_log).
-- Do not commit real credentials to version control — use environment variables or a local config file excluded by .gitignore.
-- After these steps the app should be reachable at the local URL.
+2. Place the project in the web root:
+	- **macOS (XAMPP):** `/Applications/XAMPP/xamppfiles/htdocs/myapp` (the project was developed using this option)
+	- **Windows (XAMPP):** `C:\xampp\htdocs\myapp`
+
+3. Database initialization:
+   - Ensure the MySQL/MariaDB server is running.
+   - Open the application in the browser.
+   - The database `myCoinApp` will be created automatically (via database.php file) if it does not already exist.
+
+4. Configure database connection:
+	- Open `php/database.php`
+	- Update the database credentials (`$host`, `$user`, `$password`, `$database`)
+	e.g., for this project, the following apply
+	$host = '127.0.0.1:3307'; // port used in this project
+	$user = 'root';
+	$password = '1357987';
+	$database = 'myCoinApp';
+
+5. Start the local server and navigate to `http://localhost/myapp` in the browser
 
 
-### Project Structure
+## Project Structure
 
 ```
 project-root/
@@ -64,40 +104,79 @@ project-root/
 		│   ├── homepage.css
 		│   └── accountpage.css
 		├── js_files/
-		│   ├── welcomepage.js
-		│   ├── homepage.js
-		│   └── accountpage.js
+		│   ├── accountpage.js
+		│   ├── budget_api.js
+		│   ├── charts_controller.js
+		│   ├── expenses_api.js
+		│   ├── homepage_ui.js
+		│   └── welcomepage.js
 		├── php/
-		│   ├── login.php
-		│   ├── signup.php
-		│   ├── reset_password.php
-		│   ├── logout.php
+		│   ├── budget_and_expense_manager.php
 		│   ├── database.php
-		│   ├── budget_operations.php
-		│   └── ... (other PHP files)
+		│   ├── expenses_controller.php
+		│   ├── login.php
+		│   ├── logout.php
+		│   ├── reset_password.php
+		│   ├── sample_test_users.php
+		│   └── signup.php
 		├── screenshots/
 		│   ├── welcomepage.png
 		│   ├── homepage_preview.png
 		│   └── summary_month.png
+		├── .gitignore
 		└── README.md
 ```
 
-
-### Website Preview
-
-| ![Welcome page](screenshots/welcomepage.png) | ![Homepage preview](screenshots/homepage_preview.png) | ![Monthly summary](screenshots/summary_month.png) |
-|:--:|:--:|:--:|
-| *Welcome page* | *Homepage preview* | *Monthly summary* |
+The codebase is organized by responsibility, separating frontend assets, backend logic, and configuration files to improve readability and maintainability.
 
 
-## 🎯 Goals
+## Test Data and Usage
 
-- Build a complete full‑stack app with PHP + MySQL: secure authentication, CRUD for transactions and budgets, and safe DB access (prepared statements).
-- Strengthen frontend skills: responsive layouts, accessible UI, client‑side validation, and interactive charts.
-- Improve development workflow: use Git/GitHub with feature branches, meaningful commits, pull requests, and issue tracking.
-- Practice deployment and debugging: run locally with XAMPP/MAMP, examine logs, and prepare simple production configuration (env-based credentials).
-- Add automated checks: basic unit/integration tests and linting for JS/CSS to catch regressions early.
-- Plan future extensions: prototype front‑end frameworks (React/Vue) or consider a server‑side migration (e.g., JSF/Java) if you decide to move off PHP.
+Sample users and test data are provided to facilitate manual testing of the application’s functionality. These datasets were consistently utilized across screenshots, test cases, and screencast demonstrations to ensure reproducibility.
 
-Success criteria: a working local app with secure auth, tested CRUD flows, responsive UI, and a documented Git workflow for further contributions.
+Manual test cases are documented in the presentation slides and include:
+- Authentication flows
+- Budget creation and updates
+- Expense entry and persistence
+- Chart updates after data changes
+- Responsive layout behavior
 
+
+## Learning Objectives and Outcomes
+
+This project was designed to achieve the following learning outcomes:
+
+- Apply full-stack web development principles using PHP and relational databases
+- Design and implement CRUD operations securely using prepared statements
+- Develop responsive user interfaces with HTML, CSS, and JavaScript
+- Manage source code using Git and GitHub with meaningful commit history
+- Reflect on architectural decisions and iterate based on feedback
+- Document installation, usage, and testing procedures clearly
+
+## Future Improvements
+
+Potential enhancements for future iterations include:
+
+- **Receipt-like expense preview** — Display expenses in a formatted receipt layout for better visual context
+- **Expense categories expansion** — Allow users to create custom budgeting and spending categories instead of predefined ones
+- **Data export functionality** — Enable users to export budget summaries and expense reports in PDF or CSV formats
+- **Budget alerts** — Notify users when spending in a category approaches or exceeds the allocated budget
+- **Dark mode UI** — Provide a dark theme option for improved accessibility and user preference
+
+
+
+### Application Preview
+
+| ![Welcome page](screenshots/welcomepage.png) | ![Homepage](screenshots/homepage.png) | ![Budget & Overview](screenshots/budget_&_overview.png) | ![Expenses & Bar Chart](screenshots/expenses_&_barchart.png) |
+|:--:|:--:|:--:|:--:|
+| *Welcome page* | *Homepage* | *Budget & Overview* | *Expenses & Bar Chart* |
+
+
+### Development Notes
+
+Some `console.log()` statements are intentionally left commented out in the JavaScript source files. These logs were used during debugging and validation of API responses and UI state changes.
+
+They remain commented (not removed) to support future development and troubleshooting beyond the scope of this project submission. They do not affect runtime behavior, performance, or user experience in the submitted version.
+
+
+**End**

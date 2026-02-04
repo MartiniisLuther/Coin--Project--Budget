@@ -319,7 +319,7 @@ if (!isset($_SESSION['username'])) {
 
                     <!-- months in overview -->
                     <div class="months-overview">
-                        <h3>Spending (Last 12 Months)</h3>
+                        <h3>Spending vs Budget for Last 6 Months</h3>
                         <canvas id="monthsBarChart" width="400" height="400"></canvas>
                     </div>                    
                 </div>

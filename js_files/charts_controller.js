@@ -1,11 +1,23 @@
-// charts_controller.js - UI logic to render the charts on the page
+/**
+ * charts_controller.js
+ * 
+ * Handles UI-related chart rendering and updates for the dashboard.
+ * Responsible for displaying budget progress, summary donut charts, 
+ * and historical monthly bar charts (last 6 months: budget vs expenditure).
+ */
 
 /* ---------------- GLOBAL STATE ---------------- */
-// Flag to prevent multiple simultaneous bar chart updates
+
+// Prevents multiple bar chart updates triggered by multiple events.
 let isUpdatingBarChart = false;
 
+
 /* ---------------- DAYS TRACKING ---------------- */
-// Track the days progress to last day to map the difference as progress bar
+/**
+ * Updates the monthly progress bar and label based on the current date,
+ * showing how many days remain in the current month.
+ * @return {void}
+ */
 function setupDayProgress() {
     const dateElement = new Date();
     const lastDay = new Date(dateElement.getFullYear(), dateElement.getMonth() + 1, 0).getDate();
@@ -25,7 +37,12 @@ function setupDayProgress() {
 
 
 /* ---------------- SUMMARY DONUT WITH WARNING LABELS ---------------- */
-// Draws the half-donut chart with color-coded budget warnings
+/**
+ * Draws a half-donut summary chart representing spent vs. total budget.
+ * @param {CanvasRenderingContext2D} ctx - Canvas rendering context
+ * @param {number} spent - Amount spent in the selected month
+ * @param {number} total - Total allocated budget for the month
+ */
 function initHalfDonutChart(ctx, spent, total) {
     const canvasWidth = ctx.canvas.width;
     const canvasHeight = ctx.canvas.height;
@@ -177,8 +194,12 @@ function initHalfDonutChart(ctx, spent, total) {
 }
 
 
-/* ---------------- UPDATE LEGEND VALUES (Existing HTML Elements) ---------------- */
-// Update the legend values in the existing HTML structure
+/* ---------------- LEGEND UPDATE ---------------- */
+/**
+ * Updates numeric legend values below the summary donut chart.
+ * @param {number} spent - Amount spent
+ * @param {number} total - Total budget
+ */
 function updateLegend(spent, total) {
     const remaining = total - spent;
     
@@ -201,13 +222,16 @@ function updateLegend(spent, total) {
 }
 
 
-/* ---------------- RENDER AND UPDATE DONUT WITH BACKEND DATA ---------------- */
-// Render the donut chart with data from backend
+/* ---------------- RENDER AND UPDATE DONUT (WITH BACKEND DATA) ---------------- */
+/**
+ * Fetches monthly summary data and updates the donut chart and legend.
+ * @returns {Promise<void>}
+ */
 async function renderAndUpdateDonutChart() {
     const {spent_total, budget_total} = await fetchPerMonthSummaryData();
 
     // Debug log
-    console.log("Rendering donut chart with:", { spent_total, budget_total });
+    //console.log("Rendering donut chart with:", { spent_total, budget_total });
 
     const donutCanvas = document.getElementById("summaryDonut");
 
@@ -243,8 +267,11 @@ async function renderAndUpdateDonutChart() {
 }
 
 
-/* ---------------- FETCH PER MONTH SUMMARY DATA FROM BACKEND ---------------- */
-// Fetch per month budget/expenditure for the currently selected month
+/* ---------------- FETCH PER MONTH SUMMARY DATA ---------------- */
+/**
+ * Retrieves budget and expenditure totals for the selected month.
+ * @returns {Promise<{spent_total:number, budget_total:number}>}
+ */
 async function fetchPerMonthSummaryData() {
     try {
         // Check if an active month is selected
@@ -254,7 +281,7 @@ async function fetchPerMonthSummaryData() {
         }
 
         // Debug log
-        console.log('Fetching summary data for monthly_sums_id:', window.currentMonthlySumsId);
+        //console.log('Fetching summary data for monthly_sums_id:', window.currentMonthlySumsId);
 
         const responseData = await fetch(
             `/myapp/php/budget_and_expense_manager.php?action=fetch_month_summary&monthly_sums_id=${window.currentMonthlySumsId}`
@@ -270,7 +297,7 @@ async function fetchPerMonthSummaryData() {
         const fetchedData = await responseData.json();
 
         // Debug log
-        console.log('Received summary data:', fetchedData);
+        //console.log('Received summary data:', fetchedData);
 
         // Validate the data from PHP
         if (!fetchedData || !fetchedData.success) {
@@ -296,34 +323,36 @@ async function fetchPerMonthSummaryData() {
 function setupMonthChangeListener() {
     // Listen for custom event from homepage_ui.js
     window.addEventListener('monthDataLoaded', async (event) => {
-        console.log('Month data loaded event received:', event.detail);
+        //console.log('Month data loaded event received:', event.detail);
         await renderAndUpdateDonutChart();
     });
 }
-
 
 /* ---------------- LISTEN FOR BUDGET UPDATES ---------------- */
 // Update charts instantly when budget is saved
 function setupBudgetUpdateListener() {
     window.addEventListener('budgetSaved', async (event) => {
-        console.log('Budget saved event received:', event.detail);
+        // console.log('Budget saved event received:', event.detail);
         await renderAndUpdateDonutChart();
     });
 }
-
 
 /* ---------------- LISTEN FOR EXPENSE UPDATES ---------------- */
 // Update charts instantly when expense is added
 function setupExpenseUpdateListener() {
     window.addEventListener('expenseAdded', async (event) => {
-        console.log('Expense added event received:', event.detail);
+        //console.log('Expense added event received:', event.detail);
         await renderAndUpdateDonutChart();
     });
 }
 
 
-/* ---------------- DISPLAY LAST 12-MONTH BAR CHART ---------------- */
-// Create the barchart element from the cdn site
+/* ---------------- BAR CHART ---------------- */
+/**
+ * Loads Chart.js dynamically and executes a callback once available.
+ * @param {Function} callback - Function to call after Chart.js is loaded
+ * @returns {void}
+ */
 function initBarChart(callback) {
     // Check if Chart.js is already loaded
     if (window.Chart) {
@@ -339,13 +368,17 @@ function initBarChart(callback) {
 
 
 /* ---------------- PROCESS DATA INTO BAR CHART -----------------------  */
-// Returned array data processed into a 12-month bar chart with labels.
+/**
+ * Fetches historical budget data and renders a six-month bar chart.
+ * @returns {Promise<void>}
+ */
 async function setupAndUpdateBarChart() {
     try {
-        // Fetch spending data for last 12 months
+        // Fetch spending data for last 6 months
         const monthlyData = await fetchAllMonthlyTotalExpenses();
         
-        console.log("Received monthly data:", monthlyData);
+        // Debug log
+        //console.log("Received monthly data:", monthlyData);
 
         // Generate labels and data for last 6 months
         const monthLabels = [];
@@ -374,9 +407,10 @@ async function setupAndUpdateBarChart() {
             budgetData.push(monthData ? Number(monthData.total_budget ?? 0) : 0);
         }
 
-        console.log("Month labels:", monthLabels);
-        console.log("Spent data:", spentData);
-        console.log("Budget data:", budgetData);
+        // Debug log
+        //console.log("Month labels:", monthLabels);
+        //console.log("Spent data:", spentData);
+        //console.log("Budget data:", budgetData);
 
         // Initialize & load Bar Chart
         initBarChart(() => {
@@ -455,15 +489,19 @@ async function setupAndUpdateBarChart() {
 }
 
 
-/* ---------------- FETCH LAST 12-MONTHLY TOTAL EXPENDITURES -----------------------  */
-// Fetch an array of 12-month values for each month's spending (uses user_id, not monthly_sums_id)
+/* ---------------- FETCH LAST 6-MONTHLY TOTAL EXPENDITURES -----------------------  */
+/**
+ * Retrieves aggregated spending data for the last six months.
+ * @returns {Promise<Array>}
+ */
 async function fetchAllMonthlyTotalExpenses() {
     try {
-        console.log("Fetching 12-month spending data...");
+        // Debug log
+        //console.log("Fetching 6-month spending data...");
         
         // Note: Uses user_id from session (PHP side), not monthly_sums_id
         const response = await fetch(
-            `/myapp/php/budget_and_expense_manager.php?action=fetch_12_months_spending`
+            `/myapp/php/budget_and_expense_manager.php?action=fetch_6_months_spending`
         );
 
         if (!response.ok) {
@@ -473,7 +511,7 @@ async function fetchAllMonthlyTotalExpenses() {
 
         // Get response text first to see what we're receiving
         const responseText = await response.text();
-        console.log("Raw response:", responseText.substring(0, 500)); // Log first 500 chars
+        //console.log("Raw response:", responseText.substring(0, 500)); // Log first 500 chars
         
         // Try to parse as JSON
         let data;
@@ -485,7 +523,7 @@ async function fetchAllMonthlyTotalExpenses() {
             return [];
         }
         
-        console.log("Received 12-month data:", data);
+        //console.log("Received 6-month data:", data);
 
         if (!data || !data.success) {
             console.warn("Invalid response:", data);
@@ -495,22 +533,26 @@ async function fetchAllMonthlyTotalExpenses() {
         return data.months || [];
 
     } catch (error) {
-        console.error("Error fetching 12-month data:", error);
+        console.error("Error fetching 6-month data:", error);
         return [];
     }
 }
 
 
 /* ---------------- UPDATE BAR CHART ON EVENTS ---------------- */
-// Listen for events that should trigger bar chart update
+/**
+ * Registers event listeners that trigger bar chart updates.
+ * @returns {void}
+ */
 function setupBarChartListeners() {
     // Update when budget is saved
     window.addEventListener('budgetSaved', async () => {
         if (isUpdatingBarChart) {
-            console.log("Bar chart update already in progress, skipping");
+            //console.log("Bar chart update already in progress, skipping");
             return;
         }
-        console.log("Updating bar chart after budget saved");
+        // Debug log
+        //console.log("Updating bar chart after budget saved");
         isUpdatingBarChart = true;
         await setupAndUpdateBarChart();
         isUpdatingBarChart = false;
@@ -519,10 +561,10 @@ function setupBarChartListeners() {
     // Update when expense is added
     window.addEventListener('expenseAdded', async () => {
         if (isUpdatingBarChart) {
-            console.log("Bar chart update already in progress, skipping");
+            //console.log("Bar chart update already in progress, skipping");
             return;
         }
-        console.log("Updating bar chart after expense added");
+        //console.log("Updating bar chart after expense added");
         isUpdatingBarChart = true;
         await setupAndUpdateBarChart();
         isUpdatingBarChart = false;
@@ -532,9 +574,8 @@ function setupBarChartListeners() {
 
 /* ---------------- INITIALIZATION ---------------- */
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log("Initializing charts UI render...");
+    //console.log("Initializing charts UI render...");
 
-    // Setup UI Components
     // Donut chart
     setupDayProgress();
     setupMonthChangeListener();

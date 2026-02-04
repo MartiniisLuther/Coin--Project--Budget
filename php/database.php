@@ -1,7 +1,13 @@
 <?php
-// database.php — Database connection and setup (No timestamps version)
+/* database.php — Database connection and schema initialization
+ *
+ * Establishes a MySQL connection and ensures the required database
+ * and tables exist. Intended for local development environments. 
+ */
 
-// MySQL connection parameters
+
+// ---------------------------------------------------------------------------
+// DATABASE CONNECTION SETTINGS
 $host = '127.0.0.1:3307';
 $user = "root";
 $password = "1357987";
@@ -22,9 +28,11 @@ if (!$conn->select_db($database)) {
     }
     $conn->select_db($database);
 }
+
+
 // ---------------------------------------------------------------------------
 // TABLE 1: USERS
-// This table stores user credentials and security info
+// This table stores user credentials and security questions & answers info
 $createUsersTable = 
 "CREATE TABLE IF NOT EXISTS users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,9 +47,10 @@ if ($conn->query($createUsersTable) !== TRUE) {
     die("Error creating users table: " . $conn->error);
 }
 
+
 // ---------------------------------------------------------------------------
 // TABLE 2: MONTHLY_SUMS
-// This table manages total monthly budgets and expenses per user
+// Tracks per-user monthly budget and total expenses
 $createMonthlyBudgetsTable =  
 "CREATE TABLE IF NOT EXISTS monthly_sums (
     monthly_sums_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -58,9 +67,9 @@ if ($conn->query($createMonthlyBudgetsTable) !== TRUE) {
 }
 
 
-// ----------------------------------------------------------------------------
-// TABLE 3: BUDGET_CATEGORIES (Multiple categories)
-// This table stores individual categories for each month
+// ---------------------------------------------------------------------------
+// TABLE 3: BUDGETS_CATEGORIES
+// Stores allocated budget amounts per category and month
 $createBudgetCategoriesTable =
 "CREATE TABLE IF NOT EXISTS budgets_categories (
     budgets_categories_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -80,9 +89,10 @@ if ($conn->query($createBudgetCategoriesTable) !== TRUE) {
     die("Error creating budgets_categories table: " . $conn->error);
 }
 
+
 // ---------------------------------------------------------------------------
 // TABLE 4: EXPENSES_CATEGORIES
-// This table records category expenses for each month
+// Records individual expense entries per category and month
 $createExpensesTable =
 "CREATE TABLE IF NOT EXISTS expenses_categories (
     expenses_categories_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -100,7 +110,9 @@ if ($conn->query($createExpensesTable) !== TRUE) {
     die("Error creating expenses_categories table: " . $conn->error);
 }
 
-// RESET AUTO_INCREMENT FOR USERS TABLE IF EMPTY
+
+// ---------------------------------------------------------------------------
+// RESET AUTO_INCREMENT IF USERS TABLE IS EMPTY
 $result = $conn->query("SELECT COUNT(*) AS count FROM users");
 if ($result && $row = $result->fetch_assoc()) {
     if ((int)$row['count'] === 0) {

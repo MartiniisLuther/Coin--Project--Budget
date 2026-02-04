@@ -21,7 +21,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // verify the security answer
         if (password_verify($security_answer, $storedAnswer)) {
             // corect answer -> update the password
-            $update = $conn -> prepare("UPDATE users SET password = ? WHERE id = ?");
+            $update = $conn -> prepare(
+                "UPDATE users SET password = ? WHERE id = ?
+            ");
+            
             $update -> bind_param("si", $newPassword, $user_id);
 
             // execute the update statement and go to login page

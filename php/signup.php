@@ -1,7 +1,12 @@
 <?php
-// signup.php — Handle user signup form submission
+// signup.php — Handles user registration
+// Responsibilities:
+//  - Validate and sanitize user input
+//  - Hash sensitive credentials (password + security answer)
+//  - Enforce unique usernames
+//  - Persist new user record securely
 
-// enable error reporting for debugging
+// Enable error reporting during development
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
@@ -9,14 +14,16 @@ include 'database.php'; // includes the database connection file
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // --- Sanitize input ---
+    // -----------------------------------------------------------------------
+    // INPUT SANITIZATION
     $name = trim($_POST["signup_name"]);
     $username = trim($_POST["signup_username"]);
     $password_raw = $_POST["signup_password"];
     $security_question = trim($_POST["security_question"]);
     $security_answer_raw = trim($_POST["security_answer"]);
 
-    // --- Validate input ---
+    // -----------------------------------------------------------------------
+    // INPUT VALIDATION
     $errors = [];
 
     if (empty($name)) $errors[] = "Name is required.";
@@ -26,13 +33,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($security_answer_raw)) $errors[] = "Security answer is required.";
 
     if (!empty($errors)) {
-        // Redirect back with errors (or handle how you prefer)
+        // Redirect back with validation feedback
         $error_query = implode(',', $errors);
         header("Location: ../welcomepage.html?error=" . urlencode($error_query));
         exit();
     }
 
-    // --- Hash sensitive fields ---
+    // -----------------------------------------------------------------------
+    // SECURITY: HASH SENSITIVE DATA    
     $password = password_hash($password_raw, PASSWORD_DEFAULT);
     $security_answer = password_hash($security_answer_raw, PASSWORD_DEFAULT);
 
@@ -41,8 +49,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Database connection failed: " . mysqli_connect_error());
     }
 
-    // --- Check if username exists ---
-    $stmt = $conn->prepare("SELECT user_id FROM users WHERE username = ?");
+    // -----------------------------------------------------------------------
+    // CHECK USERNAME UNIQUENESS
+    $stmt = $conn->prepare(
+        "SELECT user_id FROM users WHERE username = ?
+    ");
+
     if (!$stmt) {
         die("Prepare failed (SELECT): " . $conn->error);
     }
@@ -52,13 +64,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
+        // Username already exists
         $stmt->close();
         header("Location: ../welcomepage.html?error=userexists");
         exit();
     }
     $stmt->close();
 
-    // --- Insert new user ---
+    // -----------------------------------------------------------------------
+    // CREATE NEW USER
     $stmt = $conn->prepare(
         "INSERT INTO users (name, username, password, security_question, security_answer) 
     VALUES (?, ?, ?, ?, ?)");
@@ -67,9 +81,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Prepare failed (INSERT): " . $conn->error);
     }
 
-$stmt->bind_param("sssss", $name, $username, $password, $security_question, $security_answer);
+    $stmt->bind_param(
+        "sssss", 
+        $name, $username, $password, $security_question, $security_answer
+    );
 
     if ($stmt->execute()) {
+        // Successful registration
         $stmt->close();
         $conn->close();
         header("Location: ../homepage.php?success=signup");

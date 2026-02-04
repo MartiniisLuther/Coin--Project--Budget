@@ -60,66 +60,6 @@ $users = [
 
     // USER 2
     [
-        'name' => 'Nina Bauer',
-        'username' => 'ninab',
-        'password' => 'nona145',
-        'security_question' => 'favorite_color',
-        'security_answer' => 'lilac',
-        'months' => [
-            '2026-01-01' => [
-                'categories' => [
-                    'Rent' => 300,
-                    'Health' => 20,
-                    'Groceries' => 300,
-                    'Impromptu' => 500,
-                    'Transport' => 67.90,
-                    'Insurance' => 60.90,
-                    'Shopping' => 22.98
-                ],
-                'expenses' => [
-                    ['Groceries', 25.50],
-                    ['Health', 39.00],
-                    ['Insurance', 60.90],
-                    ['Transport', 31.90],
-                    ['Groceries', 23.32],
-                    ['Rent', 300.00],
-                    ['Groceries', 20.00],
-                    ['Impromptu', 300.00],
-                    ['Groceries', 150.00],
-                    ['Shopping', 78.00]
-                ]
-            ]
-        ]
-    ],
-
-    // USER 3
-    [
-        'name' => 'Mark Weber',
-        'username' => 'markw',
-        'password' => 'markpass',
-        'security_question' => 'nick_name',
-        'security_answer' => 'webo',
-        'months' => [
-            '2026-03-01' => [
-                'categories' => [
-                    'Rent' => 800,
-                    'Groceries' => 250,
-                    'Transport' => 90,
-                    'Entertainment' => 120
-                ],
-                'expenses' => [
-                    ['Rent', 800],
-                    ['Groceries', 60],
-                    ['Groceries', 90],
-                    ['Transport', 45],
-                    ['Entertainment', 70]
-                ]
-            ]
-        ]
-    ],
-
-    // USER 4
-    [
         'name' => 'Julia Klein',
         'username' => 'jklein',
         'password' => 'secure321',
@@ -231,38 +171,6 @@ $users = [
                     ['Health', 30],
                     ['Entertainment', 40]
                     // total ≈ 160 / 1050 ≈ 15%
-                ]
-            ],
-
-            // FEB 2026 — ORANGE (≤ 75%)
-            '2026-02-01' => [
-                'categories' => [
-                    'Rent' => 650,
-                    'Groceries' => 240,
-                    'Transport' => 90,
-                    'Entertainment' => 120
-                ],
-                'expenses' => [
-                    ['Rent', 650],
-                    ['Groceries', 140],
-                    ['Transport', 60]
-                    // total ≈ 850 / 1100 ≈ 77% (borderline orange)
-                ]
-            ],
-
-            // MAR 2026 — DEEP ORANGE (≤ 90%)
-            '2026-03-01' => [
-                'categories' => [
-                    'Rent' => 650,
-                    'Groceries' => 260,
-                    'Shopping' => 150,
-                    'Health' => 100
-                ],
-                'expenses' => [
-                    ['Rent', 650],
-                    ['Groceries', 200],
-                    ['Shopping', 90]
-                    // total ≈ 940 / 1160 ≈ 81%
                 ]
             ]            
         ]

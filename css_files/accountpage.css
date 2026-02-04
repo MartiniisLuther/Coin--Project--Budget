@@ -166,11 +166,7 @@ section.account_container {
     color: #d4af37;
 }
 
-/* styles the buttons div */
-.right_account_details .account_actions {
-    
-}
-
+/* styles the button container */
 .right_account_details .button_div {
     display: flex;
     flex-direction: column; /* across layout */
@@ -215,6 +211,8 @@ section.account_container {
     box-shadow: 0 0 5px #ff4d4d;
 }
 
+
+/* -------------------------------- MEDIA QUERIES ---------------------------------------- */
 
 /* media queries - up to 1300px*/
 @media screen and (max-width: 1200px) {

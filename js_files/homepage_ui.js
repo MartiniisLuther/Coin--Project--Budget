@@ -1,7 +1,15 @@
-// homepage_ui.js — UI logic for normalized database schema
+/**
+ * homepage_ui.js — UI logic for the homepage.php page
+ * 
+ * Handles dynamic category management, budget saving/loading,
+ * expense addition, and UI updates on the homepage.
+ */
+
 
 /* ---------------- STATE TRACKING ---------------- */
-// Track the last saved state to compare current state
+/**
+ * Stores the last saved month and categories to detect unsaved changes.
+ */
 let lastSavedState = {
     month: null,
     categories: []
@@ -12,7 +20,10 @@ window.currentMonthlySumsId = null;
 
 
 /* ---------------- NAVBAR DROPDOWN ---------------- */
-// This provides the About options in the navbar
+/**
+ * Toggles the About dropdown in the navbar and closes it on outside clicks.
+ * @returns {void}
+ */
 function setupNavbarDropdown() {
     const linkAbout = document.querySelector(".linkAbout");
     const dropdownMenu = document.querySelector(".nav-item-dropdown");
@@ -33,7 +44,10 @@ function setupNavbarDropdown() {
 
 
 /* ---------------- TODAY'S DATE ELEMENT ---------------- */
-// Update date display
+/**
+ * Displays the current date in a readable weekday–month-date–year format.
+ * @return {void}
+ */
 function updateDateDisplay() {
     const dateElement = document.getElementById("date");
     if (!dateElement) return;
@@ -47,8 +61,12 @@ function updateDateDisplay() {
 }
 
 
-/* ---------------- ALLOCATE AMOUNT BUTTON FUNCTIONS ---------------- */
-// This section entails the logic for the "Add Category" button and popup.
+/* ---------------- ADD CATEGORY POPUP  ---------------- */
+/**
+ * Handles opening and closing of the “Add Category” popup,
+ * when the "+ Allocate Amount" button is clicked.
+ * @return {void}
+ */
 function setupCategoryPopup() {
     const categoryPopup = document.getElementById("addCategoryPopup");
     const addCategoryBtn = document.getElementById("add_categories_btn");
@@ -58,7 +76,7 @@ function setupCategoryPopup() {
 
     // Show popup
     addCategoryBtn.addEventListener("click", () => {
-        console.log("Opening category popup");
+        //console.log("Opening category popup");
         categoryPopup.classList.remove("hidden");
     });
 
@@ -75,7 +93,14 @@ function setupCategoryPopup() {
 
 
 /* ---------------- CREATE CATEGORY ELEMENT ---------------- */
-// This section adds the Budget categories to the homepage dynamically
+/**
+ * Creates a budget category DOM element with allocated and spent data.
+ * @param {string} name - The name of the category.
+ * @param {number} allocated - The allocated amount for the category.
+ * @param {number} [spent=0] - The spent amount for the category.
+ * @param {string} [currency="€"] - The currency symbol.
+ * @returns {HTMLElement} The created category element.
+ */
 function createCategoryElement(name, allocated, spent = 0, currency = "€") {
     const categoryDiv = document.createElement("div");
     categoryDiv.className = "category_added";
@@ -110,7 +135,10 @@ function createCategoryElement(name, allocated, spent = 0, currency = "€") {
 
 
 /* ---------------- DISPLAY CATEGORIES ON THE HOMEPAGE ---------------- */
-// This section adds/removes categories on the homepage.
+/**
+ * Handles submission of new categories and updates the UI.
+ * @returns {void}
+ */
 function setupCategorySubmission() {
     const submitCategoryBtn = document.getElementById("submitCategory");
     const categoriesContainer = document.getElementById("categories_container");
@@ -154,7 +182,10 @@ function setupCategorySubmission() {
 
 
 /* ---------------- SUM ALLOCATED TOTAL ---------------- */
-// Sum current categories total and update the budget input
+/**
+ * Recalculates and updates the total allocated budget from all categories.
+ * @returns {void}
+ */
 function updateAllocatedTotal() {
     const budgetInput = document.getElementById("budget_amount");
     if (!budgetInput) return;
@@ -168,7 +199,10 @@ function updateAllocatedTotal() {
 
 
 /* ---------------- COLLECT CATEGORIES FROM DOM ---------------- */
-// Collect all categories from the DOM
+/**
+ * Collects category data from the DOM.
+ * @returns {{name: string, amount: number}[]}
+ */
 function collectCategoriesFromUI() {
     return [...document.querySelectorAll(".category_added")].map(cat => ({
         name: cat.querySelector(".category_title").textContent,
@@ -180,7 +214,12 @@ function collectCategoriesFromUI() {
 
 
 /* ---------------- COMPARE CATEGORIES ---------------- */
-// Check if current categories match last saved state, to enable/disable save button
+/**
+ * Compares two category arrays to detect changes.
+ * @param {Array} current - Current category list
+ * @param {Array} saved - Last saved category list
+ * @returns {boolean}
+ */
 function categoriesMatch(current, saved) {
     if (current.length !== saved.length) return false;
 
@@ -196,7 +235,10 @@ function categoriesMatch(current, saved) {
 
 
 /* ---------------- UPDATE SAVE BUTTON STATE ---------------- */
-// Enable/disable save button based on whether categories have changed
+/**
+ * Enables or disables the Save Budget button based on state changes.
+ * @returns {void}
+ */
 function updateSaveButtonState() {
     const setBudgetBtn = document.getElementById("set_budget_btn");
     const monthSelect = document.getElementById("month_select");
@@ -225,7 +267,11 @@ function updateSaveButtonState() {
 
 
 /* ---------------- CONVERT MONTH FORMAT ---------------- */
-// Convert month string to Month Year format: i.e. -> "January 2026"
+/**
+ * Converts various month formats into "Month Year".
+ * @param {string} monthStr - Input month string
+ * @returns {string|null} Formatted month or null if invalid
+ */
 function convertToMonthYear(monthStr) {
     if (!monthStr) return null;
     
@@ -258,6 +304,10 @@ function convertToMonthYear(monthStr) {
 
 
 /* ---------------- SAVE BUDGET ---------------- */
+/**
+ * Handles saving the budget and categories to the backend.
+ * @returns {void}
+ */
 function setupBudgetSave() {
     const setBudgetBtn = document.getElementById("set_budget_btn");
     
@@ -337,13 +387,17 @@ function setupBudgetSave() {
 
 
 /* ---------------- LOAD BUDGET ---------------- */
-// Load budget data for selected month and populate UI
+/**
+ * Loads budget data for a given month and populates the UI.
+ * @param {string} monthStr - Selected month value
+ * @returns {Promise<void>}
+ */
 async function loadBudgetForMonth(monthStr) {
     const categoriesContainer = document.getElementById("categories_container");
     const budgetInput = document.getElementById("budget_amount");
 
     // Debug
-    console.log("Loading budget for month:", monthStr);
+    //console.log("Loading budget for month:", monthStr);
 
     // Convert month to month year format for API call
     const month = convertToMonthYear(monthStr);
@@ -356,15 +410,15 @@ async function loadBudgetForMonth(monthStr) {
     try {
         const data = await BudgetAPI.loadBudget(month);
         
-        console.log("Loaded budget data:", data);
+        //console.log("Loaded budget data:", data);
         
         // Store currently active monthly_sums_id globally
         window.currentMonthlySumsId = data?.monthly_sums_id || null;
-        console.log("Set currentMonthlySumsId to:", window.currentMonthlySumsId);
+        //console.log("Set currentMonthlySumsId to:", window.currentMonthlySumsId);
 
         // Handle null or error response
         if (!data || !data.success) {
-            console.log("No budget data found for", month);
+            //console.log("No budget data found for", month);
             if (categoriesContainer) {
                 categoriesContainer.innerHTML = "";
             }
@@ -400,7 +454,7 @@ async function loadBudgetForMonth(monthStr) {
                 const allocated = parseFloat(cat.allocated) || 0;
                 const spent = parseFloat(cat.spent) || 0;
                 
-                console.log(`Category: ${cat.name}, Allocated: ${allocated}, Spent: ${spent}`);
+                //console.log(`Category: ${cat.name}, Allocated: ${allocated}, Spent: ${spent}`);
                 
                 // Create category element with the correct spent amount
                 const categoryElement = createCategoryElement(cat.name, allocated, spent);
@@ -455,7 +509,11 @@ async function loadBudgetForMonth(monthStr) {
 
 
 /* --------------- UPDATE BUDGETED AMOUNT (IN EXPENSE POPUP) ---------------- */
-// Gets the budgeted amount for a selected category and feeds it to the expense popup
+/**
+ * Updates the budgeted amount field for a selected category.
+ * @param {string} categoryName
+ * @returns {void}
+ */
 function updateBudgetedAmount(categoryName) {
     const budgetedAmountInput = document.getElementById("budgeted_amount");
     if (!budgetedAmountInput) return;
@@ -482,11 +540,14 @@ function updateBudgetedAmount(categoryName) {
 
 
 /* --------------- UPDATE EXPENDITURE CARDS ---------------- */
-// Update the expenditure overview cards with spent amounts
+/**
+ * Updates expenditure overview cards(on homepage) with current spent values.
+ * @returns {void}
+ */
 function updateExpenditureCards() {
     const categories = document.querySelectorAll(".category_added");
     
-    console.log(`Updating expenditure cards for ${categories.length} categories`);
+    //console.log(`Updating expenditure cards for ${categories.length} categories`);
     
     // First, reset all expense cards to €0.00
     const overviewCards = document.querySelectorAll(".each_exp_overview");
@@ -502,7 +563,7 @@ function updateExpenditureCards() {
         const categoryName = cat.querySelector(".category_title")?.textContent.trim();
         const spent = parseFloat(cat.dataset.spent) || 0;
         
-        console.log(`Card update - Category: ${categoryName}, Spent: €${spent.toFixed(2)}`);
+        //console.log(`Card update - Category: ${categoryName}, Spent: €${spent.toFixed(2)}`);
         
         if (!categoryName) return;
         
@@ -521,7 +582,10 @@ function updateExpenditureCards() {
 
 
 /* --------------- POPULATE EXPENSE CATEGORY DROPDOWN ---------------- */
-// Populates the expense form category dropdown with current budget categories
+/**
+ * Populates the expense category dropdown with active categories.
+ * @returns {void}
+ */
 function populateExpenseCategoryDropdown() {
     const categorySelect = document.getElementById("category");
     if (!categorySelect) return;
@@ -552,12 +616,17 @@ function populateExpenseCategoryDropdown() {
         categorySelect.appendChild(option);
     });
     
-    console.log(`Populated ${categories.length} categories in expense dropdown`);
+    //console.log(`Populated ${categories.length} categories in expense dropdown`);
 }
 
 
 /* --------------- UPDATE CATEGORY DISPLAY WITH SPENT AMOUNT ---------------- */
-// Update the spent amount display for a category on the main page
+/**
+ * Updates the displayed spent amount for a category.
+ * @param {string} categoryName 
+ * @param {number} spentAmount
+ * @returns {void}
+ */
 function updateCategorySpentDisplay(categoryName, spentAmount) {
     const categories = document.querySelectorAll(".category_added");
     
@@ -567,8 +636,11 @@ function updateCategorySpentDisplay(categoryName, spentAmount) {
             // Update the data attribute
             cat.dataset.spent = spentAmount;
             
-            // You can add visual feedback here if needed
-            // For example, flash the category or update a progress bar
+            // TODO: Add visual feedback for spent amount update
+            // FUTURE feature:
+            // - Flash/highlight the added category element
+            // - Animate the spent amount display
+
             cat.style.transition = "background-color 0.3s";
             const originalBg = cat.style.backgroundColor;
             cat.style.backgroundColor = "#4CAF50";
@@ -583,7 +655,10 @@ function updateCategorySpentDisplay(categoryName, spentAmount) {
 
 
 /* --------------- ADD EXPENSES POPUP SETUP ---------------- */
-// This section entails the logic for the "Add Expenses" button and popup.
+/**
+ * Initializes the Add Expense popup and related UI behavior.
+ * @returns {void}
+ */
 function setupExpensesPopup() {
     const addExpenseBtn = document.getElementById("add_expense_btn");
     const expenseForm = document.getElementById("addExpenseForm");
@@ -598,7 +673,7 @@ function setupExpensesPopup() {
 
     // Show popup
     addExpenseBtn.addEventListener("click", () => {
-        console.log("Opening expenses popup");
+        //console.log("Opening expenses popup");
         expenseForm.classList.toggle("hidden");
         
         // Populate category dropdown with current categories
@@ -650,8 +725,13 @@ function setupExpensesPopup() {
     }
 }
 
+
 /* --------------- UPDATE TOTAL SPENT ---------------- */
-// Get and display the current total spent for a category
+/**
+ * Updates the 'total spent' field for a selected category.
+ * @param {string} categoryName
+ * @returns {void}
+ */
 function updateTotalSpent(categoryName) {
     const totalSpentInput = document.getElementById("total_spent");
     if (!totalSpentInput) return;
@@ -670,7 +750,10 @@ function updateTotalSpent(categoryName) {
 
 
 /* --------------- SUBMIT EXPENSE ---------------- */
-// Handle expense submission - adds amount to total spent
+/**
+ * Submits a new expense and updates UI and backend state.
+ * @returns {Promise<void>}
+ */
 async function submitExpense() {
     const categorySelect = document.getElementById("category");
     const spentAmountInput = document.getElementById("spent_amount");
@@ -680,9 +763,9 @@ async function submitExpense() {
     const spentAmount = parseFloat(spentAmountInput.value);
 
     // Debug logs
-    console.log("Submit Expense - Category:", categoryName);
-    console.log("Submit Expense - Amount:", spentAmount);
-    console.log("Submit Expense - Current Monthly Sums ID:", window.currentMonthlySumsId);
+    //console.log("Submit Expense - Category:", categoryName);
+    //console.log("Submit Expense - Amount:", spentAmount);
+    //console.log("Submit Expense - Current Monthly Sums ID:", window.currentMonthlySumsId);
 
     // Validate inputs
     if (!categoryName) {
@@ -705,11 +788,12 @@ async function submitExpense() {
 
     // Call ExpensesAPI to add expense
     try {
-        console.log("Calling ExpensesAPI.addExpense with:", {
-            monthlySumsId: window.currentMonthlySumsId,
-            categoryName: categoryName,
-            amount: spentAmount
-        });
+        // Debug log
+        // console.log("Calling ExpensesAPI.addExpense with:", {
+        //     monthlySumsId: window.currentMonthlySumsId,
+        //     categoryName: categoryName,
+        //     amount: spentAmount
+        // });
 
         const result = await ExpensesAPI.addExpense({
             monthlySumsId: window.currentMonthlySumsId,
@@ -718,7 +802,7 @@ async function submitExpense() {
         });
 
         // Debug log
-        console.log("ExpensesAPI.addExpense result:", result);
+        //console.log("ExpensesAPI.addExpense result:", result);
 
         if (!result?.success) {
             alert(result?.message || "Failed to add expense");
@@ -726,7 +810,7 @@ async function submitExpense() {
         }
 
         // Update UI with new total spent
-        console.log("Updating UI with new total spent:", result.new_total_spent);
+        //console.log("Updating UI with new total spent:", result.new_total_spent);
         updateCategorySpentDisplay(categoryName, result.new_total_spent);
         updateExpenditureCards();
 
@@ -762,7 +846,10 @@ async function submitExpense() {
 
 
 /* ---------------- SETUP MONTH SELECTOR ---------------- */
-// Creates month selector change event
+/**
+ * Sets up the month selector change handler.
+ * @returns {HTMLSelectElement|undefined}
+ */
 function setupMonthSelector() {
     const monthSelect = document.getElementById("month_select");
     
@@ -777,8 +864,9 @@ function setupMonthSelector() {
 
 
 /* ---------------- INITIALIZATION ---------------- */
+// Initialize homepage UI components on DOMContentLoaded
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log("Initializing homepage UI...");
+    //console.log("Initializing homepage UI...");
     
     // Setup UI components
     setupNavbarDropdown();
