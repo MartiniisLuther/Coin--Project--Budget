@@ -79,16 +79,15 @@ To run the application locally, the following components are required:
    - The database `myCoinApp` will be created automatically (via database.php file) if it does not already exist.
 
 4. Configure database connection:
-	4. Configure database connection:
-		- Open `php/database.php`
-		- Update the database credentials (`$host`, `$user`, `$password`, `$database`)
-		- Example configuration for this project:
-		  ```php
-		  $host = '127.0.0.1:3306'; // port used in this project
-		  $user = 'root';
-		  $password = '1357987';
-		  $database = 'myCoinApp';
-		  ```
+    - Open `php/database.php`
+    - Update the database credentials (`$host`, `$user`, `$password`, `$database`)
+    - Example configuration for this project:
+        ```php
+        $host = '127.0.0.1:3307';
+        $user = 'root';
+        $password = '1357987';
+        $database = 'myCoinApp';
+        ```
 
 5. Start the local server:
 	- **macOS:** Use the XAMPP Manager to start Apache and MySQL services
