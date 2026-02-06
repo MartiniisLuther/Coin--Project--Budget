@@ -79,15 +79,27 @@ To run the application locally, the following components are required:
    - The database `myCoinApp` will be created automatically (via database.php file) if it does not already exist.
 
 4. Configure database connection:
-	- Open `php/database.php`
-	- Update the database credentials (`$host`, `$user`, `$password`, `$database`)
-	e.g., for this project, the following apply
-	$host = '127.0.0.1:3307'; // port used in this project
-	$user = 'root';
-	$password = '1357987';
-	$database = 'myCoinApp';
+	4. Configure database connection:
+		- Open `php/database.php`
+		- Update the database credentials (`$host`, `$user`, `$password`, `$database`)
+		- Example configuration for this project:
+		  ```php
+		  $host = '127.0.0.1:3306'; // port used in this project
+		  $user = 'root';
+		  $password = '1357987';
+		  $database = 'myCoinApp';
+		  ```
 
-5. Start the local server and navigate to `http://localhost/myapp` in the browser
+5. Start the local server:
+	- **macOS:** Use the XAMPP Manager to start Apache and MySQL services
+	- **Windows:** Use the XAMPP Control Panel to start Apache and MySQL services
+	- **Linux:** Start services via command line: `sudo /opt/lampp/lampp start`
+
+6. Access the application by navigating to `http://localhost/myapp`:
+	- Open `welcomepage.html`
+	- Sign up using the required fields
+	- For quick testing, execute `sample_test_users.php` by navigating to `http://localhost/myapp/php/sample_test_users.php` to insert sample test users into the database
+	- Log in with the sample credentials in `sample_test_users.php` file and start managing your budget and visualizing spending via the overview and charts
 
 
 ## Project Structure
